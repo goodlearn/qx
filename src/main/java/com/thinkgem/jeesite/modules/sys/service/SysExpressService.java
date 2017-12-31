@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,22 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	public Page<SysExpress> findPage(Page<SysExpress> page, SysExpress sysExpress) {
 		return super.findPage(page, sysExpress);
+	}
+	
+	//批量操作
+	@Transactional(readOnly = false)
+	public void saveBatchEnd(String[] sysExpressIds) {
+		String state = DictUtils.getDictValue("已完结", "expressState", "0");
+		List<SysExpress> sysExpresses = new ArrayList<SysExpress>();
+		for(String sysExpressId:sysExpressIds) {
+			SysExpress sysExpress = get(sysExpressId);
+			sysExpress.setState(state);
+			sysExpresses.add(sysExpress);
+			System.out.println("批量操作取货:"+sysExpressId);
+		}
+		for(SysExpress sysExpress:sysExpresses) {
+			save(sysExpress);
+		}
 	}
 	
 	@Transactional(readOnly = false)

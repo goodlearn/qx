@@ -20,7 +20,6 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
-import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
@@ -71,11 +70,27 @@ public class SysExpressController extends BaseController {
 		return "modules/sys/sysExpressEditForm";
 	}
 	
-	@RequiresPermissions("sys:sysExpress:view")
+	
+	
+	@RequiresPermissions("sys:sysExpress:edit")
 	@RequestMapping(value = "addForm")
 	public String addForm(SysExpress sysExpress, Model model) {
 		model.addAttribute("sysExpress", sysExpress);
 		return "modules/sys/sysExpressAddForm";
+	}
+	
+	//取货
+	@RequiresPermissions("sys:sysExpress:edit")
+	@RequestMapping(value = "endExpress")
+	public String endExpress(SysExpress sysExpress, Model model) {
+		if (!beanValidator(model, sysExpress)){
+			return editForm(sysExpress, model);
+		}
+		String state = DictUtils.getDictValue("已完结", "expressState", "0");
+		sysExpress.setState(state);
+		sysExpressService.save(sysExpress);
+		
+		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 	}
 	
 	/**
@@ -100,6 +115,16 @@ public class SysExpressController extends BaseController {
 			model.addAttribute("searchValue", searchValue);
 		}
 		return "modules/sys/sysExpressEndForm";
+	}
+	
+	@RequiresPermissions("sys:sysExpress:edit")
+	@RequestMapping(value = "endBatchForm")
+	public String endBatchForm(HttpServletRequest request, HttpServletResponse response, Model model) {
+		String[] sysExpressIds = request.getParameterValues("sysExpressIds");
+		if(null!=sysExpressIds&&sysExpressIds.length>0) {
+			sysExpressService.saveBatchEnd(sysExpressIds);
+		}
+		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 	}
 
 	@RequiresPermissions("sys:sysExpress:edit")
