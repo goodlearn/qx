@@ -19,7 +19,6 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/sys/sysExpress/">快递表列表</a></li>
-		<shiro:hasPermission name="sys:sysExpress:edit"><li><a href="${ctx}/sys/sysExpress/addForm">快递表添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="sysExpress" action="${ctx}/sys/sysExpress/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>

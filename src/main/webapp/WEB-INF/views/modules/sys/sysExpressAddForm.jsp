@@ -27,8 +27,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/sysExpress/">快递表列表</a></li>
-		<li class="active"><a href="${ctx}/sys/sysExpress/form?id=${sysExpress.id}">快递表<shiro:hasPermission name="sys:sysExpress:edit">${not empty sysExpress.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:sysExpress:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/sys/sysExpress/">快递列表</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="sysExpress" action="${ctx}/sys/sysExpress/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
