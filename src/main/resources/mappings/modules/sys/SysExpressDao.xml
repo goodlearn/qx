@@ -58,6 +58,35 @@
 		</choose>
 	</select>
 	
+	
+	<select id="findUnEndList" resultType="SysExpress">
+		SELECT 
+			<include refid="sysExpressColumns"/>
+		FROM sys_express a
+		<include refid="sysExpressJoins"/>
+		LEFT JOIN sys_wx_user wxuc on wxuc.phone = a.phone
+		<where>
+			<if test="searchUnEndValue != null and searchUnEndValue != null and searchUnEndValue != ''">
+				( wxuc.id_card = #{searchUnEndValue}
+				  OR a.express_id = #{searchUnEndValue}
+				  OR a.phone = #{searchUnEndValue}
+				 )
+			</if>
+			<if test="state != null and state != ''">
+				AND a.state != #{state}
+			</if>
+			AND a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
 	<select id="findAllList" resultType="SysExpress">
 		SELECT 
 			<include refid="sysExpressColumns"/>

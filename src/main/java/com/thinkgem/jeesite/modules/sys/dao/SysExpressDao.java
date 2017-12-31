@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
@@ -14,5 +16,8 @@ import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
  */
 @MyBatisDao
 public interface SysExpressDao extends CrudDao<SysExpress> {
+
+	//获取未取货的快递信息
+	public List<SysExpress> findUnEndList(SysExpress sysExpress);
 	
 }

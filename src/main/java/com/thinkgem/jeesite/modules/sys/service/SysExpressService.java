@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysExpressDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
 
@@ -45,6 +46,14 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	public List<SysExpress> findList(SysExpress sysExpress) {
 		return super.findList(sysExpress);
+	}
+	
+	
+	//获取未取货的快递单分页信息
+	public Page<SysExpress> findUnEndPage(Page<SysExpress> page, SysExpress sysExpress) {
+		sysExpress.setPage(page);
+		page.setList(dao.findUnEndList(sysExpress));
+		return page;
 	}
 	
 	public Page<SysExpress> findPage(Page<SysExpress> page, SysExpress sysExpress) {

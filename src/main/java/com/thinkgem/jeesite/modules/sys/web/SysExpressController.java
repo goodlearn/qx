@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
@@ -75,6 +76,30 @@ public class SysExpressController extends BaseController {
 	public String addForm(SysExpress sysExpress, Model model) {
 		model.addAttribute("sysExpress", sysExpress);
 		return "modules/sys/sysExpressAddForm";
+	}
+	
+	/**
+	 * 获取已取货页面
+	 * @param sysExpress
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("sys:sysExpress:view")
+	@RequestMapping(value = {"endForm", "endFormList"})
+	public String endForm(SysExpress sysExpress, HttpServletRequest request, HttpServletResponse response, Model model) {
+		
+		//获取搜索值
+		String searchValue = request.getParameter("searchValue");
+		sysExpress.setSearchUnEndValue(searchValue);
+		//如果是已经完结取货的不再查询
+		String state = DictUtils.getDictValue("已完结", "expressState", "0");
+		sysExpress.setState(state);
+		Page<SysExpress> page = sysExpressService.findUnEndPage(new Page<SysExpress>(request, response), sysExpress); 
+		model.addAttribute("page", page);
+		if(null!=searchValue) {
+			model.addAttribute("searchValue", searchValue);
+		}
+		return "modules/sys/sysExpressEndForm";
 	}
 
 	@RequiresPermissions("sys:sysExpress:edit")
