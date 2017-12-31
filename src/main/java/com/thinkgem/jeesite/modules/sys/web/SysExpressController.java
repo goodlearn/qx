@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 快递信息表Controller
@@ -82,6 +83,9 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return addForm(sysExpress, model);
 		}
+		//默认保存快递状态为已入库
+		String state = DictUtils.getDictValue("已入库", "expressState", "0");
+		sysExpress.setState(state);
 		sysExpressService.save(sysExpress);
 		addMessage(redirectAttributes, "保存快递表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";

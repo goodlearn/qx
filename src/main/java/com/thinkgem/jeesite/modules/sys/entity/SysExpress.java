@@ -58,7 +58,6 @@ public class SysExpress extends DataEntity<SysExpress> {
 		return state;
 	}
 
-	@Length(min=0, max=100, message="快递状态长度必须介于 0 和 100 之间")
 	public void setState(String state) {
 		this.state = state;
 	}
