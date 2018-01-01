@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.XStream;
 @Service
 public class WxService extends BaseService implements InitializingBean {
 	
-	private static String WX_TOKEN = "KDTEST";
+	private static String WX_TOKEN = "V189006VVxvvO8S6VHVQo9KfVAs1eS0Z";
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

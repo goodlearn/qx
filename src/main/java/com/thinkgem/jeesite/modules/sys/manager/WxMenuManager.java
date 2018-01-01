@@ -30,7 +30,6 @@ public class WxMenuManager {
 	//创建菜单
 	private String createMenuByUrl() {
 		WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
-		wxAccessTokenManager.getAccessToken();
 		return String.format("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s", wxAccessTokenManager.getAccessToken());
 	}
 	
@@ -46,10 +45,10 @@ public class WxMenuManager {
 		int ret = 0;
 		WxMenu menu = createMenuStyle();//创建菜单
 		WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
-		wxAccessTokenManager.getAccessToken();
 		String createMenuUrl = createMenuByUrl();//创建菜单URL
 		// 将菜单对象转换成json字符串  
-	    String jsonMenu = JSONObject.fromObject(menu).toString();  
+	    String jsonMenu = JSONObject.fromObject(menu).toString();
+	    System.out.println("菜单字符串是:"+jsonMenu);
 		JSONObject jsonObject = WxUrlUtils.httpRequest(createMenuUrl, Global.POST_METHOD, jsonMenu);
 		if (null != jsonObject) {  
 	        if (0 != jsonObject.getInt("errcode")) {  
@@ -135,22 +134,22 @@ public class WxMenuManager {
         WxViewButton btn32 = new WxViewButton();  
         btn32.setName("使用帮助");  
         btn32.setType("view");  
-        btn32.setUrl("http://liufeng.gotoip2.com/xiaoqrobot/help.jsp");  
+        btn32.setUrl("http://www.baidu.com");  
   
         WxComplexButton mainBtn1 = new WxComplexButton();  
         mainBtn1.setName("生活助手");  
-        mainBtn1.setSubButtons(new WxButton[] { btn11, btn12, btn13, btn14, btn15 });  
+        mainBtn1.setSub_button(new WxButton[] { btn11, btn12, btn13, btn14, btn15 });  
   
         WxComplexButton mainBtn2 = new WxComplexButton();  
         mainBtn2.setName("休闲驿站");  
-        mainBtn2.setSubButtons(new WxButton[] { btn21, btn22, btn23, btn24, btn25 });  
+        mainBtn2.setSub_button(new WxButton[] { btn21, btn22, btn23, btn24, btn25 });  
   
         WxComplexButton mainBtn3 = new WxComplexButton();  
         mainBtn3.setName("更多");  
-        mainBtn3.setSubButtons(new WxButton[] { btn31, btn33, btn34, btn35, btn32 });  
+        mainBtn3.setSub_button(new WxButton[] { btn31, btn33, btn34, btn35, btn32 });  
 	
         WxMenu menu = new WxMenu();
-        menu.setButtons(new WxButton[] { mainBtn1, mainBtn2, mainBtn3 }); 
+        menu.setButton(new WxButton[] { mainBtn1, mainBtn2, mainBtn3 }); 
         return menu;
 	}
 	

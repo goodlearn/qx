@@ -30,9 +30,9 @@ import net.sf.json.JSONObject;
  */
 public class WxAccessTokenManager {
 	
-	 private static final String appId = "wx766175b073e94a7d";
+	 private static final String appId = "wxd186964df0fdbfd5";
 	 
-	 private static final String appSecret = "c47438ccab70251b579f4a579a223193";
+	 private static final String appSecret = "30b3282df5334af8a8d62706a2669a8e";
 	 
 	 private static String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
 

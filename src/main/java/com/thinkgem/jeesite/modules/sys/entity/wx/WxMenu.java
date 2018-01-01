@@ -7,14 +7,14 @@ package com.thinkgem.jeesite.modules.sys.entity.wx;
  */
 public class WxMenu {
 
-	private WxButton[] buttons;
+	private WxButton[] button;
 
-	public WxButton[] getButtons() {
-		return buttons;
+	public WxButton[] getButton() {
+		return button;
 	}
 
-	public void setButtons(WxButton[] buttons) {
-		this.buttons = buttons;
+	public void setButton(WxButton[] buttons) {
+		this.button = buttons;
 	}  
 	 
 	 
