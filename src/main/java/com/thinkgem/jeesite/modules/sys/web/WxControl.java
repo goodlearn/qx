@@ -22,17 +22,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
+import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 
 @Controller
 @RequestMapping(value = "wx")
 public class WxControl extends BaseController {
 	
-	
+	@Autowired
+	private SysWxUserService sysWxUserService;
 	@Autowired
 	private WxService wxService;
 	@Autowired
@@ -58,6 +64,84 @@ public class WxControl extends BaseController {
 		WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
 		wtUtils.getAccessToken();
 		return null;
+	}
+	
+	//获取保存个人信息页面
+	@RequestMapping(value="/reqPersonUserInfo",method=RequestMethod.GET)
+	public String reqPersonUserInfo() {
+		return "modules/wxp/wxIdCardUserInfoAdd";
+	}
+	
+	//获取更新个人信息页面
+	@RequestMapping(value="/reqUPersonUserInfo",method=RequestMethod.GET)
+	public String reqUPersonUserInfo() {
+		return "modules/wxp/wxIdCardUserInfoAdd";
+	}
+	
+	//保存个人信息
+	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
+	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String name = request.getParameter("name");
+		String idCard = request.getParameter("idCard");
+		String phone = request.getParameter("phone");
+		SysWxUser sysWxUser = new SysWxUser();
+		sysWxUser.setName(name);
+		sysWxUser.setIdCard(idCard);
+		sysWxUser.setPhone(phone);
+		wxService.saveWxUserInfo(sysWxUser);
+		return "modules/wxp/wxIdCardUserInfo";
+	}
+	
+	//修改个人信息
+	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
+	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String name = request.getParameter("name");
+		String idCard = request.getParameter("idCard");
+		String phone = request.getParameter("phone");
+		SysWxUser sysWxUser = new SysWxUser();
+		sysWxUser.setName(name);
+		sysWxUser.setIdCard(idCard);
+		sysWxUser.setPhone(phone);
+		wxService.modifyWxUserInfo(sysWxUser);
+		return "modules/wxp/wxIdCardUserInfoModify";
+	}
+	/*
+	 * 授权回调
+	 */
+	@RequestMapping(value="/oAuthRedirectSo",method=RequestMethod.GET)
+	public String oAuthRedirectSo(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String retPage = null;
+		try {
+			// 将请求、响应的编码均设置为UTF-8（防止中文乱码）  
+	        request.setCharacterEncoding("UTF-8");  
+	        response.setCharacterEncoding("UTF-8"); 
+	        String code=request.getParameter("code");//获取code
+	        logger.info("code is " + code);
+	        
+	        SysWxInfo sysWxInfo = new SysWxInfo();
+	        sysWxInfo = wxService.saveOpenId(code);
+	        if(null == sysWxInfo) {
+	        	retPage = "/error/500.jsp";
+	        	return retPage;
+	        }else {
+	        	String idCard = sysWxInfo.getIdCard();
+	        	if(null == idCard) {
+	        		//没有身份信息
+	        		model.addAttribute("sysWxInfo", sysWxInfo);
+	        		retPage = "modules/wxp/wxIdCardUserInfoAdd";
+		        	return retPage;
+	        	}else {
+	        		//有身份信息
+	        		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
+	        		retPage = "modules/wxp/wxIdCardUserInfoModify";
+		        	return retPage;
+	        	}
+	        }
+		}catch(Exception ex) {
+			 logger.info("request getUserAccessToken error");
+			 ex.printStackTrace();
+		}
+		return retPage;
 	}
 	
 	/**

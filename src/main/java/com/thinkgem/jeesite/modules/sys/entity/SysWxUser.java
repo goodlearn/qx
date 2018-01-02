@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.entity;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.supcan.annotation.treelist.cols.SupCol;
 
 /**
  * 微信用户表Entity
@@ -27,11 +28,13 @@ public class SysWxUser extends DataEntity<SysWxUser> {
 		super(id);
 	}
 
+	@SupCol(isUnique="true")
 	@Length(min=1, max=100, message="身份证号长度必须介于 1 和 100 之间")
 	public String getIdCard() {
 		return idCard;
 	}
 
+	@SupCol(isUnique="true")
 	public void setIdCard(String idCard) {
 		this.idCard = idCard;
 	}
@@ -45,11 +48,13 @@ public class SysWxUser extends DataEntity<SysWxUser> {
 		this.name = name;
 	}
 	
+	@SupCol(isUnique="true")
 	@Length(min=1, max=200, message="手机长度必须介于 1 和 200 之间")
 	public String getPhone() {
 		return phone;
 	}
 
+	@SupCol(isUnique="true")
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}

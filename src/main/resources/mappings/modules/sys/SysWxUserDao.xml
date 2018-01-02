@@ -26,6 +26,14 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByIdCard" resultType="SysWxUser">
+		SELECT 
+			<include refid="sysWxUserColumns"/>
+		FROM sys_wx_user a
+		<include refid="sysWxUserJoins"/>
+		WHERE a.id_card = #{idCard}
+	</select>
+	
 	<select id="findByPhone" resultType="SysWxUser">
 		SELECT 
 			<include refid="sysWxUserColumns"/>

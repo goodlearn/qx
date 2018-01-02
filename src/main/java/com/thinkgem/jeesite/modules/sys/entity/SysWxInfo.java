@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.entity;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.supcan.annotation.treelist.cols.SupCol;
 
 /**
  * 微信信息表Entity
@@ -26,11 +27,13 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 		super(id);
 	}
 
+	@SupCol(isUnique="true")
 	@Length(min=1, max=100, message="微信关联号长度必须介于 1 和 100 之间")
 	public String getOpenId() {
 		return openId;
 	}
 
+	@SupCol(isUnique="true")
 	public void setOpenId(String openId) {
 		this.openId = openId;
 	}

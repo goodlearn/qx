@@ -17,4 +17,7 @@ public interface SysWxUserDao extends CrudDao<SysWxUser> {
 	
 	public SysWxUser findByPhone(String phone);
 	
+	public SysWxUser findByIdCard(String idCard);
+	
+	
 }

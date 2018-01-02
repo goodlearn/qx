@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>实名认证 -- 锡职快递服务平台</title>
+	<title>个人信息</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-	<link rel="stylesheet" type="text/css" href="css/normalize.css">
-	<link rel="stylesheet" type="text/css" href="css/common.css">
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/common.js"></script>
-
+	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
+	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
+	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
+	<link href="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"/></script>
+	
 	<style type="text/css">
-		.content{
+        .content{
 			overflow: hidden;
 		}
 		.userCheckCont{
@@ -76,7 +77,6 @@
 			float: left;
 			padding-top: 20px;
 		}
-
 		.submitBtn{
 			width: 90%;
 			margin: 0 auto 20px;
@@ -87,58 +87,41 @@
 			border: 2px solid #20d6da;
 			font-weight: bolder;
 		}
-	</style>
+    </style>
 </head>
 <body>
-<div class="content">
-	<div class="userCheckCont">
-		<div class="userInfoCont">
-			<div class="userInfoIcon">
-				<img src="images/userInfoIcon.png" width="100%">
-			</div>
-			<div class="nickName">总有刁民想害朕</div>
-		</div>
-	</div>
-	
-	<div class="solidCont">
-		<div class="checkState">
-			<div class="stateIcon">
-				<img src="images/uncheckIcon.png" width="100%">
-			</div>
-			<div class="checkStateTxt">未认证</div>
-			
-			<!-- 按钮组 -->
-			<div class="checkBtn">去认证</div>
-			<div class="checkBtn">去修改</div>
-			<div class="checkBtn">重新提交</div>
-			<div class="checkprompt">认证通过开启信息化校园快递</div>
-		</div>
-
-		<div class="infoCheckEditCont">
-			<form>
-				<div class="userInputCont">
-					<div class="inputTypeCont">
-						<div class="inputTitle">姓名</div>
-						<input type="text" class="commonInput" name="username" placeholder="请输入你的姓名...">
-					</div>
-					<div class="inputTypeCont">
-						<div class="inputTitle">手机</div>
-						<input type="text" class="commonInput" name="usernum" placeholder="请输入你的手机号码...">
-					</div>
-					<div class="inputTypeCont">
-						<div class="inputTitle">证件</div>
-						<input type="text" class="commonInput" name="userid" placeholder="请输入身份证号码...">
-					</div>
+	<div class="content">
+		<div class="userCheckCont">
+			<div class="userInfoCont">
+				<div class="userInfoIcon">
+					<img src="${ctxStatic}/wx/wximages/userInfoIcon.png" width="100%">
 				</div>
-			</form>
-
-			<div class="submitBtn">确认提交</div>
+				<div class="nickName">总有刁民想害朕</div>
+			</div>
+		</div>
+		<div class="solidCont">
+			<div class="infoCheckEditCont">
+				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/modifyPersonUserInfo" method="post">
+					<div class="userInputCont">
+						<div class="inputTypeCont">
+							<div class="inputTitle">姓名</div>
+							<input type="text" class="commonInput" name="name" placeholder="${sysWxUser.name}">
+						</div>
+						<div class="inputTypeCont">
+							<div class="inputTitle">手机</div>
+							<input type="text" class="commonInput" name="phone" placeholder="${sysWxUser.phone}">
+						</div>
+						<div class="inputTypeCont">
+							<div class="inputTitle">证件</div>
+							<input type="text" class="commonInput" name="idCard" placeholder="${sysWxUser.idCard}">
+						</div>
+					</div>
+					<input class="submitBtn" type="submit" value="确认修改"/>
+				</form>
+			</div>
 		</div>
 	</div>
-
-</div>
-
-<script type="text/javascript">
+	<script type="text/javascript">
 	$(function() {
 		var windowW = $(window).width();
 		if (windowW > 600) {

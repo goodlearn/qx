@@ -16,13 +16,26 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.WxUrlUtils;
+import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
+import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
+import com.thinkgem.jeesite.modules.sys.dao.UserDao;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatMsg;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatTextMsg;
 import com.thoughtworks.xstream.XStream;
+
+import net.sf.json.JSONObject;
 
 /**
  * 微信信息处理
@@ -32,10 +45,162 @@ import com.thoughtworks.xstream.XStream;
 @Service
 public class WxService extends BaseService implements InitializingBean {
 	
-	private static String WX_TOKEN = "V189006VVxvvO8S6VHVQo9KfVAs1eS0Z";
+	private static final String defaultLoginNameForQuery = "wxuser";
+	
+	@Autowired
+	private SysWxUserDao sysWxUserDao;
+	
+	@Autowired
+	private UserDao userDao;
+	
+	@Autowired
+	private SysWxInfoDao sysWxInfoDao;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		
+	}
+	
+	//获取access_token和openId
+	private Map<String,String> getOpenIdInfo(String code) {
+		Map<String,String> ret = new HashMap<String,String>();
+		String url = String.format(WxGlobal.USERINFO_TOKEN_URL,WxGlobal.APPID,WxGlobal.APPSECREST,code);
+		logger.info("request accessToken from url: {}", url);
+		JSONObject jsonObject = WxUrlUtils.httpRequest(url, Global.GET_METHOD, null);
+		if(null != jsonObject) {
+  		  	String accessToken = jsonObject.getString("access_token");
+  		  	String openId = jsonObject.getString("openid");
+  		  	logger.info(" access_token is " + accessToken + " openId is "+openId);
+  		  	ret.put("access_toke", accessToken);
+  		    ret.put("openId", openId);
+		}else {
+			logger.info("get accessToken by code is error");
+		}
+		return ret;
+	}
+	
+	 /**
+	  * @param code
+	  * @return
+	  */
+	 @Transactional(readOnly = false)
+	 public SysWxInfo saveOpenId(String code) {
+		 //获取access_token和openId
+		 // Map<String,String> maps = getOpenIdInfo(code);
+		 Map<String,String> maps = new HashMap<String,String>();
+		 maps.put("openId", "wzy");
+		 String openId = maps.get("openId");
+		 if(null == openId) {
+			 return null;//openId获取失败
+		 }
+		 SysWxInfo queryEntity = new SysWxInfo();
+		 queryEntity.setOpenId(openId);
+		 queryEntity.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
+		 SysWxInfo queryResult = sysWxInfoDao.findByOpenId(queryEntity);
+		 if(null == queryResult) {
+			 //不存在  保存
+			 User paramUser = new User();
+				paramUser.setLoginName(defaultLoginNameForQuery);
+				User user = userDao.getByLoginName(paramUser);
+				if(null == user) {
+					logger.info("No wxuser");
+					return null;//没有操作用户
+			 }
+			 SysWxInfo sysWxInfo = new SysWxInfo();
+			 sysWxInfo.setId(IdGen.uuid());
+			 sysWxInfo.setOpenId(openId);
+			 sysWxInfo.setCreateBy(user);
+			 sysWxInfo.setCreateDate(new Date());
+			 sysWxInfo.setUpdateBy(user);
+			 sysWxInfo.setUpdateDate(new Date());
+			 sysWxInfoDao.insert(sysWxInfo);
+			 return sysWxInfo;//不存在 保存成功
+		 }else {
+			 return queryResult;//存在
+		 }
+	 }
+	
+	//保存个人用户信息
+	@Transactional(readOnly = false)
+	public void saveWxUserInfo(SysWxUser sysWxUser) {
+		//获取操作人信息 默认为微信用户
+		User paramUser = new User();
+		paramUser.setLoginName(defaultLoginNameForQuery);
+		User user = userDao.getByLoginName(paramUser);
+		if(null == user) {
+			logger.info("No wxuser");
+			return;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		if(null != idCard) {
+			SysWxUser temp = sysWxUserDao.findByIdCard(idCard);
+			if(null != temp) {
+				logger.info("idCard exist");
+				return;
+			}
+		}
+		
+		sysWxUser.setId(IdGen.uuid());
+		sysWxUser.setCreateBy(user);
+		sysWxUser.setCreateDate(new Date());
+		sysWxUser.setUpdateBy(user);
+		sysWxUser.setUpdateDate(new Date());
+		
+		sysWxUserDao.insert(sysWxUser);
+	}
+	
+	//修改个人信息，需要将微信的数据一同更新
+	@Transactional(readOnly = false)
+	public void modifyWxUserInfo(SysWxUser sysWxUser) {
+		//获取操作人信息 默认为微信用户
+		User paramUser = new User();
+		paramUser.setLoginName(defaultLoginNameForQuery);
+		User user = userDao.getByLoginName(paramUser);
+		if(null == user) {
+			logger.info("No wxuser");
+			return;
+		}
+		
+		SysWxUser queryResult = sysWxUserDao.get(sysWxUser);
+		if(null == queryResult) {
+			return;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		if(null != idCard) {
+			queryResult.setIdCard(idCard);
+		}
+		
+		String phone = sysWxUser.getPhone();
+		if(null != phone) {
+			queryResult.setPhone(phone);
+		}
+		
+		String name = sysWxUser.getName();
+		if(null != name) {
+			queryResult.setName(name);
+		}
+		queryResult.setCreateBy(user);
+		queryResult.setCreateDate(new Date());
+		queryResult.setUpdateBy(user);
+		queryResult.setUpdateDate(new Date());
+		sysWxUserDao.update(queryResult);
+		
+		if(null != idCard) {
+			SysWxInfo queryEntity = new SysWxInfo();
+			queryEntity.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
+			queryEntity.setIdCard(idCard);
+			SysWxInfo querySysWxInfo = sysWxInfoDao.findByOpenId(queryEntity);
+			if(null == querySysWxInfo) {
+				return;
+			}
+			querySysWxInfo.setIdCard(idCard);
+			sysWxInfoDao.update(querySysWxInfo);
+		}
+		
+		
+		
 		
 	}
 	
@@ -62,7 +227,9 @@ public class WxService extends BaseService implements InitializingBean {
         //文本消息
         if (msgType.equals(Global.WX_REQ_MESSAGE_TYPE_TEXT)) {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
-        	wechatMsg.setContent("任哲是" + content);
+        	String url = String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
+    		logger.info("request code from url: {}", url);
+        	wechatMsg.setContent(WxGlobal.getUserClick());
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);
         	wechatMsg.setCreateTime(new Date().getTime() + "");
@@ -109,7 +276,7 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	//排序
 	public String sort(String timestamp, String nonce) {
-		 String[] strArray = { WX_TOKEN, timestamp, nonce };
+		 String[] strArray = { WxGlobal.WX_TOKEN, timestamp, nonce };
 		 Arrays.sort(strArray);
 		 StringBuilder sbuilder = new StringBuilder();
 		    for (String str : strArray) {

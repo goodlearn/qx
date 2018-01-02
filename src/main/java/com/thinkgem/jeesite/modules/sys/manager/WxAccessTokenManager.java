@@ -18,7 +18,11 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 
 import net.sf.json.JSONObject;
@@ -30,12 +34,11 @@ import net.sf.json.JSONObject;
  */
 public class WxAccessTokenManager {
 	
-	 private static final String appId = "wxd186964df0fdbfd5";
-	 
-	 private static final String appSecret = "30b3282df5334af8a8d62706a2669a8e";
-	 
-	 private static String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
-
+	 /**
+	  * 日志对象
+	  */
+	 protected Logger logger = LoggerFactory.getLogger(getClass());
+	
 	 private Map<String, String> map = new HashMap<>();
 	 
 	 private static WxAccessTokenManager single = null;
@@ -49,6 +52,7 @@ public class WxAccessTokenManager {
 		 }
 		 return single;
 	 }
+	 
 	
 	 //获取access_token
 	 public String getAccessToken() {
@@ -62,7 +66,7 @@ public class WxAccessTokenManager {
          }else {
         	  System.out.println("start access_token");
         	  System.out.println("accessToken 超时 ， 或者不存在 ， 重新获取");
-        	  String url = String.format(requestUrl,appId,appSecret);
+        	  String url = String.format(WxGlobal.MENUREQUESTURL,WxGlobal.APPID,WxGlobal.APPSECREST);
         	  System.out.println("格式化Url:" + url); 
         	  JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.GET_METHOD,null); 
         	  if(null != jsonObject) {

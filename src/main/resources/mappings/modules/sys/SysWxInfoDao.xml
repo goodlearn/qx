@@ -25,6 +25,49 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByIdCard" resultType="SysWxInfo">
+		SELECT 
+			<include refid="sysWxInfoColumns"/>
+		FROM sys_wx_info a
+		<include refid="sysWxInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="idCard != null and idCard != ''">
+				AND a.id_card = #{idCard}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	
+	<select id="findByOpenId" resultType="SysWxInfo">
+		SELECT 
+			<include refid="sysWxInfoColumns"/>
+		FROM sys_wx_info a
+		<include refid="sysWxInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="openId != null and openId != ''">
+				AND a.open_id = #{openId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
 	<select id="findList" resultType="SysWxInfo">
 		SELECT 
 			<include refid="sysWxInfoColumns"/>

@@ -1,0 +1,2 @@
+ALTER TABLE sys_wx_user ADD CONSTRAINT wxuser_idcard UNIQUE(id_card)
+ALTER TABLE sys_wx_info ADD CONSTRAINT wxinfo_openid UNIQUE(open_id)

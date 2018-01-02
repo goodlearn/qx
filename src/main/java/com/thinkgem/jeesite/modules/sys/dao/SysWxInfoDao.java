@@ -15,4 +15,14 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 @MyBatisDao
 public interface SysWxInfoDao extends CrudDao<SysWxInfo> {
 	
+	/**
+	 * 根据openId查询
+	 */
+	public SysWxInfo findByOpenId(SysWxInfo sysWxInfo);
+	
+	/**
+	 * 依据身份证查询
+	 */
+	public SysWxInfo findByIdCard(SysWxInfo sysWxInfo);
+	
 }

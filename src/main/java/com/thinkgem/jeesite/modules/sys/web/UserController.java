@@ -325,15 +325,6 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "treeData")
 	public List<Map<String, Object>> treeData(@RequestParam(required=false) String officeId, HttpServletResponse response) {
 		List<Map<String, Object>> mapList = Lists.newArrayList();
-		List<User> list = systemService.findUserByOfficeId(officeId);
-		for (int i=0; i<list.size(); i++){
-			User e = list.get(i);
-			Map<String, Object> map = Maps.newHashMap();
-			map.put("id", "u_"+e.getId());
-			map.put("pId", officeId);
-			map.put("name", StringUtils.replace(e.getName(), " ", ""));
-			mapList.add(map);
-		}
 		return mapList;
 	}
     

@@ -42,6 +42,39 @@ public class WxUrlUtils {
 	 
 	        }
 	    };
+	    
+	 /**
+	  * 发起https请求
+	  */
+	public static HttpsURLConnection getHttpsURLConnection(String requestUrl, String requestMethod, String outputStr) {
+		HttpsURLConnection httpUrlConn = null;;
+		 try {  
+			 // 创建SSLContext对象，并使用我们指定的信任管理器初始化  
+            TrustManager[] tm = { x509Tm };  
+            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");  
+            sslContext.init(null, tm, new java.security.SecureRandom());  
+            // 从上述SSLContext对象中得到SSLSocketFactory对象  
+            SSLSocketFactory ssf = sslContext.getSocketFactory();  
+  
+            URL url = new URL(requestUrl);  
+            httpUrlConn = (HttpsURLConnection) url.openConnection();  
+            httpUrlConn.setSSLSocketFactory(ssf);  
+  
+            httpUrlConn.setDoOutput(true);  
+            httpUrlConn.setDoInput(true);  
+            httpUrlConn.setUseCaches(false);  
+            // 设置请求方式（GET/POST）  
+            httpUrlConn.setRequestMethod(requestMethod);  
+  
+            if ("GET".equalsIgnoreCase(requestMethod))  
+                httpUrlConn.connect();  
+		 } catch (ConnectException ce) {  
+	          log.error("Weixin server connection timed out.");  
+	     } catch (Exception e) {  
+	          log.error("https request error:{}", e);  
+	     }  
+		 return httpUrlConn;
+	}
     
 	 /** 
      * 发起https请求并获取结果 
@@ -55,26 +88,12 @@ public class WxUrlUtils {
         JSONObject jsonObject = null;  
         StringBuffer buffer = new StringBuffer();  
         try {  
-            // 创建SSLContext对象，并使用我们指定的信任管理器初始化  
-            TrustManager[] tm = { x509Tm };  
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");  
-            sslContext.init(null, tm, new java.security.SecureRandom());  
-            // 从上述SSLContext对象中得到SSLSocketFactory对象  
-            SSLSocketFactory ssf = sslContext.getSocketFactory();  
+           
+        	HttpsURLConnection httpUrlConn = getHttpsURLConnection(requestUrl,requestMethod,outputStr);
   
-            URL url = new URL(requestUrl);  
-            HttpsURLConnection httpUrlConn = (HttpsURLConnection) url.openConnection();  
-            httpUrlConn.setSSLSocketFactory(ssf);  
-  
-            httpUrlConn.setDoOutput(true);  
-            httpUrlConn.setDoInput(true);  
-            httpUrlConn.setUseCaches(false);  
-            // 设置请求方式（GET/POST）  
-            httpUrlConn.setRequestMethod(requestMethod);  
-  
-            if ("GET".equalsIgnoreCase(requestMethod))  
-                httpUrlConn.connect();  
-  
+        	if(null == httpUrlConn) {
+        		return null;
+        	}
             // 当有数据需要提交时  
             if (null != outputStr) {  
                 OutputStream outputStream = httpUrlConn.getOutputStream();  
