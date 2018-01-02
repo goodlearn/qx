@@ -68,7 +68,8 @@ public class WxControl extends BaseController {
 	
 	//获取保存个人信息页面
 	@RequestMapping(value="/reqPersonUserInfo",method=RequestMethod.GET)
-	public String reqPersonUserInfo() {
+	public String reqPersonUserInfo(Model model) {
+		model.addAttribute("message", "演示模式，不允许操作！");
 		return "modules/wxp/wxIdCardUserInfoAdd";
 	}
 	
@@ -84,12 +85,15 @@ public class WxControl extends BaseController {
 		String name = request.getParameter("name");
 		String idCard = request.getParameter("idCard");
 		String phone = request.getParameter("phone");
+		String openId = request.getParameter("openId");
 		SysWxUser sysWxUser = new SysWxUser();
 		sysWxUser.setName(name);
 		sysWxUser.setIdCard(idCard);
 		sysWxUser.setPhone(phone);
-		wxService.saveWxUserInfo(sysWxUser);
-		return "modules/wxp/wxIdCardUserInfo";
+		wxService.saveWxUserInfo(sysWxUser,openId);
+		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
+		model.addAttribute("openId", openId);
+		return "modules/wxp/wxIdCardUserInfoModify";
 	}
 	
 	//修改个人信息
@@ -98,11 +102,16 @@ public class WxControl extends BaseController {
 		String name = request.getParameter("name");
 		String idCard = request.getParameter("idCard");
 		String phone = request.getParameter("phone");
+		String openId = request.getParameter("openId");
+		String id = request.getParameter("id");
 		SysWxUser sysWxUser = new SysWxUser();
+		sysWxUser.setId(id);
 		sysWxUser.setName(name);
 		sysWxUser.setIdCard(idCard);
 		sysWxUser.setPhone(phone);
-		wxService.modifyWxUserInfo(sysWxUser);
+		wxService.modifyWxUserInfo(sysWxUser,openId);
+		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
+		model.addAttribute("openId", openId);
 		return "modules/wxp/wxIdCardUserInfoModify";
 	}
 	/*
@@ -132,6 +141,7 @@ public class WxControl extends BaseController {
 		        	return retPage;
 	        	}else {
 	        		//有身份信息
+	        		model.addAttribute("openId",sysWxInfo.getOpenId());
 	        		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
 	        		retPage = "modules/wxp/wxIdCardUserInfoModify";
 		        	return retPage;

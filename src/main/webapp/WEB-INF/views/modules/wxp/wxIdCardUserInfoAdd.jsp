@@ -99,10 +99,12 @@
 				<div class="nickName">我是谁</div>
 			</div>
 		</div>
+		
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
 				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/savePersonUserInfo" method="post">
 					<input type="hidden" name="openId" value="${sysWxInfo.openId}">
+					<sys:message content="${message}"/>
 					<div class="userInputCont">
 						<div class="inputTypeCont">
 							<div class="inputTitle">姓名</div>

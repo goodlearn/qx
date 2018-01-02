@@ -120,9 +120,9 @@ public class WxService extends BaseService implements InitializingBean {
 		 }
 	 }
 	
-	//保存个人用户信息
+	//保存个人用户信息 需要将微信关联
 	@Transactional(readOnly = false)
-	public void saveWxUserInfo(SysWxUser sysWxUser) {
+	public void saveWxUserInfo(SysWxUser sysWxUser,String openId) {
 		//获取操作人信息 默认为微信用户
 		User paramUser = new User();
 		paramUser.setLoginName(defaultLoginNameForQuery);
@@ -133,26 +133,43 @@ public class WxService extends BaseService implements InitializingBean {
 		}
 		
 		String idCard = sysWxUser.getIdCard();
+		String phone = sysWxUser.getPhone();
 		if(null != idCard) {
-			SysWxUser temp = sysWxUserDao.findByIdCard(idCard);
-			if(null != temp) {
-				logger.info("idCard exist");
-				return;
+			SysWxUser temp = sysWxUserDao.findByIdCard(idCard);//已经存在了 那么要求手机号和身份证号和之前匹配才可以关联
+			if(null == temp) {
+				//不存在 直接保存
+				sysWxUser.setId(IdGen.uuid());
+				sysWxUser.setCreateBy(user);
+				sysWxUser.setCreateDate(new Date());
+				sysWxUser.setUpdateBy(user);
+				sysWxUser.setUpdateDate(new Date());
+				sysWxUserDao.insert(sysWxUser);
+			}else {
+				//已经存在了 需要进行关联判断 验证手机号
+				String tempPhone = temp.getPhone();
+				if(null == phone) {
+					//手机号为空
+					logger.info("idCard exist phone is null");
+					return;
+				}else {
+					if(!phone.equals(tempPhone)) {
+						//手机号不同
+						logger.info("idCard exist and phone is diff");
+						return;
+					}else {
+						logger.info("idCard exist and phone is same");
+						//更新关联
+						addOrUpdateWxInfo(idCard,openId,user);
+						return;
+					}
+				}
 			}
 		}
-		
-		sysWxUser.setId(IdGen.uuid());
-		sysWxUser.setCreateBy(user);
-		sysWxUser.setCreateDate(new Date());
-		sysWxUser.setUpdateBy(user);
-		sysWxUser.setUpdateDate(new Date());
-		
-		sysWxUserDao.insert(sysWxUser);
 	}
 	
 	//修改个人信息，需要将微信的数据一同更新
 	@Transactional(readOnly = false)
-	public void modifyWxUserInfo(SysWxUser sysWxUser) {
+	public void modifyWxUserInfo(SysWxUser sysWxUser,String openId) {
 		//获取操作人信息 默认为微信用户
 		User paramUser = new User();
 		paramUser.setLoginName(defaultLoginNameForQuery);
@@ -187,21 +204,35 @@ public class WxService extends BaseService implements InitializingBean {
 		queryResult.setUpdateDate(new Date());
 		sysWxUserDao.update(queryResult);
 		
+		addOrUpdateWxInfo(idCard,openId,user);//更新微信信息
+	}
+	
+	
+	//更新或者插入微信信息
+	private void addOrUpdateWxInfo(String idCard,String openId,User user) {
 		if(null != idCard) {
 			SysWxInfo queryEntity = new SysWxInfo();
 			queryEntity.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
-			queryEntity.setIdCard(idCard);
+			queryEntity.setOpenId(openId);
 			SysWxInfo querySysWxInfo = sysWxInfoDao.findByOpenId(queryEntity);
 			if(null == querySysWxInfo) {
-				return;
+				logger.info("SysWxInfo is add");
+				SysWxInfo sysWxInfo = new SysWxInfo();
+				sysWxInfo.setId(IdGen.uuid());
+				sysWxInfo.setIdCard(idCard);
+				sysWxInfo.setOpenId(openId);
+				sysWxInfo.setCreateBy(user);
+				sysWxInfo.setCreateDate(new Date());
+				sysWxInfo.setUpdateBy(user);
+				sysWxInfo.setUpdateDate(new Date());
+				sysWxInfo.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
+				sysWxInfoDao.insert(sysWxInfo);
+			}else {
+				logger.info("SysWxInfo is update");
+				querySysWxInfo.setIdCard(idCard);
+				sysWxInfoDao.update(querySysWxInfo);
 			}
-			querySysWxInfo.setIdCard(idCard);
-			sysWxInfoDao.update(querySysWxInfo);
 		}
-		
-		
-		
-		
 	}
 	
 	//处理微信消息

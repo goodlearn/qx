@@ -96,27 +96,29 @@
 				<div class="userInfoIcon">
 					<img src="${ctxStatic}/wx/wximages/userInfoIcon.png" width="100%">
 				</div>
-				<div class="nickName">总有刁民想害朕</div>
+				<div class="nickName">${sysWxUser.name}</div>
 			</div>
 		</div>
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
 				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/modifyPersonUserInfo" method="post">
+					<input type="hidden" name="openId" value="${openId}">
+					<input type="hidden" name="id" value="${sysWxUser.id}">
 					<div class="userInputCont">
 						<div class="inputTypeCont">
 							<div class="inputTitle">姓名</div>
-							<input type="text" class="commonInput" name="name" placeholder="${sysWxUser.name}">
+							<input type="text" class="commonInput" name="name" placeholder="${sysWxUser.name}" value="${sysWxUser.name}">
 						</div>
 						<div class="inputTypeCont">
 							<div class="inputTitle">手机</div>
-							<input type="text" class="commonInput" name="phone" placeholder="${sysWxUser.phone}">
+							<input type="text" class="commonInput" name="phone" placeholder="${sysWxUser.phone}" value="${sysWxUser.phone}">
 						</div>
 						<div class="inputTypeCont">
 							<div class="inputTitle">证件</div>
-							<input type="text" class="commonInput" name="idCard" placeholder="${sysWxUser.idCard}">
+							<input type="text" class="commonInput" name="idCard" placeholder="${sysWxUser.idCard}" value="${sysWxUser.idCard}">
 						</div>
 					</div>
-					<input class="submitBtn" type="submit" value="确认修改"/>
+					<input class="submitBtn" type="submit" value="修改"/>
 				</form>
 			</div>
 		</div>
