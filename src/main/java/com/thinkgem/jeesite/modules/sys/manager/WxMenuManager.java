@@ -59,8 +59,15 @@ public class WxMenuManager {
 		return ret;
 	}
 	
-	//创建菜单样式
+	/**
+	 * 创建菜单样式
+	 */
 	private WxMenu createMenuStyle() {
+		return null;
+	}
+	
+	//创建菜单样式(示例原始代码)
+	private WxMenu createOriginMenuStyle() {
 		WxCommonButton btn11 = new WxCommonButton();  
         btn11.setName("天气预报");  
         btn11.setType("click");  

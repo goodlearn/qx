@@ -69,7 +69,6 @@ public class WxControl extends BaseController {
 	//获取保存个人信息页面
 	@RequestMapping(value="/reqPersonUserInfo",method=RequestMethod.GET)
 	public String reqPersonUserInfo(Model model) {
-		model.addAttribute("message", "演示模式，不允许操作！");
 		return "modules/wxp/wxIdCardUserInfoAdd";
 	}
 	

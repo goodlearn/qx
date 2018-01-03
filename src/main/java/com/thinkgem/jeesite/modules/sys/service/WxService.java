@@ -33,6 +33,7 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatMsg;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatTextMsg;
+import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thoughtworks.xstream.XStream;
 
 import net.sf.json.JSONObject;
@@ -86,9 +87,9 @@ public class WxService extends BaseService implements InitializingBean {
 	 @Transactional(readOnly = false)
 	 public SysWxInfo saveOpenId(String code) {
 		 //获取access_token和openId
-		 // Map<String,String> maps = getOpenIdInfo(code);
-		 Map<String,String> maps = new HashMap<String,String>();
-		 maps.put("openId", "wzy");
+		  Map<String,String> maps = getOpenIdInfo(code);
+		// Map<String,String> maps = new HashMap<String,String>();
+		 //maps.put("openId", "wzy");
 		 String openId = maps.get("openId");
 		 if(null == openId) {
 			 return null;//openId获取失败
@@ -144,6 +145,8 @@ public class WxService extends BaseService implements InitializingBean {
 				sysWxUser.setUpdateBy(user);
 				sysWxUser.setUpdateDate(new Date());
 				sysWxUserDao.insert(sysWxUser);
+				//更新关联
+				addOrUpdateWxInfo(idCard,openId,user);
 			}else {
 				//已经存在了 需要进行关联判断 验证手机号
 				String tempPhone = temp.getPhone();
@@ -233,6 +236,23 @@ public class WxService extends BaseService implements InitializingBean {
 				sysWxInfoDao.update(querySysWxInfo);
 			}
 		}
+	}
+	
+	//推送消息
+	public String sendMessageExpress() {
+		String content="你的快递已到，请携带身份证前往易度空间领取";
+		WechatTextMsg wechatMsg = new WechatTextMsg();
+		logger.info("request code from content: {}"+content);
+    	wechatMsg.setContent(WxGlobal.getUserClick());
+    	wechatMsg.setToUserName("ouboC0t-H5ie5jHxb9ECPsvnY7Ow");
+    	wechatMsg.setCreateTime(new Date().getTime() + "");
+    	wechatMsg.setMsgType("textcard");
+    	String respMessage = messageToXml(wechatMsg);
+    	logger.info(respMessage);
+    	
+    	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
+		String accessToken = wxAccessTokenManager.getAccessToken();
+		return null;
 	}
 	
 	//处理微信消息
@@ -387,4 +407,7 @@ public class WxService extends BaseService implements InitializingBean {
         return map;  
     }
 
+    
+    
+    
 }
