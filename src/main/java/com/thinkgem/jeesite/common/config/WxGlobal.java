@@ -25,7 +25,7 @@ public class WxGlobal {
 	public static String MENUREQUESTURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
 
 	//授权回调
-	public static String OAUTHREDIRECTURL = "http://7c17279f.ngrok.io/wx/oAuthRedirectSo";
+	public static String OAUTHREDIRECTURL = "http://x.xlhtszgh.cn/kd/wx/oAuthRedirectSo";
 	
 	//授权请求
 	public static String OAUTHREQUESTURL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=state=wzy_state#wechat_redirect";

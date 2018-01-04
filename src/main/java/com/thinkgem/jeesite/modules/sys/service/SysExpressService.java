@@ -102,6 +102,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		if(null == phone) {
 			return;
 		}
+		logger.info("phone is "+phone);
 		
 		//查询个人信息
 		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
@@ -115,6 +116,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		if(null == idCard) {
 			return;
 		}
+		logger.info("idCard is "+idCard);
 		
 		//查询微信号 微信没有绑定 不进行消息发送
 		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
@@ -126,7 +128,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		if(null == openId) {
 			return;
 		}
-		
+		logger.info("openId is "+openId);
 		String userName = user.getName();
 		wxService.sendMessageExpress(openId,userName,"0");
 	}

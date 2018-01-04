@@ -335,7 +335,7 @@ public class WxService extends BaseService implements InitializingBean {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
         	String url = String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
     		logger.info("request code from url: {}", url);
-        	wechatMsg.setContent(WxGlobal.getUserClick());
+        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick()+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);
         	wechatMsg.setCreateTime(new Date().getTime() + "");
@@ -349,12 +349,11 @@ public class WxService extends BaseService implements InitializingBean {
         	// 订阅
             if (eventType.equals(Global.WX_EVENT_TYPE_SUBSCRIBE)) {
             	WechatTextMsg wechatMsg = new WechatTextMsg();
-            	wechatMsg.setContent("欢迎关注，xxx");
+            	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick()+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
             	wechatMsg.setToUserName(fromUserName);
             	wechatMsg.setFromUserName(toUserName);
             	wechatMsg.setCreateTime(new Date().getTime() + "");
             	wechatMsg.setMsgType(Global.WX_RESP_MESSAGE_TYPE_TEXT);
-                
                 respMessage = messageToXml(wechatMsg);
             } 
             //取消订阅后用户再收不到公众号发送的消息，因此不需要回复消息
