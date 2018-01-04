@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.WxGlobal;
@@ -32,6 +33,8 @@ import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
+
+import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(value = "wx")
@@ -44,6 +47,15 @@ public class WxControl extends BaseController {
 	@Autowired
 	private WxMenuManager wxMenuManager;
 	
+	//首页
+	private final String WX_PERSON_INDEX = "modules/wxp/wxPersonIndex";
+	//个人注册页面
+	private final String WX_ID_CARD_USERINFO_ADD = "modules/wxp/wxIdCardUserInfoAdd";
+	//修改个人信息
+	private final String WX_ID_CARD_USERINFO_MODIFY = "modules/wxp/wxIdCardUserInfoModify";
+	//个人中心页面
+	private final String WX_USER_HOME = "modules/wxp/wxUserhome";
+	
 	
 	@RequestMapping(value = {"index"})
 	public String index(Model model) {
@@ -51,7 +63,11 @@ public class WxControl extends BaseController {
 		return null;
 	}
 	
-	
+	/**
+	 * 微信接口测试
+	 * @param model
+	 * @return
+	 */
 	//创建菜单
 	@RequestMapping(value = {"createMenu"})
 	public String wxCreateMenu(Model model) {
@@ -67,17 +83,114 @@ public class WxControl extends BaseController {
 		return null;
 	}
 	
+	
+	/**
+	 * 页面跳转
+	 * @param model
+	 * @return
+	 */
 	//获取保存个人信息页面
 	@RequestMapping(value="/reqPersonUserInfo",method=RequestMethod.GET)
-	public String reqPersonUserInfo(Model model) {
-		return "modules/wxp/wxIdCardUserInfoAdd";
+	public String reqPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取code
+	    logger.info("openId is " + openId);
+	    if(null!=openId) {
+	    	model.addAttribute("openId",openId);
+	    }
+		return WX_ID_CARD_USERINFO_ADD;
+	}
+		
+	//获取个人首页
+	@RequestMapping(value="/getPersonIndex",method=RequestMethod.GET)
+	public String getPersonIndex(HttpServletRequest request, HttpServletResponse response,Model model) {
+		try {
+			// 将请求、响应的编码均设置为UTF-8（防止中文乱码）  
+	        request.setCharacterEncoding("UTF-8");  
+	        response.setCharacterEncoding("UTF-8"); 
+	        String code=request.getParameter("code");//获取code
+	        logger.info("code is " + code);
+	        /*Map<String,String> map = wxService.getOpenIdInfo(code);
+	        if(null != map) {
+	        	String openId = map.get("openid");
+	        	model.addAttribute("openId", openId);
+	        }*/
+	        //本地测试时使用，实体环境删除 将上一句注释的话显示
+	        model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return WX_PERSON_INDEX;
 	}
 	
-	//获取更新个人信息页面
-	@RequestMapping(value="/reqUPersonUserInfo",method=RequestMethod.GET)
-	public String reqUPersonUserInfo() {
-		return "modules/wxp/wxIdCardUserInfoAdd";
+	//进入个人中心
+	@RequestMapping(value="/userHome",method=RequestMethod.GET)
+	public String userHome(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
+		 String openId=request.getParameter("openId");//获取code
+		 if(null == openId) {
+			 throw new Exception("未关联个人标识符");
+		 }
+		 /**
+		  * 依据openId获取个人信息 如果没有跟人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息userHome页面
+		  */
+		 SysWxUser sysWxUser = wxService.getSysWxUser(openId);
+		 //获取
+		 if(null == sysWxUser) {
+			 model.addAttribute("openId",openId);
+			 return WX_ID_CARD_USERINFO_ADD;
+		 }else {
+			 model.addAttribute("sysWxUser",sysWxUser);
+			 return WX_USER_HOME;
+		 }
 	}
+	
+	//进入个人中心修改页面
+	@RequestMapping(value="/wxIdCardModify",method=RequestMethod.GET)
+	public String wxIdCardModify(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
+		 String openId=request.getParameter("openId");//获取code
+		 if(null == openId) {
+			 throw new Exception("未关联个人标识符");
+		 }
+		 /**
+		  * 依据openId获取个人信息 如果没有跟人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息WX_ID_CARD_USERINFO_MODIFY页面
+		  */
+		 SysWxUser sysWxUser = wxService.getSysWxUser(openId);
+		 //获取
+		 if(null == sysWxUser) {
+			 model.addAttribute("openId",openId);
+			 return WX_ID_CARD_USERINFO_ADD;
+		 }else {
+			 model.addAttribute("sysWxUser",sysWxUser);
+			 model.addAttribute("openId",openId);
+			 return WX_ID_CARD_USERINFO_MODIFY;
+		 }
+	}
+	
+	//获取页面
+	@RequestMapping(value="/clickUrl",method=RequestMethod.GET)
+	@ResponseBody
+	public String clickUrl(HttpServletRequest request, HttpServletResponse response) {
+		String urlParam = request.getParameter("url");
+		String url = null;
+		String jsonResult = null;
+		switch(urlParam) {
+			case "index":
+				//首页
+				url = WxGlobal.getUserClick("https://x.xlhtszgh.cn/kd/wx/oAuthRedirectSo",true);
+				break;
+			case "tiePerson":
+				//绑定个人中心
+				url = WxGlobal.getUserClick("https://x.xlhtszgh.cn/kd/wx/oAuthRedirectSo",false);
+				break;
+		}
+		if(null != url) {
+			jsonResult = JSONObject.toJSONString(url);
+			logger.info("url是:"+url);
+		}else {
+			logger.info("url不存在");
+		}
+		return jsonResult;
+	}
+	
 	
 	//保存个人信息
 	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
@@ -86,14 +199,51 @@ public class WxControl extends BaseController {
 		String idCard = request.getParameter("idCard");
 		String phone = request.getParameter("phone");
 		String openId = request.getParameter("openId");
-		SysWxUser sysWxUser = new SysWxUser();
-		sysWxUser.setName(name);
-		sysWxUser.setIdCard(idCard);
-		sysWxUser.setPhone(phone);
-		wxService.saveWxUserInfo(sysWxUser,openId);
+		SysWxUser param = new SysWxUser();
+		param.setName(name);
+		param.setIdCard(idCard);
+		param.setPhone(phone);
+		
+		//如果绑定身份信息依据存在,需要用户重新确定之前绑定的手机号是否正确 跳转到手机号确认页面
+		SysWxUser repeatUser = wxService.findByIdCard(idCard);
+		if(null!=repeatUser) {
+			model.addAttribute("openId", openId);
+			model.addAttribute("sysWxUser", repeatUser);
+			model.addAttribute("message", "有重复数据");
+			return "modules/wxp/wxPhoneModify";//验证手机号页面
+		}
+		//如果身份信息不存在 进行保存操作
+		wxService.saveWxUserInfo(param,openId);
 		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
 		model.addAttribute("openId", openId);
-		return "modules/wxp/wxIdCardUserInfoModify";
+		return WX_ID_CARD_USERINFO_MODIFY;
+	}
+	
+	//验证手机号
+	@RequestMapping(value="/checkPhone",method=RequestMethod.POST)
+	public String checkPhone(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String phone = request.getParameter("phone");
+		String idCard = request.getParameter("idCard");
+		String openId = request.getParameter("openId");
+		SysWxUser repeatUser = wxService.findByIdCard(idCard);
+		if(null == repeatUser) {
+			//没有该用户
+			return WX_PERSON_INDEX;
+		}else {
+			String originPhone = repeatUser.getPhone();
+			if(phone.equals(originPhone)) {
+				//验证成功 修改数据
+				repeatUser.setPhone(phone);
+				model.addAttribute("sysWxUser", repeatUser);
+				model.addAttribute("openId", openId);
+				wxService.modifyWxUserInfo(repeatUser,openId);
+				model.addAttribute("message", "添加成功!");
+				return WX_ID_CARD_USERINFO_MODIFY;
+			}else {
+				model.addAttribute("message", "与原号码不匹配!,请重新添加");
+				return WX_ID_CARD_USERINFO_ADD;
+			}
+		}
 	}
 	
 	//修改个人信息
@@ -112,7 +262,7 @@ public class WxControl extends BaseController {
 		wxService.modifyWxUserInfo(sysWxUser,openId);
 		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
 		model.addAttribute("openId", openId);
-		return "modules/wxp/wxIdCardUserInfoModify";
+		return WX_USER_HOME;
 	}
 	/*
 	 * 授权回调
@@ -137,13 +287,14 @@ public class WxControl extends BaseController {
 	        	if(null == idCard) {
 	        		//没有身份信息
 	        		model.addAttribute("sysWxInfo", sysWxInfo);
-	        		retPage = "modules/wxp/wxIdCardUserInfoAdd";
+	        		model.addAttribute("openId", sysWxInfo.getOpenId());
+	        		retPage = WX_ID_CARD_USERINFO_ADD;
 		        	return retPage;
 	        	}else {
 	        		//有身份信息
 	        		model.addAttribute("openId",sysWxInfo.getOpenId());
 	        		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
-	        		retPage = "modules/wxp/wxIdCardUserInfoModify";
+	        		retPage = WX_ID_CARD_USERINFO_MODIFY;
 		        	return retPage;
 	        	}
 	        }

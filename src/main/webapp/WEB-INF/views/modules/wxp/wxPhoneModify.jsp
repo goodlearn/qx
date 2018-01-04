@@ -99,27 +99,21 @@
 				<div class="nickName">${sysWxUser.name}</div>
 			</div>
 		</div>
+		
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
-				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/modifyPersonUserInfo" method="post">
+				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/checkPhone" method="post">
 					<input type="hidden" name="openId" value="${openId}">
-					<input type="hidden" name="id" value="${sysWxUser.id}">
+					<input type="hidden" name="idCard" value="${sysWxUser.idCard}">
 					${message}
+					请输入原先的手机号，以确认身份正确
 					<div class="userInputCont">
 						<div class="inputTypeCont">
-							<div class="inputTitle">姓名</div>
-							<input type="text" class="commonInput" name="name" placeholder="${sysWxUser.name}" value="${sysWxUser.name}">
-						</div>
-						<div class="inputTypeCont">
 							<div class="inputTitle">手机</div>
-							<input type="text" class="commonInput" name="phone" placeholder="${sysWxUser.phone}" value="${sysWxUser.phone}">
-						</div>
-						<div class="inputTypeCont">
-							<div class="inputTitle">证件</div>
-							<input type="text" class="commonInput" name="idCard" placeholder="${sysWxUser.idCard}" value="${sysWxUser.idCard}">
+							<input type="text" class="commonInput" name="phone" placeholder="请输入你的手机号码...">
 						</div>
 					</div>
-					<input class="submitBtn" type="submit" value="修改"/>
+					<input class="submitBtn" type="submit" value="确认提交"/>
 				</form>
 			</div>
 		</div>

@@ -55,6 +55,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<downloadSources>true</downloadSources>
 		
+		
+		<!-- 第三方 -->
+		<alibaba.fastjson.version>1.2.32</alibaba.fastjson.version>
+		<jackson.mapper.lgpl.version>1.8.1</jackson.mapper.lgpl.version>
+		<httpclient-version>4.5.2</httpclient-version>
+		
 	</properties>
 	
 	<!-- 设定主仓库，按设定顺序进行查找。 -->
@@ -600,6 +606,12 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<!-- TEST end -->
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.32</version>
+		</dependency>
 		
 		<!-- User Agent -->
 		<dependency>

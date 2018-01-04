@@ -29,6 +29,7 @@ public class WxGlobal {
 	
 	//授权请求
 	public static String OAUTHREQUESTURL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=state=wzy_state#wechat_redirect";
+	public static String OAUTHREQUESTURL_USERINFO = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=state=wzy_state#wechat_redirect";
 
 	//请求Token
 	public static String USERINFO_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
@@ -41,7 +42,15 @@ public class WxGlobal {
 	
 	public static String TOP_Msg_COLOR_1 = "#000000";
 	
-	public static String getUserClick() {
-		 return String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
+	//测试OPEN_ID
+	public static String TEST_OPEN_ID = "ouboC0mSlX4erWMYpj67sSLLdksU";
+
+	
+	public static String getUserClick(String redirectUrl,boolean isBase) {
+		if(isBase) {
+			return String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,redirectUrl);
+		}else {
+			return String.format(WxGlobal.OAUTHREQUESTURL_USERINFO,WxGlobal.APPID,redirectUrl);
+		}
 	}
 }

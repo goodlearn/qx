@@ -96,15 +96,14 @@
 				<div class="userInfoIcon">
 					<img src="${ctxStatic}/wx/wximages/userInfoIcon.png" width="100%">
 				</div>
-				<div class="nickName">我是谁</div>
+				<div class="nickName">请填写个人信息</div>
 			</div>
 		</div>
-		
+		${message}
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
 				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/savePersonUserInfo" method="post">
-					<input type="hidden" name="openId" value="${sysWxInfo.openId}">
-					<sys:message content="${message}"/>
+					<input type="hidden" name="openId" value="${openId}">
 					<div class="userInputCont">
 						<div class="inputTypeCont">
 							<div class="inputTitle">姓名</div>

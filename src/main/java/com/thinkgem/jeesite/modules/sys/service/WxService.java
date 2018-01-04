@@ -67,8 +67,22 @@ public class WxService extends BaseService implements InitializingBean {
 		
 	}
 	
+	public SysWxUser findByIdCard(String idCard) {
+		if(null!=idCard) {
+			return sysWxUserDao.findByIdCard(idCard);
+		}
+		return null;
+	}
+	
+	public SysWxUser findByPhone(String phone) {
+		if(null!=phone) {
+			return sysWxUserDao.findByPhone(phone);
+		}
+		return null;
+	}
+	
 	//获取access_token和openId
-	private Map<String,String> getOpenIdInfo(String code) {
+	public Map<String,String> getOpenIdInfo(String code) {
 		Map<String,String> ret = new HashMap<String,String>();
 		String url = String.format(WxGlobal.USERINFO_TOKEN_URL,WxGlobal.APPID,WxGlobal.APPSECREST,code);
 		logger.info("request accessToken from url: {}", url);
@@ -122,6 +136,35 @@ public class WxService extends BaseService implements InitializingBean {
 			 return queryResult;//存在
 		 }
 	 }
+	 
+	 /**
+	  * 依据openId查找个人信息
+	  * @param openId
+	  * @return
+	  */
+	 public SysWxUser getSysWxUser(String openId) {
+		if(null == openId) {
+			return null;
+		}
+		
+		//没有关联号
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByOpenId(openId);
+		if(null == sysWxInfo) {
+			return null;
+		}
+		String idCard = sysWxInfo.getIdCard();
+		//没有身份证号
+		if(null == idCard) {
+			return null;
+		}
+		
+		SysWxUser sysWxUser = sysWxUserDao.findByIdCard(idCard);
+		//没有信息
+		if(null == sysWxUser||null == sysWxUser.getIdCard()) {
+			return null;
+		}
+		return sysWxUser;
+	}
 	
 	//保存个人用户信息 需要将微信关联
 	@Transactional(readOnly = false)
@@ -335,7 +378,7 @@ public class WxService extends BaseService implements InitializingBean {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
         	String url = String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
     		logger.info("request code from url: {}", url);
-        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick()+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
+        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.OAUTHREDIRECTURL,true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);
         	wechatMsg.setCreateTime(new Date().getTime() + "");
@@ -349,7 +392,7 @@ public class WxService extends BaseService implements InitializingBean {
         	// 订阅
             if (eventType.equals(Global.WX_EVENT_TYPE_SUBSCRIBE)) {
             	WechatTextMsg wechatMsg = new WechatTextMsg();
-            	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick()+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
+            	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.OAUTHREDIRECTURL,true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
             	wechatMsg.setToUserName(fromUserName);
             	wechatMsg.setFromUserName(toUserName);
             	wechatMsg.setCreateTime(new Date().getTime() + "");

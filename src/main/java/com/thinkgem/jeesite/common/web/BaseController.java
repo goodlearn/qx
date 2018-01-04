@@ -6,7 +6,9 @@ package com.thinkgem.jeesite.common.web;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -211,6 +214,26 @@ public abstract class BaseController {
 //				return value != null ? DateUtils.formatDateTime((Date)value) : "";
 //			}
 		});
+	}
+	
+	/**
+	 * 返回成功数据 携带检验码
+	 */
+	protected String backSuccessWithCode(int code){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", code);
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		return jsonResult;
+	}
+	
+	/**
+	 * 返回成功数据 携带检验码
+	 */
+	protected String backSuccessWithCode(String code){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", code);
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		return jsonResult;
 	}
 	
 }
