@@ -18,6 +18,8 @@ public class WxGlobal {
 	
 	public static final String APPSECREST = "30b3282df5334af8a8d62706a2669a8e";
 	
+	//发送模板小希URL
+	public static String TMPLATE_MSG_URL = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
 	
 	//菜单请求
 	public static String MENUREQUESTURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
@@ -31,6 +33,14 @@ public class WxGlobal {
 	//请求Token
 	public static String USERINFO_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
 
+	//微信模板
+	public static String TEMPLATE_Msg_1 = "DQjKDzP4EQqrA6r_abDDYJjyNZ9071tuDls2DeNrJZA";
+	
+	//微信模板颜色
+	public static String TEMPLATE_Msg_COLOR_1 = "#173177";
+	
+	public static String TOP_Msg_COLOR_1 = "#000000";
+	
 	public static String getUserClick() {
 		 return String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
 	}

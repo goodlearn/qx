@@ -18,11 +18,11 @@ public interface SysWxInfoDao extends CrudDao<SysWxInfo> {
 	/**
 	 * 根据openId查询
 	 */
-	public SysWxInfo findByOpenId(SysWxInfo sysWxInfo);
+	public SysWxInfo findByOpenId(String openId);
 	
 	/**
 	 * 依据身份证查询
 	 */
-	public SysWxInfo findByIdCard(SysWxInfo sysWxInfo);
+	public SysWxInfo findByIdCard(String idCard);
 	
 }

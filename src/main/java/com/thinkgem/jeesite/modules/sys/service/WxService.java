@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.TimeUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
@@ -33,7 +35,10 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatMsg;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatTextMsg;
+import com.thinkgem.jeesite.modules.sys.entity.wx.WxTemplate;
+import com.thinkgem.jeesite.modules.sys.entity.wx.WxTemplateData;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thoughtworks.xstream.XStream;
 
 import net.sf.json.JSONObject;
@@ -94,10 +99,7 @@ public class WxService extends BaseService implements InitializingBean {
 		 if(null == openId) {
 			 return null;//openId获取失败
 		 }
-		 SysWxInfo queryEntity = new SysWxInfo();
-		 queryEntity.setOpenId(openId);
-		 queryEntity.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
-		 SysWxInfo queryResult = sysWxInfoDao.findByOpenId(queryEntity);
+		 SysWxInfo queryResult = sysWxInfoDao.findByOpenId(openId);
 		 if(null == queryResult) {
 			 //不存在  保存
 			 User paramUser = new User();
@@ -214,10 +216,7 @@ public class WxService extends BaseService implements InitializingBean {
 	//更新或者插入微信信息
 	private void addOrUpdateWxInfo(String idCard,String openId,User user) {
 		if(null != idCard) {
-			SysWxInfo queryEntity = new SysWxInfo();
-			queryEntity.setDelFlag(SysWxInfo.DEL_FLAG_NORMAL);
-			queryEntity.setOpenId(openId);
-			SysWxInfo querySysWxInfo = sysWxInfoDao.findByOpenId(queryEntity);
+			SysWxInfo querySysWxInfo = sysWxInfoDao.findByOpenId(openId);
 			if(null == querySysWxInfo) {
 				logger.info("SysWxInfo is add");
 				SysWxInfo sysWxInfo = new SysWxInfo();
@@ -238,20 +237,76 @@ public class WxService extends BaseService implements InitializingBean {
 		}
 	}
 	
-	//推送消息
-	public String sendMessageExpress() {
+	/**
+	 * 
+	 * @param toUser 接收人
+	 * @param username 经办人
+	 * @param money 金额
+	 * @return
+	 */
+	public String sendMessageExpress(String toUser,String username,String money) {
+		logger.info("send msg start");
+		/*
+		 *	模板ID 为 DQjKDzP4EQqrA6r_abDDYJjyNZ9071tuDls2DeNrJZA
+		 *	内容：
+		 *		{{first.DATA}}
+				状态：{{keyword1.DATA}}
+				时间：{{keyword2.DATA}}
+				金额：{{keyword3.DATA}}
+				经办人：{{keyword4.DATA}}
+				{{remark.DATA}}
+		 */
+		
+		//first.DATA
+		WxTemplateData first = new WxTemplateData();
+		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setValue("您收到一个订单");
+		WxTemplateData keyword1 = new WxTemplateData();
+		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		String state = DictUtils.getDictLabel("0","expressState","已入库");
+		keyword1.setValue(state);
+		WxTemplateData keyword2 = new WxTemplateData();
+		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setValue(DateUtils.getDateTime());
+		WxTemplateData keyword3 = new WxTemplateData();
+		keyword3.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword3.setValue(money);
+		WxTemplateData keyword4 = new WxTemplateData();
+		keyword4.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword4.setValue(username);
+		WxTemplateData remark = new WxTemplateData();
 		String content="你的快递已到，请携带身份证前往易度空间领取";
-		WechatTextMsg wechatMsg = new WechatTextMsg();
-		logger.info("request code from content: {}"+content);
-    	wechatMsg.setContent(WxGlobal.getUserClick());
-    	wechatMsg.setToUserName("ouboC0t-H5ie5jHxb9ECPsvnY7Ow");
-    	wechatMsg.setCreateTime(new Date().getTime() + "");
-    	wechatMsg.setMsgType("textcard");
-    	String respMessage = messageToXml(wechatMsg);
-    	logger.info(respMessage);
-    	
+		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setValue(content);
+		
+		WxTemplate template = new WxTemplate();
+		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setTouser(toUser);
+		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
+		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);
+		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
+		wxTemplateDatas.put("keyword1", keyword1);
+		wxTemplateDatas.put("keyword2", keyword2);
+		wxTemplateDatas.put("keyword3", keyword3);
+		wxTemplateDatas.put("keyword4", keyword4);
+		wxTemplateDatas.put("remark", remark);
+		template.setData(wxTemplateDatas);
+		//获取Token
     	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
 		String accessToken = wxAccessTokenManager.getAccessToken();
+		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String jsonString = JSONObject.fromObject(template).toString();
+		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
+		logger.info("msg is " + jsonObject);
+		int result = 0;
+        if (null != jsonObject) {  
+             if (0 != jsonObject.getInt("errcode")) {  
+                 result = jsonObject.getInt("errcode");  
+                 logger.error("错误 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));  
+             }  
+         }
+        logger.info("模板消息发送结果："+result);
+		logger.info("send msg end");
 		return null;
 	}
 	

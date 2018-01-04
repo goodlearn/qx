@@ -51,6 +51,7 @@ public class WxControl extends BaseController {
 		return null;
 	}
 	
+	
 	//创建菜单
 	@RequestMapping(value = {"createMenu"})
 	public String wxCreateMenu(Model model) {

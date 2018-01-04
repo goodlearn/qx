@@ -127,6 +127,8 @@ public class SysExpressController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 	}
 
+	
+	//入库
 	@RequiresPermissions("sys:sysExpress:edit")
 	@RequestMapping(value = "save")
 	public String save(SysExpress sysExpress, Model model, RedirectAttributes redirectAttributes) {
@@ -137,7 +139,7 @@ public class SysExpressController extends BaseController {
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
 		sysExpressService.save(sysExpress);
-		addMessage(redirectAttributes, "保存快递表成功");
+		addMessage(redirectAttributes, "快递已入库");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}
 	

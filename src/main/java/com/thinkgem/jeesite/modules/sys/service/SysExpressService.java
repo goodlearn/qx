@@ -13,9 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysExpressDao;
+import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
 
 /**
@@ -29,7 +33,10 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	@Autowired
 	private SysWxUserDao sysWxUserDao;
-	
+	@Autowired
+	private SysWxInfoDao sysWxInfoDao;
+	@Autowired
+	private WxService wxService;
 
 	public SysExpress get(String id) {
 		return super.get(id);
@@ -77,9 +84,51 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		}
 	}
 	
+	//入库后发送模板消息
 	@Transactional(readOnly = false)
 	public void save(SysExpress sysExpress) {
+		
+		//默认保存数据
 		super.save(sysExpress);
+		
+		/**
+		 * 发送模板消息
+		 */
+		
+		User user = UserUtils.getUser();
+		String phone = sysExpress.getPhone();
+		
+		//如果快递没有电话 那么不进行消息发送
+		if(null == phone) {
+			return;
+		}
+		
+		//查询个人信息
+		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
+		//如果快递没有用户  那么不进行消息发送
+		if(null == sysWxUser) {
+			return;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//如果用户没有绑定身份信息  那么不进行消息发送
+		if(null == idCard) {
+			return;
+		}
+		
+		//查询微信号 微信没有绑定 不进行消息发送
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+		if(null == sysWxInfo) {
+			return;
+		}
+		String openId = sysWxInfo.getOpenId();
+		//如果用户没有绑定微信锡信息  那么不进行消息发送
+		if(null == openId) {
+			return;
+		}
+		
+		String userName = user.getName();
+		wxService.sendMessageExpress(openId,userName,"0");
 	}
 	
 	@Transactional(readOnly = false)
