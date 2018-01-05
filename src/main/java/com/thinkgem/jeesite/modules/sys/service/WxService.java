@@ -30,6 +30,7 @@ import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
 import com.thinkgem.jeesite.modules.sys.dao.UserDao;
+import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -55,6 +56,9 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	@Autowired
 	private SysWxUserDao sysWxUserDao;
+	
+	@Autowired
+	private SysExpressService sysExpressService;
 	
 	@Autowired
 	private UserDao userDao;
@@ -215,6 +219,19 @@ public class WxService extends BaseService implements InitializingBean {
 		}
 	}
 	
+	//保存快递信息
+	@Transactional(readOnly = false)
+	public int saveExpress(SysExpress sysExpress) {
+		User paramUser = new User();
+		paramUser.setLoginName(defaultLoginNameForQuery);
+		User user = userDao.getByLoginName(paramUser);
+		if(null == user) {
+			logger.info("No wxuser");
+			return 1;//操作用户丢失
+		}
+		sysExpressService.save(sysExpress);
+		return 0;
+	}
 	//修改个人信息，需要将微信的数据一同更新
 	@Transactional(readOnly = false)
 	public void modifyWxUserInfo(SysWxUser sysWxUser,String openId) {

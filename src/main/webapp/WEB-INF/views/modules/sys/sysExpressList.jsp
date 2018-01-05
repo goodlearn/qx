@@ -44,6 +44,7 @@
 				<th>快递单号</th>
 				<th>手机</th>
 				<th>快递状态</th>
+				<th>信息发送状态</th>
 				<th>创建人</th>
 				<th>创建时间</th>
 				<th>上次操作人</th>
@@ -62,6 +63,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.state, 'expressState', '0')}
+				</td>
+				<td>
+					${fns:getDictLabel(sysExpress.msgState, 'expressMsgState', '0')}
 				</td>
 				<td>
 					${sysExpress.createBy.name}

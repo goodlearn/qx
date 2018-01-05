@@ -84,11 +84,51 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		}
 	}
 	
+	//快递信息状态查询
+	private String queryMsgState(SysExpress sysExpress) {
+		
+		String dictType = "expressMsgState";
+		
+		String phone = sysExpress.getPhone();
+		
+		//如果快递没有电话 那么不进行消息发送
+		if(null == phone) {
+			return DictUtils.getDictValue("快递单未绑定电话", dictType, "0");
+		}
+		
+		//查询个人信息
+		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
+		//如果快递没有用户  那么不进行消息发送
+		if(null == sysWxUser) {
+			return DictUtils.getDictValue("没有关联的用户", dictType, "0");
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//如果用户没有绑定身份信息  那么不进行消息发送
+		if(null == idCard) {
+			return DictUtils.getDictValue("用户未绑定身份信息", dictType, "0");
+		}
+		
+		//查询微信号 微信没有绑定 不进行消息发送
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+		if(null == sysWxInfo) {
+			return DictUtils.getDictValue("用户未关联微信", dictType, "0");
+		}
+		String openId = sysWxInfo.getOpenId();
+		//如果用户没有绑定微信信息  那么不进行消息发送
+		if(null == openId) {
+			return DictUtils.getDictValue("用户未进行微信授权", dictType, "0");
+		}
+		
+		return DictUtils.getDictValue("入库信息已发送", dictType, "0");
+	}
+	
 	//入库后发送模板消息
 	@Transactional(readOnly = false)
 	public void save(SysExpress sysExpress) {
 		
 		//默认保存数据
+		sysExpress.setMsgState(queryMsgState(sysExpress));
 		super.save(sysExpress);
 		
 		/**
@@ -124,7 +164,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			return;
 		}
 		String openId = sysWxInfo.getOpenId();
-		//如果用户没有绑定微信锡信息  那么不进行消息发送
+		//如果用户没有绑定微信信息  那么不进行消息发送
 		if(null == openId) {
 			return;
 		}

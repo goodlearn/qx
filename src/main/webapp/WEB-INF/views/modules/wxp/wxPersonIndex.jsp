@@ -102,10 +102,10 @@
 			switch(clickNum){
 				//个人中心
 				case(0): window.location.href= pageContextVal+"/wx/userHome?openId="+openId; break;
-				case(1): window.location.href="./lazyboard.html"; break;
+				case(1): window.location.href= ""; break;
 				case(2): window.location.href="./delivery.html"; break;
 				case(3): window.location.href="./sendexpress.html"; break;
-				case(4): window.location.href="./expassistant.html"; break;
+				case(4): window.location.href= pageContextVal+"/wx/reqExpressAssist?openId="+openId; break;
 				//快递分析
 				//送货上门
 				//我要寄件

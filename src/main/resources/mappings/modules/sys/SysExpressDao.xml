@@ -13,12 +13,12 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		a.state AS "state",
+		a.msg_state AS "msgState",
 		uc.name AS "createBy.name",
 		uu.name AS "updateBy.name"
 	</sql>
 	
 	<sql id="sysExpressJoins">
-		
 		LEFT JOIN sys_user uc on uc.id = a.create_by
 		LEFT JOIN sys_user uu on uu.id = a.update_by
 	</sql>
@@ -116,7 +116,8 @@
 			update_date,
 			remarks,
 			del_flag,
-			state
+			state,
+			msg_state
 		) VALUES (
 			#{id},
 			#{expressId},
@@ -127,7 +128,8 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{state}
+			#{state},
+			#{msgState}
 		)
 	</insert>
 	
@@ -138,6 +140,7 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
+			msg_state = #{msgState},
 			state = #{state}
 		WHERE id = #{id}
 	</update>

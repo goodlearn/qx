@@ -27,13 +27,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
+import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
-
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.alibaba.fastjson.JSONObject;
 
 @Controller
@@ -42,6 +44,8 @@ public class WxControl extends BaseController {
 	
 	@Autowired
 	private SysWxUserService sysWxUserService;
+	@Autowired
+	private SysExpressService sysExpressService;
 	@Autowired
 	private WxService wxService;
 	@Autowired
@@ -55,7 +59,10 @@ public class WxControl extends BaseController {
 	private final String WX_ID_CARD_USERINFO_MODIFY = "modules/wxp/wxIdCardUserInfoModify";
 	//个人中心页面
 	private final String WX_USER_HOME = "modules/wxp/wxUserhome";
-	
+	//快递助手页面
+	private final String WX_EXPRESS_ASSIST = "modules/wxp/expressAssist";
+	//录入快递页面
+	private final String WX_EXPRESS_ADD = "modules/wxp/addExpress";
 	
 	@RequestMapping(value = {"index"})
 	public String index(Model model) {
@@ -99,6 +106,40 @@ public class WxControl extends BaseController {
 	    }
 		return WX_ID_CARD_USERINFO_ADD;
 	}
+	
+	/**
+	 * 获取快递助手页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqExpressAssist",method=RequestMethod.GET)
+	public String reqExpressAssist(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取code
+	    logger.info("openId is " + openId);
+	    if(null!=openId) {
+	    	model.addAttribute("openId",openId);
+	    }
+		return WX_EXPRESS_ASSIST;
+	}
+	
+	/**
+	 * 获取快递添加页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqAddExpress",method=RequestMethod.GET)
+	public String reqAddExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取code
+	    logger.info("openId is " + openId);
+	    if(null!=openId) {
+	    	model.addAttribute("openId",openId);
+	    }
+		return WX_EXPRESS_ADD;
+	}
 		
 	//获取个人首页
 	@RequestMapping(value="/getPersonIndex",method=RequestMethod.GET)
@@ -122,6 +163,35 @@ public class WxControl extends BaseController {
 		return WX_PERSON_INDEX;
 	}
 	
+	//录入快递信息
+	@RequestMapping(value="/saveExpress",method=RequestMethod.POST)
+	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String phone=request.getParameter("phone");//获取phone
+		String expressId=request.getParameter("expressId");//获取phone
+		if(null == phone) {
+			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			model.addAttribute("message", "请输入电话号码");
+			return WX_EXPRESS_ADD;
+		}
+		if(null == expressId) {
+			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			model.addAttribute("message", "请输入快递单号");
+			return WX_EXPRESS_ADD;
+		}
+		SysExpress sysExpress = new SysExpress();
+		//默认保存快递状态为已入库
+		String state = DictUtils.getDictValue("已入库", "expressState", "0");
+		sysExpress.setState(state);
+		int result = wxService.saveExpress(sysExpress);
+		if(result == 0) {
+			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			model.addAttribute("message", "操作用户丢失");
+			return WX_EXPRESS_ADD;
+		}else {
+			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			return WX_PERSON_INDEX;
+		}
+	}
 	//进入个人中心
 	@RequestMapping(value="/userHome",method=RequestMethod.GET)
 	public String userHome(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
@@ -138,6 +208,7 @@ public class WxControl extends BaseController {
 			 model.addAttribute("openId",openId);
 			 return WX_ID_CARD_USERINFO_ADD;
 		 }else {
+			 model.addAttribute("openId",openId);
 			 model.addAttribute("sysWxUser",sysWxUser);
 			 return WX_USER_HOME;
 		 }
