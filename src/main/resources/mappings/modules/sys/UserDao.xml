@@ -60,7 +60,7 @@
     	a.id,
     	a.login_name,
     	a.password,
-    	a.no,
+    	a.id_card,
 		a.name,
 		a.email,
 		a.mobile,
@@ -88,6 +88,15 @@
 		<include refid="userJoins"/><!-- 
 		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
 		WHERE a.id = #{id}
+	</select>
+	
+	<!-- 根据身份证查询用户 -->
+	<select id="findByIdCard" resultType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.id_card = #{idCard} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->
@@ -137,14 +146,6 @@
 		</choose>
 	</select>
 	
-	<!-- 根据OfficeId获取用户（树查询用户时用） -->
-	<select id="findUserByOfficeId" resultType="User" useCache="true">
-		SELECT
-			a.id, a.name, a.login_name
-		FROM sys_user a
-		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-		ORDER BY a.name
-	</select>
 	
 	<!-- 查询全部用户 -->
 	<select id="findAllList" resultType="User">
@@ -170,7 +171,7 @@
 			id, 
 			login_name, 
 			password, 
-			no, 
+			id_card, 
 			name, 
 			email, 
 			phone, 
@@ -186,7 +187,7 @@
 			#{id}, 
 			#{loginName}, 
 			#{password}, 
-			#{no}, 
+			#{idCard}, 
 			#{name}, 
 			#{email}, 
 			#{phone}, 
@@ -206,7 +207,7 @@
 		UPDATE sys_user SET 
 			login_name = #{loginName}, 
 			password = #{password}, 
-			no = #{no}, 
+			id_card = #{idCard}, 
 			name = #{name}, 
 			email = #{email}, 
 			phone = #{phone}, 

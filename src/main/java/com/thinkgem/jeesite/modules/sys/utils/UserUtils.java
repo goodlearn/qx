@@ -45,6 +45,14 @@ public class UserUtils {
 	public static final String CACHE_OFFICE_LIST = "officeList";
 	public static final String CACHE_OFFICE_ALL_LIST = "officeAllList";
 	
+	
+	/**
+	 * 依据身份证查询
+	 */
+	public static User findByIdCard(String idCard) {
+		return userDao.findByIdCard(idCard,User.DEL_FLAG_NORMAL);
+	}
+	
 	/**
 	 * 根据ID获取用户
 	 * @param id

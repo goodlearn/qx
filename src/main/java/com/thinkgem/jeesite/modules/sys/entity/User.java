@@ -28,8 +28,8 @@ public class User extends DataEntity<User> {
 
 	private static final long serialVersionUID = 1L;
 	private String loginName;// 登录名
+	private String idCard;  //身份证
 	private String password;// 密码
-	private String no;		// 工号
 	private String name;	// 姓名
 	private String email;	// 邮箱
 	private String phone;	// 电话
@@ -107,18 +107,18 @@ public class User extends DataEntity<User> {
 		return name;
 	}
 	
-	@Length(min=1, max=100, message="工号长度必须介于 1 和 100 之间")
-	@ExcelField(title="工号", align=2, sort=45)
-	public String getNo() {
-		return no;
-	}
-
-	public void setNo(String no) {
-		this.no = no;
-	}
-
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Length(min=1, max=100, message="长度必须介于 1 和 100 之间")
+	@ExcelField(title="身份证号", align=2, sort=45)
+	public String getIdCard() {
+		return idCard;
+	}
+
+	public void setIdCard(String idCard) {
+		this.idCard = idCard;
 	}
 
 	@Email(message="邮箱格式不正确")

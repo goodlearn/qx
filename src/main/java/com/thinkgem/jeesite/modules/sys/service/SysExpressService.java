@@ -80,7 +80,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			System.out.println("批量操作取货:"+sysExpressId);
 		}
 		for(SysExpress sysExpress:sysExpresses) {
-			save(sysExpress);
+			save(sysExpress,UserUtils.getUser());
 		}
 	}
 	
@@ -125,7 +125,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	//入库后发送模板消息
 	@Transactional(readOnly = false)
-	public void save(SysExpress sysExpress) {
+	public void save(SysExpress sysExpress,User user) {
 		
 		//默认保存数据
 		sysExpress.setMsgState(queryMsgState(sysExpress));
@@ -134,8 +134,6 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		/**
 		 * 发送模板消息
 		 */
-		
-		User user = UserUtils.getUser();
 		String phone = sysExpress.getPhone();
 		
 		//如果快递没有电话 那么不进行消息发送
@@ -171,6 +169,12 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		logger.info("openId is "+openId);
 		String userName = user.getName();
 		wxService.sendMessageExpress(openId,userName,"0");
+	}
+	
+	//保存快递信息
+	@Transactional(readOnly = false)
+	public void saveExpress(SysExpress sysExpress,User user) {
+		save(sysExpress,user);
 	}
 	
 	@Transactional(readOnly = false)

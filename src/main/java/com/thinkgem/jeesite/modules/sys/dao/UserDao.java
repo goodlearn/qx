@@ -23,6 +23,13 @@ public interface UserDao extends CrudDao<User> {
 	 * @return
 	 */
 	public User getByLoginName(User user);
+	
+	/**
+	 * 根据身份证查询
+	 * @param loginName
+	 * @return
+	 */
+	public User findByIdCard(String idCard,String DEL_FLAG_NORMAL);
 
 	
 	/**

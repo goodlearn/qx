@@ -40,6 +40,7 @@ import com.thinkgem.jeesite.modules.sys.entity.wx.WxTemplate;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WxTemplateData;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thoughtworks.xstream.XStream;
 
 import net.sf.json.JSONObject;
@@ -56,9 +57,6 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	@Autowired
 	private SysWxUserDao sysWxUserDao;
-	
-	@Autowired
-	private SysExpressService sysExpressService;
 	
 	@Autowired
 	private UserDao userDao;
@@ -219,19 +217,40 @@ public class WxService extends BaseService implements InitializingBean {
 		}
 	}
 	
-	//保存快递信息
-	@Transactional(readOnly = false)
-	public int saveExpress(SysExpress sysExpress) {
-		User paramUser = new User();
-		paramUser.setLoginName(defaultLoginNameForQuery);
-		User user = userDao.getByLoginName(paramUser);
-		if(null == user) {
-			logger.info("No wxuser");
-			return 1;//操作用户丢失
+	
+	/**
+	 * 查询操作员（微信登录人员）
+	 * @param sysExpress
+	 * @return
+	 */
+	public User findOperator(String openId) {
+		if(null == openId) {
+			//参数为空
+			return null;
 		}
-		sysExpressService.save(sysExpress);
-		return 0;
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByOpenId(openId);
+		if(null == sysWxInfo) {
+			//没有绑定微信
+			return null;
+		}
+		String idCard = sysWxInfo.getIdCard();
+		if(null == idCard) {
+			//没有身份信息
+			return null;
+		}
+		SysWxUser sysWxUser = sysWxUserDao.findByIdCard(idCard);
+		if(null == sysWxUser) {
+			//微信中没有注册个人信息
+			return null;
+		}
+		User user = UserUtils.findByIdCard(idCard);
+		if(null == user) {
+			//操作人员没有关联
+			return null;
+		}
+		return user;
 	}
+	
 	//修改个人信息，需要将微信的数据一同更新
 	@Transactional(readOnly = false)
 	public void modifyWxUserInfo(SysWxUser sysWxUser,String openId) {

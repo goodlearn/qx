@@ -1,5 +1,8 @@
 ALTER TABLE sys_wx_user ADD CONSTRAINT wxuser_idcard UNIQUE(id_card)
 ALTER TABLE sys_wx_info ADD CONSTRAINT wxinfo_openid UNIQUE(open_id)
 alter table sys_express add column msg_state varchar(100) default '0' 
+ALTER TABLE sys_user MODIFY  NO VARCHAR(100) NOT NULL; 
+ALTER TABLE sys_user CHANGE NO id_card VARCHAR(100) NOT NULL;
+ALTER TABLE sys_user ADD CONSTRAINT id_card UNIQUE(id_card)
 http://localhost:8080/wx/clickUrl?url=index
 http://localhost:8080/wx/getPersonIndex?code=021V5uGz0BH7vg1sRZDz0Fe8Gz0V5uGT

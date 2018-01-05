@@ -22,6 +22,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 快递信息表Controller
@@ -88,7 +89,7 @@ public class SysExpressController extends BaseController {
 		}
 		String state = DictUtils.getDictValue("已完结", "expressState", "0");
 		sysExpress.setState(state);
-		sysExpressService.save(sysExpress);
+		sysExpressService.save(sysExpress,UserUtils.getUser());
 		
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 	}
@@ -138,7 +139,7 @@ public class SysExpressController extends BaseController {
 		//默认保存快递状态为已入库
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
-		sysExpressService.save(sysExpress);
+		sysExpressService.save(sysExpress,UserUtils.getUser());
 		addMessage(redirectAttributes, "快递已入库");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}
@@ -149,7 +150,7 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return editForm(sysExpress, model);
 		}
-		sysExpressService.save(sysExpress);
+		sysExpressService.save(sysExpress,UserUtils.getUser());
 		addMessage(redirectAttributes, "保存快递表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}

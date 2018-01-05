@@ -30,6 +30,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
@@ -44,12 +45,15 @@ public class WxControl extends BaseController {
 	
 	@Autowired
 	private SysWxUserService sysWxUserService;
-	@Autowired
-	private SysExpressService sysExpressService;
-	@Autowired
-	private WxService wxService;
+	
 	@Autowired
 	private WxMenuManager wxMenuManager;
+	
+	@Autowired
+	private WxService wxService;
+	
+	@Autowired
+	private SysExpressService sysExpressService;
 	
 	//首页
 	private final String WX_PERSON_INDEX = "modules/wxp/wxPersonIndex";
@@ -168,29 +172,34 @@ public class WxControl extends BaseController {
 	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		String phone=request.getParameter("phone");//获取phone
 		String expressId=request.getParameter("expressId");//获取phone
+		String openId=request.getParameter("openId");//获取phone
 		if(null == phone) {
-			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			model.addAttribute("openId",openId);
 			model.addAttribute("message", "请输入电话号码");
 			return WX_EXPRESS_ADD;
-		}
+		} 
 		if(null == expressId) {
-			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+			model.addAttribute("openId",openId);
 			model.addAttribute("message", "请输入快递单号");
 			return WX_EXPRESS_ADD;
 		}
+		
+		//查询操作人员
+		User user = wxService.findOperator(openId);
+		if(null == user) {
+			model.addAttribute("openId",openId);
+			model.addAttribute("message", "无操作权限");
+			return WX_EXPRESS_ADD;
+		}
+		
+		
 		SysExpress sysExpress = new SysExpress();
 		//默认保存快递状态为已入库
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
-		int result = wxService.saveExpress(sysExpress);
-		if(result == 0) {
-			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
-			model.addAttribute("message", "操作用户丢失");
-			return WX_EXPRESS_ADD;
-		}else {
-			model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
-			return WX_PERSON_INDEX;
-		}
+		sysExpressService.saveExpress(sysExpress,user);
+		model.addAttribute("openId",openId);
+		return WX_PERSON_INDEX;
 	}
 	//进入个人中心
 	@RequestMapping(value="/userHome",method=RequestMethod.GET)

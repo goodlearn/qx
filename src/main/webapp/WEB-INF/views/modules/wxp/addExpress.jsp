@@ -56,6 +56,7 @@
 		${message}
 		<div class="expEnterInput">
 			<form id="saveForm" action="${pageContext.request.contextPath}/wx/saveExpress " method="post">
+				<input type="hidden" name="openId" value="${openId}">
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
