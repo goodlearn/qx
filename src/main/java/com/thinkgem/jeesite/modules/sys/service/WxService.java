@@ -69,6 +69,7 @@ public class WxService extends BaseService implements InitializingBean {
 		
 	}
 	
+	
 	public SysWxUser findByIdCard(String idCard) {
 		if(null!=idCard) {
 			return sysWxUserDao.findByIdCard(idCard);
@@ -314,6 +315,79 @@ public class WxService extends BaseService implements InitializingBean {
 				sysWxInfoDao.update(querySysWxInfo);
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param toUser 接收人
+	 * @param username 经办人
+	 * @param money 金额
+	 * @return
+	 */
+	public String sendMessageEndExpress(String toUser,String username,String money) {
+		logger.info("send msg start");
+		/*
+		 *	模板ID 为 DQjKDzP4EQqrA6r_abDDYJjyNZ9071tuDls2DeNrJZA
+		 *	内容：
+		 *		{{first.DATA}}
+				状态：{{keyword1.DATA}}
+				时间：{{keyword2.DATA}}
+				金额：{{keyword3.DATA}}
+				经办人：{{keyword4.DATA}}
+				{{remark.DATA}}
+		 */
+		
+		//first.DATA
+		WxTemplateData first = new WxTemplateData();
+		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setValue("您收到一个订单");
+		WxTemplateData keyword1 = new WxTemplateData();
+		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		String state = DictUtils.getDictLabel("1","expressState","已完结");
+		keyword1.setValue(state);
+		WxTemplateData keyword2 = new WxTemplateData();
+		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setValue(DateUtils.getDateTime());
+		WxTemplateData keyword3 = new WxTemplateData();
+		keyword3.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword3.setValue(money);
+		WxTemplateData keyword4 = new WxTemplateData();
+		keyword4.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword4.setValue(username);
+		WxTemplateData remark = new WxTemplateData();
+		String content="您的快递取走,谢谢合作";
+		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setValue(content);
+		
+		WxTemplate template = new WxTemplate();
+		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setTouser(toUser);
+		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
+		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);
+		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
+		wxTemplateDatas.put("keyword1", keyword1);
+		wxTemplateDatas.put("keyword2", keyword2);
+		wxTemplateDatas.put("keyword3", keyword3);
+		wxTemplateDatas.put("keyword4", keyword4);
+		wxTemplateDatas.put("remark", remark);
+		template.setData(wxTemplateDatas);
+		//获取Token
+    	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
+		String accessToken = wxAccessTokenManager.getAccessToken();
+		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String jsonString = JSONObject.fromObject(template).toString();
+		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
+		logger.info("msg is " + jsonObject);
+		int result = 0;
+        if (null != jsonObject) {  
+             if (0 != jsonObject.getInt("errcode")) {  
+                 result = jsonObject.getInt("errcode");  
+                 logger.error("错误 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));  
+             }  
+         }
+        logger.info("模板消息发送结果："+result);
+		logger.info("send msg end");
+		return null;
 	}
 	
 	/**

@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.IdcardUtils;
+import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
@@ -67,6 +69,29 @@ public class SysWxUserController extends BaseController {
 		if (!beanValidator(model, sysWxUser)){
 			return form(sysWxUser, model);
 		}
+		
+		//验证手机号
+		String phone = sysWxUser.getPhone();
+		if(null == phone) {
+			addMessage(model, "手机号不能为空");
+			return form(sysWxUser, model);
+		}
+		if(!PhoneUtils.validatePhone(phone)) {
+			addMessage(model, "手机号格式错误");
+			return form(sysWxUser, model);
+		}
+		
+		//验证快递单号
+		String idCard = sysWxUser.getIdCard();
+		if(null!=idCard) {
+			addMessage(model, "身份证不能为空");
+			return form(sysWxUser, model);
+		}
+		if(!IdcardUtils.validateIdCard18(idCard)) {
+			addMessage(model, "身份证格式错误");
+			return form(sysWxUser, model);
+		}
+		
 		sysWxUserService.save(sysWxUser);
 		addMessage(redirectAttributes, "保存微信用户表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysWxUser/?repage";

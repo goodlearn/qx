@@ -67,6 +67,10 @@ public class WxControl extends BaseController {
 	private final String WX_EXPRESS_ASSIST = "modules/wxp/expressAssist";
 	//录入快递页面
 	private final String WX_EXPRESS_ADD = "modules/wxp/addExpress";
+	//取快递页面
+	private final String WX_EXPRESS_PICK = "modules/wxp/pickExpress";
+	//验证手机号页面
+	private final String WX_PHONE_MODIFY = "modules/wxp/wxPhoneModify";
 	
 	@RequestMapping(value = {"index"})
 	public String index(Model model) {
@@ -144,6 +148,23 @@ public class WxControl extends BaseController {
 	    }
 		return WX_EXPRESS_ADD;
 	}
+	
+	/**
+	 * 获取取快递页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqPickExpress",method=RequestMethod.GET)
+	public String reqPickExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取code
+	    logger.info("openId is " + openId);
+	    if(null!=openId) {
+	    	model.addAttribute("openId",openId);
+	    }
+		return WX_EXPRESS_PICK;
+	}
 		
 	//获取个人首页
 	@RequestMapping(value="/getPersonIndex",method=RequestMethod.GET)
@@ -197,6 +218,8 @@ public class WxControl extends BaseController {
 		//默认保存快递状态为已入库
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
+		sysExpress.setExpressId(expressId);
+		sysExpress.setPhone(phone);
 		sysExpressService.saveExpress(sysExpress,user);
 		model.addAttribute("openId",openId);
 		return WX_PERSON_INDEX;
@@ -279,6 +302,31 @@ public class WxControl extends BaseController {
 		String idCard = request.getParameter("idCard");
 		String phone = request.getParameter("phone");
 		String openId = request.getParameter("openId");
+		
+		//身份证不能为空
+		if(null == idCard) {
+			model.addAttribute("message", "身份证号不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
+		//电话号不能为空
+		if(null == phone) {
+			model.addAttribute("message", "电话不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
+		//电话号码重复查询
+		if(null != wxService.findByPhone(phone)) {
+			model.addAttribute("message", "该电话号已经注册，请更换其它电话号，如被他人绑定，请前往快递点联系快递人员");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
 		SysWxUser param = new SysWxUser();
 		param.setName(name);
 		param.setIdCard(idCard);
@@ -290,7 +338,7 @@ public class WxControl extends BaseController {
 			model.addAttribute("openId", openId);
 			model.addAttribute("sysWxUser", repeatUser);
 			model.addAttribute("message", "有重复数据");
-			return "modules/wxp/wxPhoneModify";//验证手机号页面
+			return WX_PHONE_MODIFY;
 		}
 		//如果身份信息不存在 进行保存操作
 		wxService.saveWxUserInfo(param,openId);
@@ -305,9 +353,28 @@ public class WxControl extends BaseController {
 		String phone = request.getParameter("phone");
 		String idCard = request.getParameter("idCard");
 		String openId = request.getParameter("openId");
+		
+		//身份证不能为空
+		if(null == idCard) {
+			model.addAttribute("message", "身份证号不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_PERSON_INDEX;
+		}
+		
+		//电话号不能为空
+		if(null == phone) {
+			model.addAttribute("message", "电话不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_PERSON_INDEX;
+		}
+		
 		SysWxUser repeatUser = wxService.findByIdCard(idCard);
 		if(null == repeatUser) {
 			//没有该用户
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
 			return WX_PERSON_INDEX;
 		}else {
 			String originPhone = repeatUser.getPhone();
@@ -320,6 +387,8 @@ public class WxControl extends BaseController {
 				model.addAttribute("message", "添加成功!");
 				return WX_ID_CARD_USERINFO_MODIFY;
 			}else {
+				model.addAttribute("idCard", idCard);
+				model.addAttribute("phone", phone);
 				model.addAttribute("message", "与原号码不匹配!,请重新添加");
 				return WX_ID_CARD_USERINFO_ADD;
 			}
@@ -334,6 +403,39 @@ public class WxControl extends BaseController {
 		String phone = request.getParameter("phone");
 		String openId = request.getParameter("openId");
 		String id = request.getParameter("id");
+		
+		//身份证不能为空
+		if(null == idCard) {
+			model.addAttribute("message", "身份证号不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_MODIFY;
+		}
+		
+		//电话号不能为空
+		if(null == phone) {
+			model.addAttribute("message", "电话不能为空");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_MODIFY;
+		}
+		
+		//电话号码重复查询
+		if(null != wxService.findByPhone(phone)) {
+			model.addAttribute("message", "该电话号已经注册，请更换其它电话号，如被他人绑定，请前往快递点联系快递人员");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
+		//身份证号码重复查询
+		if(null != wxService.findByIdCard(idCard)) {
+			model.addAttribute("message", "该身份证号已经注册，请更换其它身份证号，如被他人绑定，请前往快递点联系快递人员");
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
 		SysWxUser sysWxUser = new SysWxUser();
 		sysWxUser.setId(id);
 		sysWxUser.setName(name);

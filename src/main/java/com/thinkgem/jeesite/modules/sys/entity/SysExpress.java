@@ -19,6 +19,7 @@ public class SysExpress extends DataEntity<SysExpress> {
 	private String phone;		// 手机
 	private String state;		// 快递状态
 	private String msgState;	//短信状态
+	private String company;		//快递公司
 	private SysWxUser sysWxUser;//微信用户
 	private String searchUnEndValue;//未取货搜索条件
 	
@@ -81,5 +82,12 @@ public class SysExpress extends DataEntity<SysExpress> {
 		this.msgState = msgState;
 	}
 
-	
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
 }

@@ -31,10 +31,14 @@
 					<td colspan="4">
 						${fns:getDictLabel(sysExpress.state,'expressState','')}
 					</td>
-					<td class="tit">快递手机号</td>
-					<td colspan="2">${sysExpress.phone}</td>
 					<td class="tit">信息发送状态</td>
-					<td colspan="4">${fns:getDictLabel(sysExpress.msgState,'expressMsgState','未知')</td>
+					<td colspan="2">
+						${fns:getDictLabel(sysExpress.msgState,'expressMsgState','未知')}
+					</td>
+					<td class="tit">快递公司</td>
+					<td colspan="4">
+						${fns:getDictLabel(sysExpress.company,'expressCompany','其它')}
+					</td>
 				<tr>
 				</tr>
 				<tr>

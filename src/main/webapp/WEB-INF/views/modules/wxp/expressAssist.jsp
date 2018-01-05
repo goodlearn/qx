@@ -148,7 +148,7 @@
 			window.location.href="expassitant/expsend.html";
 		});
 		$(".controw2right").click(function(){
-			window.location.href = "expassitant/exppick.html";
+			window.location.href= pageContextVal+"/wx/reqPickExpress?openId="+openId;;
 		});
 		$(".controw2Left2").click(function(){
 			window.location.href="expassitant/expdelivery.html";

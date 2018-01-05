@@ -11,6 +11,7 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
+		a.company AS "company",
 		a.del_flag AS "delFlag",
 		a.state AS "state",
 		a.msg_state AS "msgState",
@@ -46,6 +47,9 @@
 			</if>
 			<if test="state != null and state != ''">
 				AND a.state = #{state}
+			</if>
+			<if test="company != null and company != ''">
+				AND a.company = #{company}
 			</if>
 		</where>
 		<choose>
@@ -117,7 +121,8 @@
 			remarks,
 			del_flag,
 			state,
-			msg_state
+			msg_state,
+			company
 		) VALUES (
 			#{id},
 			#{expressId},
@@ -129,7 +134,8 @@
 			#{remarks},
 			#{delFlag},
 			#{state},
-			#{msgState}
+			#{msgState},
+			#{company}
 		)
 	</insert>
 	
@@ -141,7 +147,8 @@
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			msg_state = #{msgState},
-			state = #{state}
+			state = #{state},
+			company= #{company}
 		WHERE id = #{id}
 	</update>
 	

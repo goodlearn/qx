@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
@@ -87,9 +88,16 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return editForm(sysExpress, model);
 		}
+		
+		//验证快递单号
+		String expressId = sysExpress.getExpressId();
+		if(null!=expressId) {
+			addMessage(model, "快递单号不能为空");
+			return addForm(sysExpress, model);
+		}
 		String state = DictUtils.getDictValue("已完结", "expressState", "0");
 		sysExpress.setState(state);
-		sysExpressService.save(sysExpress,UserUtils.getUser());
+		sysExpressService.end(sysExpress,UserUtils.getUser());
 		
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 	}
@@ -136,6 +144,25 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return addForm(sysExpress, model);
 		}
+		
+		//验证手机号
+		String phone = sysExpress.getPhone();
+		if(null == phone) {
+			addMessage(model, "手机号不能为空");
+			return addForm(sysExpress, model);
+		}
+		if(!PhoneUtils.validatePhone(phone)) {
+			addMessage(model, "手机号格式错误");
+			return addForm(sysExpress, model);
+		}
+		
+		//验证快递单号
+		String expressId = sysExpress.getExpressId();
+		if(null!=expressId) {
+			addMessage(model, "快递单号不能为空");
+			return addForm(sysExpress, model);
+		}
+		
 		//默认保存快递状态为已入库
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
@@ -150,6 +177,25 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return editForm(sysExpress, model);
 		}
+		
+		//验证手机号
+		String phone = sysExpress.getPhone();
+		if(null == phone) {
+			addMessage(redirectAttributes, "手机号不能为空");
+			return editForm(sysExpress, model);
+		}
+		if(!PhoneUtils.validatePhone(phone)) {
+			addMessage(redirectAttributes, "手机号格式错误");
+			return editForm(sysExpress, model);
+		}
+		
+		//验证快递单号
+		String expressId = sysExpress.getExpressId();
+		if(null!=expressId) {
+			addMessage(redirectAttributes, "快递单号不能为空");
+			return editForm(sysExpress, model);
+		}
+		
 		sysExpressService.save(sysExpress,UserUtils.getUser());
 		addMessage(redirectAttributes, "保存快递表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";

@@ -33,6 +33,9 @@
 			<li><label>快递状态：</label>
 				<form:input path="state" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li><label>快递公司：</label>
+				<form:input path="company" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -44,6 +47,7 @@
 				<th>快递单号</th>
 				<th>手机</th>
 				<th>快递状态</th>
+				<th>快递公司</th>
 				<th>信息发送状态</th>
 				<th>创建人</th>
 				<th>创建时间</th>
@@ -63,6 +67,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.state, 'expressState', '0')}
+				</td>
+				<td>
+					${fns:getDictLabel(sysExpress.company,'expressCompany','其它')}
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.msgState, 'expressMsgState', '0')}

@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.IdcardUtils;
+import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
@@ -67,6 +69,27 @@ public class SysWxInfoController extends BaseController {
 		if (!beanValidator(model, sysWxInfo)){
 			return form(sysWxInfo, model);
 		}
+		
+		
+		//验证微信号
+		String openId = sysWxInfo.getOpenId();
+		if(null!=openId) {
+			addMessage(model, "微信号不能为空");
+			return form(sysWxInfo, model);
+		}
+		
+		//验证快递单号
+		String idCard = sysWxInfo.getIdCard();
+		if(null!=idCard) {
+			addMessage(model, "身份证不能为空");
+			return form(sysWxInfo, model);
+		}
+		if(!IdcardUtils.validateIdCard18(idCard)) {
+			addMessage(model, "身份证格式错误");
+			return form(sysWxInfo, model);
+		}
+				
+				
 		sysWxInfoService.save(sysWxInfo);
 		addMessage(redirectAttributes, "保存微信表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysWxInfo/?repage";

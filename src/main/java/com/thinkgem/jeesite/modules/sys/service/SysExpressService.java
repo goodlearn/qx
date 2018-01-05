@@ -120,7 +120,65 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			return DictUtils.getDictValue("用户未进行微信授权", dictType, "0");
 		}
 		
-		return DictUtils.getDictValue("入库信息已发送", dictType, "0");
+		return DictUtils.getDictValue("信息已发送", dictType, "0");
+	}
+	
+	//消息发送获取openId
+	private String getOpenIdForMsg(SysExpress sysExpress) {
+		String phone = sysExpress.getPhone();
+		
+		//如果快递没有电话 那么不进行消息发送
+		if(null == phone) {
+			return null;
+		}
+		logger.info("phone is "+phone);
+		
+		//查询个人信息
+		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
+		//如果快递没有用户  那么不进行消息发送
+		if(null == sysWxUser) {
+			return null;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//如果用户没有绑定身份信息  那么不进行消息发送
+		if(null == idCard) {
+			return null;
+		}
+		logger.info("idCard is "+idCard);
+		
+		//查询微信号 微信没有绑定 不进行消息发送
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+		if(null == sysWxInfo) {
+			return null;
+		}
+		String openId = sysWxInfo.getOpenId();
+		//如果用户没有绑定微信信息  那么不进行消息发送
+		if(null == openId) {
+			return null;
+		}
+		logger.info("openId is "+openId);
+		return openId;
+	}
+	
+	//完结后发送模板消息
+	@Transactional(readOnly = false)
+	public void end(SysExpress sysExpress,User user) {
+		
+		//默认保存数据
+		sysExpress.setMsgState(queryMsgState(sysExpress));
+		super.save(sysExpress);
+		
+		/**
+		 * 发送模板消息
+		 */
+		String openId = getOpenIdForMsg(sysExpress);
+		if(null == openId) {
+			logger.info("save sendMsg is null ");
+		}else {
+			String userName = user.getName();
+			wxService.sendMessageEndExpress(openId,userName,"0");	
+		}
 	}
 	
 	//入库后发送模板消息
@@ -134,41 +192,13 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		/**
 		 * 发送模板消息
 		 */
-		String phone = sysExpress.getPhone();
-		
-		//如果快递没有电话 那么不进行消息发送
-		if(null == phone) {
-			return;
-		}
-		logger.info("phone is "+phone);
-		
-		//查询个人信息
-		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
-		//如果快递没有用户  那么不进行消息发送
-		if(null == sysWxUser) {
-			return;
-		}
-		
-		String idCard = sysWxUser.getIdCard();
-		//如果用户没有绑定身份信息  那么不进行消息发送
-		if(null == idCard) {
-			return;
-		}
-		logger.info("idCard is "+idCard);
-		
-		//查询微信号 微信没有绑定 不进行消息发送
-		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
-		if(null == sysWxInfo) {
-			return;
-		}
-		String openId = sysWxInfo.getOpenId();
-		//如果用户没有绑定微信信息  那么不进行消息发送
+		String openId = getOpenIdForMsg(sysExpress);
 		if(null == openId) {
-			return;
+			logger.info("save sendMsg is null ");
+		}else {
+			String userName = user.getName();
+			wxService.sendMessageExpress(openId,userName,"0");	
 		}
-		logger.info("openId is "+openId);
-		String userName = user.getName();
-		wxService.sendMessageExpress(openId,userName,"0");
 	}
 	
 	//保存快递信息

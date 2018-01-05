@@ -45,6 +45,15 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">快递公司:</label>
+			<div class="controls">
+				<form:select path="company">
+					<form:options items="${fns:getDictList('expressCompany')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
