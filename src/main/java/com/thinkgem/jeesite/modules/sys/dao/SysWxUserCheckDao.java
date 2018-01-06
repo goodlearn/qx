@@ -15,4 +15,8 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 @MyBatisDao
 public interface SysWxUserCheckDao extends CrudDao<SysWxUserCheck> {
 	
+	public SysWxUserCheck findByIdCardAndPhone(String idCard,String phone,String state);
+	
+	public SysWxUserCheck findByOpenId(String openId);
+	
 }

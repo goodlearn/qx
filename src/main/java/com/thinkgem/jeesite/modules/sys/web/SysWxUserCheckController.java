@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserCheckService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 信信息检查表Controller
@@ -53,6 +54,44 @@ public class SysWxUserCheckController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/sys/sysWxUserCheckList";
 	}
+
+	
+	/**
+	 * 激活
+	 * @param sysWxUserCheck
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("sys:sysWxUserCheck:edit")
+	@RequestMapping(value = "active")
+	public String active(SysWxUserCheck sysWxUserCheck, Model model) {
+		
+		String retPath = "redirect:"+Global.getAdminPath()+"/sys/sysWxUserCheck/?repage";
+		
+		//验证
+		if (!beanValidator(model, sysWxUserCheck)){
+			return retPath;
+		}
+		
+		String state = sysWxUserCheck.getState();
+		if(null!=state) {
+			addMessage(model, "数据错误,空值");
+			return retPath;
+		}
+		
+		if(!"0".equals(state)) {
+			addMessage(model, "该用户已激活");
+			return retPath;
+		}
+		
+		sysWxUserCheck.setState(DictUtils.getDictValue("已激活", "userCheckState", "1"));
+		sysWxUserCheckService.save(sysWxUserCheck);
+		
+		model.addAttribute("sysWxUserCheck", sysWxUserCheck);
+		return retPath;
+	}
+
+	
 
 	@RequiresPermissions("sys:sysWxUserCheck:view")
 	@RequestMapping(value = "form")

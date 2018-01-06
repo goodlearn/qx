@@ -28,6 +28,22 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByOpenId" resultType="SysWxUserCheck">
+		SELECT 
+			<include refid="sysWxUserCheckColumns"/>
+		FROM sys_wx_user_check a
+		<include refid="sysWxUserCheckJoins"/>
+		WHERE a.open_id = #{openId}
+	</select>
+	
+	<select id="findByIdCardAndPhone" resultType="SysWxUserCheck">
+		SELECT 
+			<include refid="sysWxUserCheckColumns"/>
+		FROM sys_wx_user_check a
+		<include refid="sysWxUserCheckJoins"/>
+		WHERE a.id_card = #{0} AND a.phone = #{1} AND a.state = #{2}
+	</select>
+	
 	<select id="findList" resultType="SysWxUserCheck">
 		SELECT 
 			<include refid="sysWxUserCheckColumns"/>
@@ -123,8 +139,7 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE sys_wx_user_check SET 
-			del_flag = #{DEL_FLAG_DELETE}
+		DELETE FROM sys_wx_user_check 
 		WHERE id = #{id}
 	</update>
 	

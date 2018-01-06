@@ -19,6 +19,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
@@ -60,52 +61,91 @@ public class WxControl extends BaseController {
 	private final String WX_EXPRESS_PICK = "modules/wxp/pickExpress";
 	//验证手机号页面
 	private final String WX_PHONE_MODIFY = "modules/wxp/wxPhoneModify";
+	//审核页面
+	private final String WX_WAIT_VALIDATE = "modules/wxp/waitValidate";
+	//错误页面
+	private final String WX_ERROR = "modules/wxp/500";
+
+	/**
+	 * 错误信息
+	 */
+	private final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
+	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+	private final String ERR_PHONE_NULL = "电话不能为空";
+	private final String ERR_SAME_IDCARD_PHONE_CHECK = "该电话号码和身份证已经注册，请更换其它身份证和电话号码，如被他人绑定，请前往快递点联系快递人员处理";
+	private final String ERR_NO_WXUER = "系统异常，不存在操作用户，请前往快递点联系快递人员处理";
+	private final String ERR_PHONE_ORIGIN = "请输入原先的电话号码进行验证";
+
 	
-	@RequestMapping(value = {"index"})
-	public String index(Model model) {
-		System.out.println("Test net is success");
-		return null;
+	/**
+	 * 依据微信号查询是否已经注册并且激活
+	 * 用户是新用户，需要跳转到注册页面
+	 * 用户已经注册，需要查看是否激活，没有激活跳转到审核页面，激活后跳转到对应页面
+	 * @param openId 查询微信号
+	 * @return
+	 * 如果微信号查询不到，返回注册页面
+	 * 如果微信号查询到，但是没有激活，返回未审核页面
+	 * 如果用户已注册，也已经激活，返回空值
+	 */
+	private String validateRegAndActiveByOpenId(String openId) {
+		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
+		if(null == sysWxUserCheck) {
+			return WX_ID_CARD_USERINFO_ADD;//用户不存在,返回注册页面
+		}
+		String state = sysWxUserCheck.getState();
+		if("0".equals(state)) {
+			return WX_WAIT_VALIDATE;//用户已注册，但未激活，返回审核等待状态
+		}
+		return null;//用户已注册，也已经激活，返回空值
 	}
 	
 	/**
-	 * 微信接口测试
+	 * 验证微信号是否获取，如果微信号未获取，系统后续操作无法进行，提示微信号未获取
+	 * @param request
+	 * @param response
 	 * @param model
 	 * @return
+	 * 如果微信号未获取，返回错误页面
+	 * 如果微信号获取，返回空值
 	 */
-	//创建菜单
-	@RequestMapping(value = {"createMenu"})
-	public String wxCreateMenu(Model model) {
-		wxMenuManager.createMenu();
-		return null;
-	}
-	
-	//生成access_token
-	@RequestMapping(value = {"getAt"})
-	public String wxAccessToken(Model model) {
-		WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
-		wtUtils.getAccessToken();
-		return null;
+	private String validateOpenId(String openId,Model model) {
+		if(null == openId) {
+			model.addAttribute("message", ERR_OPEN_ID_NOT_GET);
+			return WX_ERROR;//返回错误页面
+		}
+		return null;//微信号 标识微信号已获取
 	}
 	
 	
 	/**
 	 * 页面跳转
+	 * @param request
 	 * @param model
+	 * @param url 想要跳转的页面
 	 * @return
 	 */
-	//获取保存个人信息页面
-	@RequestMapping(value="/reqPersonUserInfo",method=RequestMethod.GET)
-	public String reqPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取code
+	private String getRedirectUrl(HttpServletRequest request,Model model,String url) {
+		String openId = request.getParameter("openId");//获取微信号
+		//是否获取到微信号
+		String isGetOpenId = validateOpenId(openId,model);
+		if(null!=isGetOpenId) {
+			//没有获取到，跳转到错误页面
+			return isGetOpenId;
+		}
+		//是否已经注册并且激活
+		String isRegAndActive = validateRegAndActiveByOpenId(openId);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
 	    logger.info("openId is " + openId);
-	    if(null!=openId) {
-	    	model.addAttribute("openId",openId);
-	    }
-		return WX_ID_CARD_USERINFO_ADD;
+	    model.addAttribute("openId",openId);
+		return url;
 	}
 	
+	
 	/**
-	 * 获取快递助手页面
+	 * 页面跳转-获取快递助手页面
 	 * @param request
 	 * @param response
 	 * @param model
@@ -113,16 +153,11 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqExpressAssist",method=RequestMethod.GET)
 	public String reqExpressAssist(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取code
-	    logger.info("openId is " + openId);
-	    if(null!=openId) {
-	    	model.addAttribute("openId",openId);
-	    }
-		return WX_EXPRESS_ASSIST;
+		return getRedirectUrl(request,model,WX_EXPRESS_ASSIST);
 	}
 	
 	/**
-	 * 获取快递添加页面
+	 * 页面跳转-获取快递添加页面
 	 * @param request
 	 * @param response
 	 * @param model
@@ -130,16 +165,11 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqAddExpress",method=RequestMethod.GET)
 	public String reqAddExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取code
-	    logger.info("openId is " + openId);
-	    if(null!=openId) {
-	    	model.addAttribute("openId",openId);
-	    }
-		return WX_EXPRESS_ADD;
+		return getRedirectUrl(request,model,WX_EXPRESS_ADD);
 	}
 	
 	/**
-	 * 获取取快递页面
+	 * 页面跳转-获取取快递页面
 	 * @param request
 	 * @param response
 	 * @param model
@@ -147,15 +177,17 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqPickExpress",method=RequestMethod.GET)
 	public String reqPickExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取code
-	    logger.info("openId is " + openId);
-	    if(null!=openId) {
-	    	model.addAttribute("openId",openId);
-	    }
-		return WX_EXPRESS_PICK;
+		return getRedirectUrl(request,model,WX_EXPRESS_PICK);
 	}
 		
-	//获取个人首页
+	/**
+	 * 获取个人首页
+	 * 微信点击个人首页后，微信重定向访问地址
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/getPersonIndex",method=RequestMethod.GET)
 	public String getPersonIndex(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
@@ -175,6 +207,127 @@ public class WxControl extends BaseController {
 			e.printStackTrace();
 		}
 		return WX_PERSON_INDEX;
+	}
+	
+	
+	/**
+	 * 页面跳转-获取个人中心页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/userHome",method=RequestMethod.GET)
+	public String userHome(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
+		
+		String openId = request.getParameter("openId");//获取微信号
+		
+		//验证微信号、是否注册、是否激活
+		String isSendUrl = getRedirectUrl(request,model,null);
+		
+		//验证未通过
+		if(null != isSendUrl) {
+			return isSendUrl;
+		}
+		 
+		//依据openId获取个人信息 如果没有个人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息userHome页面
+		SysWxUser sysWxUser = wxService.getSysWxUser(openId);
+		//判断
+		if(null == sysWxUser) {
+			//没有个人信息
+			model.addAttribute("openId",openId);
+			return WX_ID_CARD_USERINFO_ADD;
+		}else {
+			//已注册个人信息
+			model.addAttribute("openId",openId);
+			model.addAttribute("sysWxUser",sysWxUser);
+			return WX_USER_HOME;
+		}
+	}
+	
+	/**
+	 * 注册个人信息
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
+	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String name = request.getParameter("name");
+		String idCard = request.getParameter("idCard");
+		String phone = request.getParameter("phone");
+		String openId = request.getParameter("openId");
+
+		//身份证不能为空
+		if(null == idCard) {
+			model.addAttribute("message", ERR_ID_CARD_NULL);
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			model.addAttribute("openId", openId);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
+		//电话号不能为空
+		if(null == phone) {
+			model.addAttribute("message", ERR_PHONE_NULL);
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			model.addAttribute("openId", openId);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		
+		SysWxUser sysWxUser = null;
+		//是否已经注册（电话和身份证） 如果依据注册过，身份证和电话相同 那么直接获取
+		sysWxUser = wxService.findWxUser(idCard, phone);
+		if(null!=sysWxUser) {
+			//填写信息
+			sysWxUser.setName(name);
+			//因为是注册页面 说明用户使用了新的微信，那么更新微信绑定和用户信息
+			wxService.saveWxUserInfo(sysWxUser,openId);
+			model.addAttribute("openId",openId);
+			model.addAttribute("sysWxUser",sysWxUser);
+			return WX_USER_HOME;
+		}
+		
+		
+		//如果该身份证已经注册，需要提示用户输入之前注册的手机号以进行验证
+		sysWxUser = wxService.findByIdCard(idCard);
+		if(null != sysWxUser) {
+			String originPhone = sysWxUser.getPhone();//原先电话
+			if(!originPhone.equals(phone)) {
+				model.addAttribute("message", ERR_PHONE_NULL);
+				model.addAttribute("idCard", idCard);
+				model.addAttribute("phone", phone);
+				model.addAttribute("openId", openId);
+				return ERR_PHONE_ORIGIN;
+			}
+		}
+		
+	
+		
+		//注册信息填写
+		SysWxUserCheck param = new SysWxUserCheck();
+		param.setName(name);
+		param.setIdCard(idCard);
+		param.setPhone(phone);
+		param.setOpenId(openId);
+		param.setState(DictUtils.getDictValue("未激活", "userCheckState", "0"));
+
+		//如果身份信息不存在 进行保存操作
+		SysWxUserCheck result = wxService.saveSysWxUserCheck(param);
+		if(null == result) {
+			model.addAttribute("message", ERR_NO_WXUER);
+			model.addAttribute("idCard", idCard);
+			model.addAttribute("phone", phone);
+			model.addAttribute("openId", openId);
+			return WX_ID_CARD_USERINFO_ADD;
+		}
+		model.addAttribute("sysWxUser", result);
+		model.addAttribute("openId", openId);
+		return WX_WAIT_VALIDATE;
 	}
 	
 	//录入快递信息
@@ -213,51 +366,8 @@ public class WxControl extends BaseController {
 		model.addAttribute("openId",openId);
 		return WX_PERSON_INDEX;
 	}
-	//进入个人中心
-	@RequestMapping(value="/userHome",method=RequestMethod.GET)
-	public String userHome(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
-		 String openId=request.getParameter("openId");//获取code
-		 if(null == openId) {
-			 throw new Exception("未关联个人标识符");
-		 }
-		 /**
-		  * 依据openId获取个人信息 如果没有跟人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息userHome页面
-		  */
-		 SysWxUser sysWxUser = wxService.getSysWxUser(openId);
-		 //获取
-		 if(null == sysWxUser) {
-			 model.addAttribute("openId",openId);
-			 return WX_ID_CARD_USERINFO_ADD;
-		 }else {
-			 model.addAttribute("openId",openId);
-			 model.addAttribute("sysWxUser",sysWxUser);
-			 return WX_USER_HOME;
-		 }
-	}
 	
-	//进入个人中心修改页面
-	@RequestMapping(value="/wxIdCardModify",method=RequestMethod.GET)
-	public String wxIdCardModify(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
-		 String openId=request.getParameter("openId");//获取code
-		 if(null == openId) {
-			 throw new Exception("未关联个人标识符");
-		 }
-		 /**
-		  * 依据openId获取个人信息 如果没有跟人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息WX_ID_CARD_USERINFO_MODIFY页面
-		  */
-		 SysWxUser sysWxUser = wxService.getSysWxUser(openId);
-		 //获取
-		 if(null == sysWxUser) {
-			 model.addAttribute("openId",openId);
-			 return WX_ID_CARD_USERINFO_ADD;
-		 }else {
-			 model.addAttribute("sysWxUser",sysWxUser);
-			 model.addAttribute("openId",openId);
-			 return WX_ID_CARD_USERINFO_MODIFY;
-		 }
-	}
-	
-	//获取页面
+	//获取页面(测试时使用，运行时可删除)
 	@RequestMapping(value="/clickUrl",method=RequestMethod.GET)
 	@ResponseBody
 	public String clickUrl(HttpServletRequest request, HttpServletResponse response) {
@@ -284,57 +394,7 @@ public class WxControl extends BaseController {
 	}
 	
 	
-	//保存个人信息
-	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
-	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
-		String name = request.getParameter("name");
-		String idCard = request.getParameter("idCard");
-		String phone = request.getParameter("phone");
-		String openId = request.getParameter("openId");
-		
-		//身份证不能为空
-		if(null == idCard) {
-			model.addAttribute("message", "身份证号不能为空");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_ADD;
-		}
-		
-		//电话号不能为空
-		if(null == phone) {
-			model.addAttribute("message", "电话不能为空");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_ADD;
-		}
-		
-		//电话号码重复查询
-		if(null != wxService.findByPhone(phone)) {
-			model.addAttribute("message", "该电话号已经注册，请更换其它电话号，如被他人绑定，请前往快递点联系快递人员");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_ADD;
-		}
-		
-		SysWxUser param = new SysWxUser();
-		param.setName(name);
-		param.setIdCard(idCard);
-		param.setPhone(phone);
-		
-		//如果绑定身份信息依据存在,需要用户重新确定之前绑定的手机号是否正确 跳转到手机号确认页面
-		SysWxUser repeatUser = wxService.findByIdCard(idCard);
-		if(null!=repeatUser) {
-			model.addAttribute("openId", openId);
-			model.addAttribute("sysWxUser", repeatUser);
-			model.addAttribute("message", "有重复数据");
-			return WX_PHONE_MODIFY;
-		}
-		//如果身份信息不存在 进行保存操作
-		wxService.saveWxUserInfo(param,openId);
-		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
-		model.addAttribute("openId", openId);
-		return WX_ID_CARD_USERINFO_MODIFY;
-	}
+	
 	
 	//验证手机号
 	@RequestMapping(value="/checkPhone",method=RequestMethod.POST)
@@ -388,23 +448,14 @@ public class WxControl extends BaseController {
 	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
 	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
 		String name = request.getParameter("name");
-		String idCard = request.getParameter("idCard");
 		String phone = request.getParameter("phone");
 		String openId = request.getParameter("openId");
 		String id = request.getParameter("id");
 		
-		//身份证不能为空
-		if(null == idCard) {
-			model.addAttribute("message", "身份证号不能为空");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_MODIFY;
-		}
-		
 		//电话号不能为空
 		if(null == phone) {
 			model.addAttribute("message", "电话不能为空");
-			model.addAttribute("idCard", idCard);
+			model.addAttribute("openId", openId);
 			model.addAttribute("phone", phone);
 			return WX_ID_CARD_USERINFO_MODIFY;
 		}
@@ -412,20 +463,13 @@ public class WxControl extends BaseController {
 		//电话号码重复查询
 		if(null != wxService.findByPhone(phone)) {
 			model.addAttribute("message", "该电话号已经注册，请更换其它电话号，如被他人绑定，请前往快递点联系快递人员");
-			model.addAttribute("idCard", idCard);
 			model.addAttribute("phone", phone);
+			model.addAttribute("openId", openId);
 			return WX_ID_CARD_USERINFO_ADD;
 		}
 		
-		//身份证号码重复查询
-		if(null != wxService.findByIdCard(idCard)) {
-			model.addAttribute("message", "该身份证号已经注册，请更换其它身份证号，如被他人绑定，请前往快递点联系快递人员");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_ADD;
-		}
 		
-		SysWxUser sysWxUser = new SysWxUser();
+		SysWxUser sysWxUser = wxService.getSysWxUser(openId);
 		sysWxUser.setId(id);
 		sysWxUser.setName(name);
 		sysWxUser.setIdCard(idCard);
@@ -435,8 +479,14 @@ public class WxControl extends BaseController {
 		model.addAttribute("openId", openId);
 		return WX_USER_HOME;
 	}
-	/*
+
+	
+	/**
 	 * 授权回调
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
 	 */
 	@RequestMapping(value="/oAuthRedirectSo",method=RequestMethod.GET)
 	public String oAuthRedirectSo(HttpServletRequest request, HttpServletResponse response,Model model) {
@@ -474,6 +524,30 @@ public class WxControl extends BaseController {
 			 ex.printStackTrace();
 		}
 		return retPage;
+	}
+	
+	/**
+	 * 微信接口测试-创建菜单
+	 * @param model
+	 * @return
+	 */
+	//创建菜单
+	@RequestMapping(value = {"createMenu"})
+	public String wxCreateMenu(Model model) {
+		wxMenuManager.createMenu();
+		return null;
+	}
+	
+	/**
+	 * 生成access_token
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = {"getAt"})
+	public String wxAccessToken(Model model) {
+		WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
+		wtUtils.getAccessToken();
+		return null;
 	}
 	
 	/**

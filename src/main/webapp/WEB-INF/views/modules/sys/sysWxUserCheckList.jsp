@@ -37,7 +37,7 @@
 			<li><label>激活状态：</label>
 				<form:select path="state" class="input-medium">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('userCheckState')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -70,7 +70,7 @@
 					${sysWxUserCheck.phone}
 				</td>
 				<td>
-					${fns:getDictLabel(sysWxUserCheck.state, '', '')}
+					${fns:getDictLabel(sysWxUserCheck.state, 'userCheckState', '未激活')}
 				</td>
 				<td>
 					<fmt:formatDate value="${sysWxUserCheck.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -79,7 +79,7 @@
 					${sysWxUserCheck.remarks}
 				</td>
 				<shiro:hasPermission name="sys:sysWxUserCheck:edit"><td>
-    				<a href="${ctx}/sys/sysWxUserCheck/form?id=${sysWxUserCheck.id}">修改</a>
+    				<a href="${ctx}/sys/sysWxUserCheck/active?id=${sysWxUserCheck.id}">激活</a>
 					<a href="${ctx}/sys/sysWxUserCheck/delete?id=${sysWxUserCheck.id}" onclick="return confirmx('确认要删除该信信息检查表吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

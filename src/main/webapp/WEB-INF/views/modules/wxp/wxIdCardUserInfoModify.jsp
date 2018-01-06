@@ -114,10 +114,6 @@
 							<div class="inputTitle">手机</div>
 							<input type="text" class="commonInput" name="phone" placeholder="${sysWxUser.phone}" value="${sysWxUser.phone}">
 						</div>
-						<div class="inputTypeCont">
-							<div class="inputTitle">证件</div>
-							<input type="text" class="commonInput" name="idCard" placeholder="${sysWxUser.idCard}" value="${sysWxUser.idCard}">
-						</div>
 					</div>
 					<input class="submitBtn" type="submit" value="修改"/>
 				</form>

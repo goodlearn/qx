@@ -42,6 +42,15 @@
 		WHERE a.phone = #{phone}
 	</select>
 	
+	<select id="findByIdCardAndPhone" resultType="SysWxUser">
+		SELECT 
+			<include refid="sysWxUserColumns"/>
+		FROM sys_wx_user a
+		<include refid="sysWxUserJoins"/>
+		WHERE a.id_card = #{0} AND a.phone = #{1}
+	</select>
+	
+	
 	<select id="findList" resultType="SysWxUser">
 		SELECT 
 			<include refid="sysWxUserColumns"/>

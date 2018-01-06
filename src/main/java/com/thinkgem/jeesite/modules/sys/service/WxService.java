@@ -28,11 +28,13 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.TimeUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
+import com.thinkgem.jeesite.modules.sys.dao.SysWxUserCheckDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
 import com.thinkgem.jeesite.modules.sys.dao.UserDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatMsg;
 import com.thinkgem.jeesite.modules.sys.entity.wx.WechatTextMsg;
@@ -63,13 +65,60 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	@Autowired
 	private SysWxInfoDao sysWxInfoDao;
+	
+	@Autowired
+	private SysWxUserCheckDao sysWxUserCheckDao;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
 	}
 	
+	/**
+	 * 依据电话和身份证查询(未激活的)
+	 * @param idCard
+	 * @return
+	 */
+	public SysWxUserCheck findUserCheck(String idCard,String phone) {
+		return sysWxUserCheckDao.findByIdCardAndPhone(idCard,phone,DictUtils.getDictValue("未激活", "userCheckState", "0"));
+	}
 	
+	/**
+	 * 依据微信号查询审核信息
+	 */
+	public SysWxUserCheck findByOpenId(String openId) {
+		return sysWxUserCheckDao.findByOpenId(openId);
+	}
+	
+	
+	/**
+	 * 保存注册信息 等待审核
+	 * @param param
+	 * @return
+	 */
+	public SysWxUserCheck saveSysWxUserCheck(SysWxUserCheck param) {
+		 //不存在  保存
+		 User paramUser = new User();
+			paramUser.setLoginName(defaultLoginNameForQuery);
+			User user = userDao.getByLoginName(paramUser);
+			if(null == user) {
+				logger.info("No wxuser");
+				return null;//没有操作用户
+		 }
+		param.setId(IdGen.uuid());
+		param.setCreateBy(user);
+		param.setCreateDate(new Date());
+		param.setUpdateBy(user);
+		param.setUpdateDate(new Date());
+		sysWxUserCheckDao.insert(param);
+		return param;
+	}
+	
+	/**
+	 * 依据身份证查询用户信息
+	 * @param idCard
+	 * @return
+	 */
 	public SysWxUser findByIdCard(String idCard) {
 		if(null!=idCard) {
 			return sysWxUserDao.findByIdCard(idCard);
@@ -77,6 +126,11 @@ public class WxService extends BaseService implements InitializingBean {
 		return null;
 	}
 	
+	/**
+	 * 依据电话查询用户信息
+	 * @param phone
+	 * @return
+	 */
 	public SysWxUser findByPhone(String phone) {
 		if(null!=phone) {
 			return sysWxUserDao.findByPhone(phone);
@@ -84,7 +138,18 @@ public class WxService extends BaseService implements InitializingBean {
 		return null;
 	}
 	
-	//获取access_token和openId
+	/**
+	 * 依据身份证和电话查询信息是否存在
+	 */
+	public SysWxUser findWxUser(String phone,String idCard) {
+		if(null!=phone&&null!=idCard) {sysWxUserDao.findByIdCardAndPhone(idCard, phone);}return null;
+	}
+	
+	/**
+	 * 获取access_token和openId
+	 * @param code
+	 * @return
+	 */
 	public Map<String,String> getOpenIdInfo(String code) {
 		Map<String,String> ret = new HashMap<String,String>();
 		String url = String.format(WxGlobal.USERINFO_TOKEN_URL,WxGlobal.APPID,WxGlobal.APPSECREST,code);
@@ -103,6 +168,7 @@ public class WxService extends BaseService implements InitializingBean {
 	}
 	
 	 /**
+	  * 保存微信号
 	  * @param code
 	  * @return
 	  */
