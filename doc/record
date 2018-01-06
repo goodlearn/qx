@@ -7,5 +7,25 @@ ALTER TABLE sys_user ADD CONSTRAINT id_card UNIQUE(id_card)
 ALTER TABLE sys_express ADD COLUMN msg_state varchar(100) default '0' 
 ALTER TABLE sys_express ADD COLUMN company varchar(100) default '0'
 ALTER TABLE sys_wx_info ADD CONSTRAINT wxinfo_idcard UNIQUE(id_card)
+
+CREATE TABLE `sys_wx_user_check`(
+
+  `id` VARCHAR(64) NOT NULL COMMENT '编号',
+  `id_card` VARCHAR(100) DEFAULT NULL COMMENT '身份证号',
+  `name` VARCHAR(100) NOT NULL COMMENT '姓名',
+  `phone` VARCHAR(200) DEFAULT NULL COMMENT '手机',
+  `open_id` VARCHAR(100) DEFAULT NULL COMMENT '微信关联号',
+  `state` VARCHAR(100) NOT NULL COMMENT '激活状态',
+  `create_by` VARCHAR(64) NOT NULL COMMENT '创建者',
+  `create_date` DATETIME NOT NULL COMMENT '创建时间',
+  `update_by` VARCHAR(64) NOT NULL COMMENT '更新者',
+  `update_date` DATETIME NOT NULL COMMENT '更新时间',
+  `remarks` VARCHAR(255) DEFAULT NULL COMMENT '备注信息',
+  `del_flag` CHAR(1) NOT NULL DEFAULT '0' COMMENT '删除标记',
+   PRIMARY KEY (`id`),
+   KEY `sys_user_check_del_flag` (`del_flag`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='微信信息检查表'
+
+
 http://localhost:8080/wx/clickUrl?url=index
 http://localhost:8080/wx/getPersonIndex?code=021V5uGz0BH7vg1sRZDz0Fe8Gz0V5uGT
