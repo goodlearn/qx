@@ -84,7 +84,7 @@ public class SysWxInfoController extends BaseController {
 			addMessage(model, "身份证不能为空");
 			return form(sysWxInfo, model);
 		}
-		if(!IdcardUtils.validateIdCard18(idCard)) {
+		if(!IdcardUtils.validateCard(idCard)) {
 			addMessage(model, "身份证格式错误");
 			return form(sysWxInfo, model);
 		}

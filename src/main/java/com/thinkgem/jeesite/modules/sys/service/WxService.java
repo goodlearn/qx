@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.TimeUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
+import com.thinkgem.jeesite.modules.sys.dao.SysExpressDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserCheckDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
@@ -64,10 +65,14 @@ public class WxService extends BaseService implements InitializingBean {
 	private UserDao userDao;
 	
 	@Autowired
+	private SysExpressDao sysExpressDao;
+	
+	@Autowired
 	private SysWxInfoDao sysWxInfoDao;
 	
 	@Autowired
 	private SysWxUserCheckDao sysWxUserCheckDao;
+	
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -146,6 +151,36 @@ public class WxService extends BaseService implements InitializingBean {
 	}
 	
 	/**
+	 * 依据微信号查询信息
+	 * @param openId
+	 * @return
+	 */
+	public SysWxUser findSysUserByOpenId(String openId) {
+		//没有微信号
+		if(null == openId) {
+			return null;
+		}
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByOpenId(openId);
+		//没有查到微信信息
+		if(null == sysWxInfo) {
+			return null;
+		}
+		
+		String idCard = sysWxInfo.getIdCard();
+		//身份证号为空
+		if(null == idCard) {
+			return null;
+		}
+		
+		SysWxUser sysWxUser = sysWxUserDao.findByIdCard(idCard);
+		//个人信息为空
+		if(null == sysWxUser) {
+			return null;
+		}
+		return sysWxUser;
+	}
+	
+	/**
 	 * 依据电话查询用户信息
 	 * @param phone
 	 * @return
@@ -162,6 +197,116 @@ public class WxService extends BaseService implements InitializingBean {
 	 */
 	public SysWxUser findWxUser(String phone,String idCard) {
 		if(null!=phone&&null!=idCard) {sysWxUserDao.findByIdCardAndPhone(idCard, phone);}return null;
+	}
+	
+	/**
+	 * 查询快递
+	 */
+	public List<SysExpress> findExpressByIdCard(String idCard) {
+		return sysExpressDao.findByIdCard(idCard);
+	}
+	
+	/**
+	 * 保存快递
+	 */
+	@Transactional(readOnly = false)
+	public void saveExpress(SysExpress sysExpress,User user) {
+		//默认保存数据
+		sysExpress.setId(IdGen.uuid());
+		sysExpress.setMsgState(queryMsgState(sysExpress));
+		sysExpress.setCreateBy(user);
+		sysExpress.setCreateDate(new Date());
+		sysExpress.setUpdateBy(user);
+		sysExpress.setUpdateDate(new Date());
+		sysExpressDao.insert(sysExpress);
+		
+		/**
+		 * 发送模板消息
+		 */
+		String openId = getOpenIdForMsg(sysExpress);
+		if(null == openId) {
+			logger.info("save sendMsg is null ");
+		}else {
+			String userName = user.getName();
+			sendMessageExpress(openId,userName,"0");	
+		}
+	}
+	
+	//快递信息状态查询
+	public String queryMsgState(SysExpress sysExpress) {
+		
+		String dictType = "expressMsgState";
+		
+		String phone = sysExpress.getPhone();
+		
+		//如果快递没有电话 那么不进行消息发送
+		if(null == phone) {
+			return DictUtils.getDictValue("快递单未绑定电话", dictType, "0");
+		}
+		
+		//查询个人信息
+		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
+		//如果快递没有用户  那么不进行消息发送
+		if(null == sysWxUser) {
+			return DictUtils.getDictValue("没有关联的用户", dictType, "0");
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//如果用户没有绑定身份信息  那么不进行消息发送
+		if(null == idCard) {
+			return DictUtils.getDictValue("用户未绑定身份信息", dictType, "0");
+		}
+		
+		//查询微信号 微信没有绑定 不进行消息发送
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+		if(null == sysWxInfo) {
+			return DictUtils.getDictValue("用户未关联微信", dictType, "0");
+		}
+		String openId = sysWxInfo.getOpenId();
+		//如果用户没有绑定微信信息  那么不进行消息发送
+		if(null == openId) {
+			return DictUtils.getDictValue("用户未进行微信授权", dictType, "0");
+		}
+		
+		return DictUtils.getDictValue("信息已发送", dictType, "0");
+	}
+	
+	//消息发送获取openId
+	public String getOpenIdForMsg(SysExpress sysExpress) {
+		String phone = sysExpress.getPhone();
+		
+		//如果快递没有电话 那么不进行消息发送
+		if(null == phone) {
+			return null;
+		}
+		logger.info("phone is "+phone);
+		
+		//查询个人信息
+		SysWxUser sysWxUser = sysWxUserDao.findByPhone(phone);
+		//如果快递没有用户  那么不进行消息发送
+		if(null == sysWxUser) {
+			return null;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//如果用户没有绑定身份信息  那么不进行消息发送
+		if(null == idCard) {
+			return null;
+		}
+		logger.info("idCard is "+idCard);
+		
+		//查询微信号 微信没有绑定 不进行消息发送
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+		if(null == sysWxInfo) {
+			return null;
+		}
+		String openId = sysWxInfo.getOpenId();
+		//如果用户没有绑定微信信息  那么不进行消息发送
+		if(null == openId) {
+			return null;
+		}
+		logger.info("openId is "+openId);
+		return openId;
 	}
 	
 	/**

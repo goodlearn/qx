@@ -9,6 +9,7 @@
 	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expPickCont{
 			padding-bottom: 20px;
@@ -140,6 +141,8 @@
 
 		<div class="expPickInput">
 			<form>
+				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+				<input type="hidden" id="openId" name="openId" value="${openId}">
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">证件</div>
@@ -184,15 +187,23 @@
 <script type="text/javascript">
 	$(function() {
 		$(".searchInfoBtn").click(function() {
-			/* Act on the event */
 			var expPickUserId = $("#expPickUserId").val();
-
+			var pageContextVal = $("#PageContext").val();
+			var openId = $("#openId").val();
 			$.ajax({
 			    type:'POST',
-			    url:'#',
-			    data:'userId':expPickUserId,
+			    url:pageContextVal+'/wx/endExpress',
+			    data:{'userId':expPickUserId,'openId':openId},
+			    dataType: "json",
 			    success:function(data){
-			    	
+			    	var prompt = "操作提示";
+			    	var message = data.message;
+			    	if(data.code == "0"){
+			    		rzAlert(prompt,message);
+			    		$("#expPickUserId").val("");
+			    	}else{
+			    		rzAlert(prompt,message);
+			    	}
 			    },
 			    error:function(){
 			      
@@ -211,7 +222,7 @@
 			$.ajax({
 			    type:'POST',
 			    url:'#',
-			    data:'expNum':expNum,
+			    data:{'expNum':expNum},
 			    success:function(data){
 			    	alert("取货成功");
 			    	$(this).parent().parent().hide();

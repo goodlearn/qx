@@ -22,6 +22,7 @@
 	<sql id="sysExpressJoins">
 		LEFT JOIN sys_user uc on uc.id = a.create_by
 		LEFT JOIN sys_user uu on uu.id = a.update_by
+		LEFT JOIN sys_wx_user wxu on wxu.phone = a.phone
 	</sql>
     
 	<select id="get" resultType="SysExpress">
@@ -30,6 +31,14 @@
 		FROM sys_express a
 		<include refid="sysExpressJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByIdCard" resultType="SysExpress">
+		SELECT 
+			<include refid="sysExpressColumns"/>
+		FROM sys_express a
+		<include refid="sysExpressJoins"/>
+		WHERE wxu.id_card = #{idCard}
 	</select>
 	
 	<select id="findList" resultType="SysExpress">

@@ -177,7 +177,7 @@
 
 		// user Info Edit
 		$(".editUserInfo").click(function(){
-			window.location.href=pageContextVal+"/wx/wxIdCardModify?openId="+openId; 
+			window.location.href=pageContextVal+"/wx/reqUserInfoEdit?openId="+openId; 
 		});
 		$(".expUserInfo").click(function(){
 			window.location.href="userLazyboard.html"; 

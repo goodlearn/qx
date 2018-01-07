@@ -44,7 +44,7 @@
 	width:10%;
 	height:40px;
 	float:left;
-	background:url(../static/wx/wx/images/arrowLeft.png) no-repeat right center;
+	background:url(../wximages/arrowLeft.png) no-repeat right center;
 	background-size:90%;
 }
 
@@ -97,7 +97,7 @@
 	background: #5787f7;
 }
 
-/* 閬僵灞� */
+/* 遮罩层 */
 #goodcover {
 	position: absolute;
 	top: 0%;
@@ -160,7 +160,7 @@
 	height:35px;
 	float:left;
 	border-right:1px solid #f1f1f1;
-	background:url(../images/uname.png) no-repeat center center;
+	background:url(../wximages/uname.png) no-repeat center center;
 	background-size:60%;
 }
 .goodtxt .userInputDiv input#userNameId{
@@ -177,7 +177,7 @@
 	height:35px;
 	float:left;
 	border-right:1px solid #f1f1f1;
-	background:url(../images/uphone.png) no-repeat center center;
+	background:url(../wximages/uphone.png) no-repeat center center;
 	background-size:70%;
 }
 .goodtxt .userInputDiv input#userPhoneId{
@@ -194,7 +194,7 @@
 	height:35px;
 	float:left;
 	border-right:1px solid #f1f1f1;
-	background:url(../images/userIDIcon.png) no-repeat center center;
+	background:url(../wximages/userIDIcon.png) no-repeat center center;
 	background-size:70%;
 }
 .goodtxt .userInputDiv input#userVerifId{
@@ -211,7 +211,7 @@
 	height:35px;
 	float:left;
 	border-right:1px solid #f1f1f1;
-	background:url(../images/verifCode.png) no-repeat center center;
+	background:url(../wximages/verifCode.png) no-repeat center center;
 	background-size:60%;
 }
 .goodtxt .userInputDiv input#userPhVerifId{

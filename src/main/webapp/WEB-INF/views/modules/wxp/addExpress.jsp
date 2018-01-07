@@ -9,6 +9,7 @@
 	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expEnterCont{
 			padding-bottom: 20px;
@@ -55,27 +56,58 @@
 		</div>
 		${message}
 		<div class="expEnterInput">
-			<form id="saveForm" action="${pageContext.request.contextPath}/wx/saveExpress " method="post">
-				<input type="hidden" name="openId" value="${openId}">
+			<form>
+				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+				<input type="hidden" id="openId" name="openId" value="${openId}">
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
-						<input type="text" class="commonInputFunc" name="expressId" placeholder="请输入快递单号...">
+						<input type="text" id="expressId" class="commonInputFunc" name="expressId" placeholder="请输入快递单号...">
 						<div class="commonFuncBtnScan"></div>
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">手机</div>
-						<input type="text" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
+						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
 						<div class="commonFuncBtnScan"></div>
 					</div>
 				</div>
-				<input class="submitBtn" type="submit" value="录入信息"/>
 			</form>
+			<div class="submitBtn">录入信息</div>
 		</div>
 	</div>
 </div>
 <script type="text/javascript">
 	$(function() {
+		$(".submitBtn").click(function(){
+			//$(".msgcover").fadeIn();
+			//$(".coverMsgCont").fadeIn();
+			var pageContextVal = $("#PageContext").val();
+			var expressId = $("#expressId").val();
+			var phone = $("#phone").val();
+			var openId = $("#openId").val();
+			$.ajax({
+			    type:'POST',
+			    url:pageContextVal+'/wx/saveExpress',
+			    data:{'expressId':expressId,'phone':phone,'openId':openId},
+			    dataType: "json",
+			    success:function(data){
+			    	var prompt = "操作提示";
+			    	var code = data.code;
+			    	var message = data.message;
+			    	if(code == "0"){
+			    		rzAlert(prompt,message);
+			    		$("#expressId").val("");
+			    		$("#phone").val("");
+			    	}else{
+			    		rzAlert(prompt,message);
+			    	}
+		    	},
+			    error:function(){
+				      
+			    }
+			});
+		});
+		
 		var initFun = function(){
 			var windowW = $(window).width();
 			

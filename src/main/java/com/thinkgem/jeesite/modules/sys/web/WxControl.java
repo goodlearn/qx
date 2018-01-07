@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.sys.web;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
 import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
+import com.thinkgem.jeesite.common.utils.IdcardUtils;
 import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
@@ -50,9 +52,6 @@ public class WxControl extends BaseController {
 	
 	@Autowired
 	private WxService wxService;
-	
-	@Autowired
-	private SysExpressService sysExpressService;
 	
 	//首页
 	private final String WX_PERSON_INDEX = "modules/wxp/wxPersonIndex";
@@ -82,6 +81,7 @@ public class WxControl extends BaseController {
 	 */
 	private final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
 	private final String ERR_NAME_NULL = "姓名不能为空";
 	private final String ERR_CODE_NULL = "验证码不能为空";
 	private final String ERR_CODE_SIZE = "验证码长度错误";
@@ -93,6 +93,7 @@ public class WxControl extends BaseController {
 	private final String ERR_NO_WXUER = "系统异常，不存在操作用户，请前往快递点联系快递人员处理";
 	private final String ERR_PHONE_ORIGIN = "请输入原先的电话号码进行验证";
 	private final String ERR_PHONE_PATTERN = "手机号码格式不正确";
+	private final String ERR_ID_CARD_PATTERN = "身份证号码格式不正确";
 	private final String ERR_SAME_PHONE_NO_ACTIVE = "该号码已经注册，未审核激活，请携带身份证前往快递中心激活";
 	private final String ERR_SAME_PHONE = "该号码已经注册，请绑定其它号码";
 	private final String ERR_PROMPT_USER_CONFIRE = "您好，短信已发送，如果您没有收到，可能是网络有延迟，请耐心等待片刻";
@@ -100,13 +101,16 @@ public class WxControl extends BaseController {
 	private final String ERR_NO_ACTIVE = "用户未审核激活，请前往快递中心审核激活";
 	private final String ERR_INPUT_OLD_PHONE = "用户已绑定，请输入原手机号码";
 	private final String ERR_NOT_SAME_OLD_PHONE = "绑定原手机号码输入错误";
-	private final String ERR_NO_USER = "为检测到操作用户";
+	private final String ERR_NO_USER = "未检测到操作用户";
 	private final String ERR_OLD_PHONE_PATTERN = "旧手机号码格式不正确";
 	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
+	private final String ERR_EXPREE_NOT_ID_CARD = "未查询到快递信息";
 
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
-	private final String MSG_USER_SAVE_SUCCESS = "数据提交成功";
+	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功";
+	private final String MSG_EXPRESS_SAVE_SUCCESS = "快递录入成功";
+	private final String MSG_EXPRESS_QUERY_SUCCESS = "查找成功";
 	
 	/**
 	 * 测试页面（上线可删除）
@@ -189,6 +193,31 @@ public class WxControl extends BaseController {
 		return url;
 	}
 	
+	/**
+	 * 页面跳转-完善个人信息页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqUserInfoEdit",method=RequestMethod.GET)
+	public String reqUserInfoEdit(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		String isReirectUrl = getRedirectUrl(request,model,null);//验证是否跳转
+		
+		//验证出现错误 进行跳转
+		if(null!=isReirectUrl) {
+			return isReirectUrl;//跳转
+		}
+		//获取个人信息
+		String openId = request.getParameter("openId");//获取微信号
+		SysWxUser sysWxUser = wxService.findSysUserByOpenId(openId);
+		if(null != sysWxUser) {
+			model.addAttribute("sysWxUser",sysWxUser);
+		}
+		model.addAttribute("openId",openId);
+		return WX_ID_CARD_USERINFO_MODIFY;
+	}
 	
 	/**
 	 * 页面跳转-获取快递助手页面
@@ -413,6 +442,11 @@ public class WxControl extends BaseController {
 		final String errCode_11 = "11";//原手机号码输入错误
 		final String errCode_12 = "12";//无操作用户
 		final String errCode_13 = "13";//手机号码格式不正确
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
 
 		//验证码不能为空
 		if(StringUtils.isEmpty(msg)) {
@@ -432,6 +466,11 @@ public class WxControl extends BaseController {
 		//身份证不能为空
 		if(StringUtils.isEmpty(idCard)) {
 			return backJsonWithCode(errCode_4,ERR_ID_CARD_NULL);
+		}
+		
+		//身份证号格式
+		if(IdcardUtils.validateCard(idCard)) {
+			return backJsonWithCode(errCode_4,ERR_ID_CARD_PATTERN);
 		}
 		
 		//电话号不能为空
@@ -526,28 +565,43 @@ public class WxControl extends BaseController {
 	}
 	
 	//录入快递信息
+	@ResponseBody
 	@RequestMapping(value="/saveExpress",method=RequestMethod.POST)
 	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		String phone=request.getParameter("phone");//获取phone
 		String expressId=request.getParameter("expressId");//获取phone
 		String openId=request.getParameter("openId");//获取phone
-		if(null == phone) {
-			model.addAttribute("openId",openId);
-			model.addAttribute("message", "请输入电话号码");
-			return WX_EXPRESS_ADD;
-		} 
-		if(null == expressId) {
-			model.addAttribute("openId",openId);
-			model.addAttribute("message", "请输入快递单号");
-			return WX_EXPRESS_ADD;
+		
+		final String successCode = "0";//成功码
+		final String errCode_1 = "1";//快递单号不能为空
+		final String errCode_2 = "2";//手机号不能为空
+		final String errCode_3 = "3";//手机号格式错误
+		final String errCode_4 = "4";//未检测到操作人员
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+
+		//快递单号不能为空
+		if(StringUtils.isEmpty(expressId)) {
+			return backJsonWithCode(errCode_1,ERR_EXPREE_ID_NULL);
+		}
+		
+		//电话号不能为空
+		if(StringUtils.isEmpty(phone)) {
+			return backJsonWithCode(errCode_2,ERR_PHONE_NULL);
+		}
+		
+		//手机号码格式不正确
+		if(!PhoneUtils.validatePhone(phone)) {
+			return backJsonWithCode(errCode_3,ERR_NEW_PHONE_PATTERN);
 		}
 		
 		//查询操作人员
 		User user = wxService.findOperator(openId);
 		if(null == user) {
-			model.addAttribute("openId",openId);
-			model.addAttribute("message", "无操作权限");
-			return WX_EXPRESS_ADD;
+			return backJsonWithCode(errCode_4,ERR_NO_USER);
 		}
 		
 		
@@ -557,9 +611,50 @@ public class WxControl extends BaseController {
 		sysExpress.setState(state);
 		sysExpress.setExpressId(expressId);
 		sysExpress.setPhone(phone);
-		sysExpressService.saveExpress(sysExpress,user);
+		wxService.saveExpress(sysExpress,user);
 		model.addAttribute("openId",openId);
-		return WX_PERSON_INDEX;
+		return backJsonWithCode(successCode,MSG_EXPRESS_SAVE_SUCCESS);
+	}
+	
+	//收取快递信息
+	@ResponseBody
+	@RequestMapping(value="/endExpress",method=RequestMethod.POST)
+	public String endExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String userId=request.getParameter("userId");//获取userId
+		String openId=request.getParameter("openId");//获取openId
+		
+		final String successCode = "0";//成功码
+		final String errCode_1 = "1";//身份证号不能为空
+		final String errCode_2 = "2";//身份证号格式错误
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+
+		//身份证号
+		if(StringUtils.isEmpty(userId)) {
+			return backJsonWithCode(errCode_1,ERR_ID_CARD_NULL);
+		}
+		
+		//身份证号格式
+		if(!IdcardUtils.validateCard(userId)) {
+			return backJsonWithCode(errCode_2,ERR_ID_CARD_PATTERN);
+		}
+		
+		//验证快递单号
+		List<SysExpress> sysExpresses = wxService.findExpressByIdCard(userId);
+		if(null == sysExpresses || sysExpresses.size() == 0) {
+			return backJsonWithCode(errCode_1,ERR_EXPREE_NOT_ID_CARD);
+		}
+		
+		//查询操作人员
+		User user = wxService.findOperator(openId);
+		if(null == user) {
+			return backJsonWithCode(errCode_2,ERR_NO_USER);
+		}
+		
+		return backJsonWithCode(successCode,MSG_EXPRESS_QUERY_SUCCESS);
 	}
 	
 	//获取页面(测试时使用，运行时可删除)

@@ -87,7 +87,7 @@ public class SysWxUserController extends BaseController {
 			addMessage(model, "身份证不能为空");
 			return form(sysWxUser, model);
 		}
-		if(!IdcardUtils.validateIdCard18(idCard)) {
+		if(!IdcardUtils.validateCard(idCard)) {
 			addMessage(model, "身份证格式错误");
 			return form(sysWxUser, model);
 		}

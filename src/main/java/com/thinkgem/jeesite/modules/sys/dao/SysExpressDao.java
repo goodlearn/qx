@@ -20,4 +20,7 @@ public interface SysExpressDao extends CrudDao<SysExpress> {
 	//获取未取货的快递信息
 	public List<SysExpress> findUnEndList(SysExpress sysExpress);
 	
+	//获取快递
+	public List<SysExpress> findByIdCard(String idCard);
+	
 }

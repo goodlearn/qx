@@ -207,7 +207,7 @@ transform: translateY(-4px) rotate(0deg);
   height: 40px;
   padding-left: 5px;
   float: right;
-  background: url(../images/search.png) no-repeat center center;
+  background: url(../wximages/search.png) no-repeat center center;
   background-size: 60%;
   border-left:1px solid #f1f1f1;
 }
@@ -247,6 +247,9 @@ transform: translateY(-4px) rotate(0deg);
   font-size: 14px;
   color: #333333;
 }
+.userInputCont .inputTypeCont input.commonInput[disabled]{
+  background: #fff;
+}
 .userInputCont .inputTypeCont input.commonInputFunc{
   border: none;
   width: 140px;
@@ -257,6 +260,9 @@ transform: translateY(-4px) rotate(0deg);
   font-size: 14px;
   color: #333333;
 }
+.userInputCont .inputTypeCont input.commonInputFunc[disabled]{
+  background: #fff;
+}
 .userInputCont .inputTypeCont .commonFuncBtnScan{
   float: right;
   font-size: 12px;
@@ -264,9 +270,18 @@ transform: translateY(-4px) rotate(0deg);
   height: 46px;
   line-height: 46px;
   margin: 0px 18px 0px 0px;
-  background:url(../images/scanIcon.png) no-repeat center right;
+  background:url(../wximages/scanIcon.png) no-repeat center right;
   background-size: 50%;
-
+}
+.userInputCont .inputTypeCont .commonFuncBtnModify{
+  float: right;
+  font-size: 12px;
+  width: 50px;
+  height: 46px;
+  line-height: 46px;
+  margin: 0px 18px 0px 0px;
+  background:url(../wximages/modifyIcon.png) no-repeat center right;
+  background-size: 50%;
 }
 .userInputCont .inputTypeCont input.verifiInput{
   border: none;
