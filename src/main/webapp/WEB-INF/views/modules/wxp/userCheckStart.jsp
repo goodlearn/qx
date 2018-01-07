@@ -125,11 +125,11 @@
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">姓名</div>
-						<input type="text" class="commonInput" name="name" placeholder="请输入你的姓名...">
+						<input type="text" id="name" class="commonInput" name="name" placeholder="请输入你的姓名...">
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">证件</div>
-						<input type="text" class="commonInput" name="idCard" placeholder="请输入身份证号码...">
+						<input type="text" id="idCard" class="commonInput" name="idCard" placeholder="请输入身份证号码...">
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">手机</div>
@@ -137,12 +137,12 @@
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">短信</div>
-						<input type="text" class="verifiInput" name="msg" placeholder="请输入验证码...">
+						<input type="text" id="msg" class="verifiInput" name="msg" placeholder="请输入验证码...">
 						<input type="button" class="verifiBtn" value="发送验证码">
 					</div>
 					<div class="inputTypeCont" id="oldPhone">
 						<div class="inputTitle">原手机</div>
-						<input type="text" class="commonInput" name="oldPhone" placeholder="请输入你绑定的原手机号码...">
+						<input type="text" id="originPhone" class="commonInput" name="oldPhone" placeholder="请输入你绑定的原手机号码...">
 					</div>
 				</div>
 			</form>
@@ -174,16 +174,35 @@
 		$(".userRegSubmitBtn").click(function(){
 			//$(".msgcover").fadeIn();
 			//$(".coverMsgCont").fadeIn();
-			var state = 2;  //1:新用户注册  2：新微信绑定 
-			switch(state){
-				case 1: 
-					rzAlert("操作提示","正在审核中，请耐心等待");
-					break;
-				case 2:
-					rzAlert("操作提示","用户已绑定，请输入原手机号码");
-					$("#oldPhone").show();
-					break;
-			}
+			var name = $("#name").val();
+			var idCard = $("#idCard").val();
+			var phone = $("#phone").val();
+			var msg = $("#msg").val();
+			var openId = $("#openId").val();
+			var oldPhone = $("#originPhone").val();
+			$.ajax({
+			    type:'POST',
+			    url:pageContextVal+'/wx/savePersonUserInfo',
+			    data:{'name':name,'idCard':idCard,'phone':phone,'msg':msg,'openId':openId,'oldPhone':oldPhone},
+			    dataType: "json",
+			    success:function(data){
+			    	var prompt = "操作提示";
+			    	var code = data.code;
+			    	var message = data.message;
+			    	if(code == "0"){
+			    		rzAlert(prompt,message);
+			    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId;
+			    	}else if(code == "10"){
+						rzAlert(prompt,message);
+						$("#oldPhone").show();
+			    	}else{
+			    		rzAlert(prompt,message);
+			    	}
+		    	},
+			    error:function(){
+				      
+			    }
+			});
 		});
 
 		$(".verifiBtn").click(function(){

@@ -24,7 +24,7 @@ function rzAlert(msgTitle,msgTxt){
 	});
 	$msgCover.append($coverMsgCont);
 
-	var $closeimg = $("<img src='images/close.gif' alt=''>");
+	var $closeimg = $("<img src='"+pageContextVal+"images/close.gif' alt=''>");
 	$closeimg.css({
 		"display":"block",
 		"float":"right",
@@ -41,7 +41,7 @@ function rzAlert(msgTitle,msgTxt){
 	});
 	$coverMsgCont.append($closeimg);
 
-	var $noticeimg = $("<img src='images/noticeIcon.png' alt=''>");
+	var $noticeimg = $("<img src='"+pageContextVal+"/wx/wximages/noticeIcon.png' alt=''>");
 	$noticeimg.css({
 		"display":"block",
 		"width":"90px",

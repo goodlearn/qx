@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.sys.web;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,9 +98,15 @@ public class WxControl extends BaseController {
 	private final String ERR_PROMPT_USER_CONFIRE = "您好，短信已发送，如果您没有收到，可能是网络有延迟，请耐心等待片刻";
 	private final String ERR_TOO_MONEY = "今日次数已达上限";
 	private final String ERR_NO_ACTIVE = "用户未审核激活，请前往快递中心审核激活";
-	
+	private final String ERR_INPUT_OLD_PHONE = "用户已绑定，请输入原手机号码";
+	private final String ERR_NOT_SAME_OLD_PHONE = "绑定原手机号码输入错误";
+	private final String ERR_NO_USER = "为检测到操作用户";
+	private final String ERR_OLD_PHONE_PATTERN = "旧手机号码格式不正确";
+	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
+
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
+	private final String MSG_USER_SAVE_SUCCESS = "数据提交成功";
 	
 	/**
 	 * 测试页面（上线可删除）
@@ -170,14 +178,14 @@ public class WxControl extends BaseController {
 			//没有获取到，跳转到错误页面
 			return isGetOpenId;
 		}
+	    logger.info("openId is " + openId);
+	    model.addAttribute("openId",openId);
 		//是否已经注册并且激活
 		String isRegAndActive = validateRegAndActiveByOpenId(openId);
 		if(null!=isRegAndActive) {
 			//未注册或者未激活 跳转到指定页面
 			return isRegAndActive;
 		}
-	    logger.info("openId is " + openId);
-	    model.addAttribute("openId",openId);
 		return url;
 	}
 	
@@ -372,17 +380,6 @@ public class WxControl extends BaseController {
 		}
 	}
 	
-	//注册个人信息返回值（代码重复 抽取为函数）
-	private String savePersonUserInfoRet(String name,String idCard,String phone,
-			String msg,String openId,String errorMsg,String retPage,Model model) {
-		model.addAttribute("message", errorMsg);
-		model.addAttribute("msg", msg);
-		model.addAttribute("name", name);
-		model.addAttribute("idCard", idCard);
-		model.addAttribute("phone", phone);
-		model.addAttribute("openId", openId);
-		return retPage;
-	}
 	
 	/**
 	 * 注册个人信息
@@ -392,6 +389,7 @@ public class WxControl extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
+	@ResponseBody
 	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
 	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
 		String name = request.getParameter("name").trim();
@@ -401,90 +399,113 @@ public class WxControl extends BaseController {
 		String openId = request.getParameter("openId").trim();
 		String oldPhone = request.getParameter("oldPhone").trim();//老手机号
 		
+		final String successCode = "0";//成功码
 		final String errCode_1 = "1";//验证码不能为空
+		final String errCode_2 = "2";//验证码长度为固定值
+		final String errCode_3 = "3";//姓名不能为空
+		final String errCode_4 = "4";//身份证不能为空
+		final String errCode_5 = "5";//电话号不能为空
+		final String errCode_6 = "6";//请获取验证码
+		final String errCode_7 = "7";//验证码已超时
+		final String errCode_8 = "8";//验证码错误
+		final String errCode_9 = "9";//身份处于审核状态
+		final String errCode_10 = "10";//请输入原手机号码
+		final String errCode_11 = "11";//原手机号码输入错误
+		final String errCode_12 = "12";//无操作用户
+		final String errCode_13 = "13";//手机号码格式不正确
 
 		//验证码不能为空
 		if(StringUtils.isEmpty(msg)) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_CODE_NULL,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_1,MSG_PHONE_CODE_MSG);
 		}
 		
 		//验证码长度为固定值
 		if(msg.length()!=Global.MOBILE_CODE_SIZE) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_CODE_SIZE,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_2,ERR_CODE_SIZE);
 		}
 		
 		//姓名不能为空
 		if(StringUtils.isEmpty(name)) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_NAME_NULL,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_3,ERR_NAME_NULL);
 		}
 		
 		//身份证不能为空
 		if(StringUtils.isEmpty(idCard)) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_ID_CARD_NULL,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_4,ERR_ID_CARD_NULL);
 		}
 		
 		//电话号不能为空
 		if(StringUtils.isEmpty(phone)) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_PHONE_NULL,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_5,ERR_PHONE_NULL);
+		}
+		
+		//手机号码格式不正确
+		if(!PhoneUtils.validatePhone(phone)) {
+			return backJsonWithCode(errCode_13,ERR_NEW_PHONE_PATTERN);
 		}
 		
 		//验证码缓存
 		String cacheKey = Global.PREFIX_MOBLIE_CODE + phone;
 		PhoneMsgCache phoneMsgCache = (PhoneMsgCache)CacheUtils.get(cacheKey);
 		if(null==phoneMsgCache) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_CODE,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_6,ERR_CODE);
 		}
 		
 		//是否已经超时
 		long timeOut = phoneMsgCache.getTimeOut();
 		if(System.currentTimeMillis() > timeOut) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_CODE_TIME_OUT,WX_ID_CARD_USERINFO_ADD,model);
+			return backJsonWithCode(errCode_7,ERR_CODE_TIME_OUT);
 		}
 		
 		//验证码错误
 		String cacheCode = (String)phoneMsgCache.getValue();
-		if(!msg.equals(cacheCode)) {
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_CODE_INPUT,WX_ID_CARD_USERINFO_ADD,model);
+		if(!msg.equalsIgnoreCase(cacheCode)) {
+			return backJsonWithCode(errCode_8,ERR_CODE_INPUT);
 		}
-		
 		
 		//该身份证号是否处于审核状态
 		SysWxUserCheck sysWxUserCheck = wxService.findUserCheckByIdCard(idCard);
 		if(null != sysWxUserCheck) {
-			//有处于审核的信息
-			return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_NO_ACTIVE,WX_ID_CARD_USERINFO_ADD,model);
+			//有信息，处于审核状态
+			return backJsonWithCode(errCode_9,ERR_NO_ACTIVE);
 		}
 		
 		SysWxUser sysWxUser = null;
 		//如果该身份证已经注册，需要提示用户输入之前注册的手机号以进行验证
 		sysWxUser = wxService.findByIdCard(idCard);
 		if(null != sysWxUser) {
-			String originPhone = sysWxUser.getPhone();//原先电话
-			if(!originPhone.equals(phone)) {
-				return savePersonUserInfoRet(name,idCard,phone,msg,openId,ERR_PHONE_NULL,ERR_PHONE_ORIGIN,model);
+			//不为空，表示用户存在
+			if(StringUtils.isEmpty(oldPhone)) {
+				//没有输入了旧手机号码 提示用户输入旧手机
+				return backJsonWithCode(errCode_10,ERR_INPUT_OLD_PHONE);
+			}else {
+				//手机号码格式不正确
+				if(!PhoneUtils.validatePhone(oldPhone)) {
+					return backJsonWithCode(errCode_13,ERR_OLD_PHONE_PATTERN);
+				}
+				//输入旧手机号码
+				String originPhone = sysWxUser.getPhone();//原先电话
+				if(!originPhone.equals(oldPhone)) {
+					//旧手机号码验证错误
+					return backJsonWithCode(errCode_11,ERR_NOT_SAME_OLD_PHONE);
+				}else {
+					//号码输入正确，更改信息
+					sysWxUser.setName(name);
+					sysWxUser.setPhone(phone);
+					if(null!=wxService.saveWxUserInfo(sysWxUser,openId)) {
+						//移除缓存验证码 已经完成验证了
+						CacheUtils.remove(cacheKey);
+						CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
+						return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
+					}else {
+						//操作异常
+						return backJsonWithCode(errCode_12,ERR_NO_USER);
+					}
+				}
 			}
 		}
 		
-		
-		//用户
-		
-		
-		//移除缓存
-		CacheUtils.remove(cacheKey);
-		CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
-		
-		
-		//是否已经注册（电话和身份证） 如果依据注册过，身份证和电话相同 那么直接获取
-		sysWxUser = wxService.findWxUser(idCard, phone);
-		if(null!=sysWxUser) {
-			//填写信息
-			sysWxUser.setName(name);
-			//因为是注册页面 说明用户使用了新的微信，那么更新微信绑定和用户信息
-			wxService.saveWxUserInfo(sysWxUser,openId);
-			model.addAttribute("openId",openId);
-			model.addAttribute("sysWxUser",sysWxUser);
-			return WX_USER_HOME;
-		}
+		//接下来是信息不存在 可以直接保存了
 		
 		//注册信息填写
 		SysWxUserCheck param = new SysWxUserCheck();
@@ -497,15 +518,11 @@ public class WxControl extends BaseController {
 		//如果身份信息不存在 进行保存操作
 		SysWxUserCheck result = wxService.saveSysWxUserCheck(param);
 		if(null == result) {
-			model.addAttribute("message", ERR_NO_WXUER);
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			model.addAttribute("openId", openId);
-			return WX_ID_CARD_USERINFO_ADD;
+			//操作异常
+			return backJsonWithCode(errCode_12,ERR_NO_USER);
+		}else {
+			return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
 		}
-		model.addAttribute("sysWxUser", result);
-		model.addAttribute("openId", openId);
-		return WX_WAIT_VALIDATE;
 	}
 	
 	//录入快递信息

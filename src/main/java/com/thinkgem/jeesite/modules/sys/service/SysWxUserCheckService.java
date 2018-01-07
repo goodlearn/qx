@@ -3,14 +3,21 @@
  */
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserCheckDao;
 
 /**
@@ -22,6 +29,9 @@ import com.thinkgem.jeesite.modules.sys.dao.SysWxUserCheckDao;
 @Transactional(readOnly = true)
 public class SysWxUserCheckService extends CrudService<SysWxUserCheckDao, SysWxUserCheck> {
 
+	@Autowired
+	private WxService wxService;
+	
 	public SysWxUserCheck get(String id) {
 		return super.get(id);
 	}
@@ -37,6 +47,39 @@ public class SysWxUserCheckService extends CrudService<SysWxUserCheckDao, SysWxU
 	@Transactional(readOnly = false)
 	public void save(SysWxUserCheck sysWxUserCheck) {
 		super.save(sysWxUserCheck);
+		
+		//添加用户表和微信表
+		SysWxUser sysWxUser = new SysWxUser();
+		SysWxInfo sysWxInfo = new SysWxInfo();
+		User user = UserUtils.getUser();
+		
+		//添加操作信息
+		sysWxUser.setId(IdGen.uuid());
+		sysWxUser.setName(sysWxUserCheck.getName());
+		sysWxUser.setIdCard(sysWxUserCheck.getIdCard());
+		sysWxUser.setPhone(sysWxUserCheck.getPhone());
+		sysWxUser.setUpdateBy(user);
+		sysWxUser.setUpdateDate(new Date());
+		sysWxUser.setCreateBy(user);
+		sysWxUser.setCreateDate(new Date());
+		
+		sysWxInfo.setId(IdGen.uuid());
+		sysWxInfo.setIdCard(sysWxUserCheck.getIdCard());
+		sysWxInfo.setOpenId(sysWxUserCheck.getOpenId());
+		sysWxInfo.setUpdateBy(user);
+		sysWxInfo.setUpdateDate(new Date());
+		sysWxInfo.setCreateBy(user);
+		sysWxInfo.setCreateDate(new Date());
+		
+		//保存信息
+		wxService.saveInfo(sysWxUser, sysWxInfo);
+		
+		//发送消息
+		String openId = sysWxUserCheck.getOpenId();
+		String name = sysWxUserCheck.getName();
+		if(null!=openId) {
+			wxService.sendMessageActive(openId, name);
+		}
 	}
 	
 	@Transactional(readOnly = false)

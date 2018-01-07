@@ -64,7 +64,7 @@ public class SysWxUserCheckController extends BaseController {
 	 */
 	@RequiresPermissions("sys:sysWxUserCheck:edit")
 	@RequestMapping(value = "active")
-	public String active(SysWxUserCheck sysWxUserCheck, Model model) {
+	public String active(SysWxUserCheck sysWxUserCheck, Model model,RedirectAttributes redirectAttributes) {
 		
 		String retPath = "redirect:"+Global.getAdminPath()+"/sys/sysWxUserCheck/?repage";
 		
@@ -74,13 +74,13 @@ public class SysWxUserCheckController extends BaseController {
 		}
 		
 		String state = sysWxUserCheck.getState();
-		if(null!=state) {
-			addMessage(model, "数据错误,空值");
+		if(null == state) {
+			addMessage(redirectAttributes, "数据错误,空值");
 			return retPath;
 		}
 		
 		if(!"0".equals(state)) {
-			addMessage(model, "该用户已激活");
+			addMessage(redirectAttributes, "该用户已激活");
 			return retPath;
 		}
 		

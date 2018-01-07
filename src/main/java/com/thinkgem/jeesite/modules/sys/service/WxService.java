@@ -114,15 +114,16 @@ public class WxService extends BaseService implements InitializingBean {
 	 * @param param
 	 * @return
 	 */
+	@Transactional(readOnly = false)
 	public SysWxUserCheck saveSysWxUserCheck(SysWxUserCheck param) {
 		 //不存在  保存
-		 User paramUser = new User();
+		User paramUser = new User();
 			paramUser.setLoginName(defaultLoginNameForQuery);
 			User user = userDao.getByLoginName(paramUser);
 			if(null == user) {
 				logger.info("No wxuser");
 				return null;//没有操作用户
-		 }
+		}
 		param.setId(IdGen.uuid());
 		param.setCreateBy(user);
 		param.setCreateDate(new Date());
@@ -252,56 +253,73 @@ public class WxService extends BaseService implements InitializingBean {
 		}
 		return sysWxUser;
 	}
+	 
+	@Transactional(readOnly = false)
+	public void saveInfo(SysWxUser sysWxUser,SysWxInfo sysWxInfo) {
+		sysWxUserDao.insert(sysWxUser);
+		sysWxInfoDao.insert(sysWxInfo);
+	}
 	
 	//保存个人用户信息 需要将微信关联
 	@Transactional(readOnly = false)
-	public void saveWxUserInfo(SysWxUser sysWxUser,String openId) {
+	public SysWxUser saveWxUserInfo(SysWxUser sysWxUser,String openId) {
 		//获取操作人信息 默认为微信用户
 		User paramUser = new User();
 		paramUser.setLoginName(defaultLoginNameForQuery);
 		User user = userDao.getByLoginName(paramUser);
 		if(null == user) {
 			logger.info("No wxuser");
-			return;
+			return null;
 		}
 		
 		String idCard = sysWxUser.getIdCard();
-		String phone = sysWxUser.getPhone();
 		if(null != idCard) {
 			SysWxUser temp = sysWxUserDao.findByIdCard(idCard);//已经存在了 那么要求手机号和身份证号和之前匹配才可以关联
+			
+			//添加操作信息
+			sysWxUser.setUpdateBy(user);
+			sysWxUser.setUpdateDate(new Date());
+			
 			if(null == temp) {
 				//不存在 直接保存
 				sysWxUser.setId(IdGen.uuid());
 				sysWxUser.setCreateBy(user);
 				sysWxUser.setCreateDate(new Date());
-				sysWxUser.setUpdateBy(user);
-				sysWxUser.setUpdateDate(new Date());
 				sysWxUserDao.insert(sysWxUser);
 				//更新关联
 				addOrUpdateWxInfo(idCard,openId,user);
 			}else {
-				//已经存在了 需要进行关联判断 验证手机号
-				String tempPhone = temp.getPhone();
-				if(null == phone) {
-					//手机号为空
-					logger.info("idCard exist phone is null");
-					return;
-				}else {
-					if(!phone.equals(tempPhone)) {
-						//手机号不同
-						logger.info("idCard exist and phone is diff");
-						return;
-					}else {
-						logger.info("idCard exist and phone is same");
-						//更新关联
-						addOrUpdateWxInfo(idCard,openId,user);
-						return;
-					}
+				updateWxInfo(idCard,openId,user);//更新微信表
+				sysWxUserDao.update(sysWxUser);//更新用户表
+			}
+			return sysWxUser;
+		}
+		return null;
+	}
+	
+	//更新微信信息
+	private void updateWxInfo(String idCard,String openId,User user) {
+		if(null != idCard) {
+			SysWxInfo querySysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+			if(null != querySysWxInfo) {
+				logger.info("SysWxInfo is update");
+				//不等于空才更新，空的话是插入操作
+				String oldOpenId = querySysWxInfo.getOpenId();//老微信号
+				
+				//添加信息
+				querySysWxInfo.setOpenId(openId);
+				querySysWxInfo.setUpdateBy(user);
+				querySysWxInfo.setUpdateDate(new Date());
+				
+				sysWxInfoDao.update(querySysWxInfo);
+				//删除检查表的数据
+				SysWxUserCheck sysWxUserCheck = sysWxUserCheckDao.findByOpenId(oldOpenId);
+				if(null == sysWxUserCheck) {
+					sysWxUserCheckDao.delete(sysWxUserCheck);
 				}
 			}
 		}
 	}
-	
 	
 	/**
 	 * 查询操作员（微信登录人员）
@@ -399,6 +417,67 @@ public class WxService extends BaseService implements InitializingBean {
 				sysWxInfoDao.update(querySysWxInfo);
 			}
 		}
+	}
+	
+	/**
+	 * 激活成功消息提示
+	 * @param toUser
+	 * @param username
+	 * @return
+	 */
+	public String sendMessageActive(String toUser,String username) {
+		logger.info("send msg start");
+		/*
+		 *	模板ID 为 43WT2ikE7JLLBMcBRPqZyW_HgLiDjpoX6X7h05_Mscw
+		 *	内容：
+		 *		{{first.DATA}}
+				激活时间：{{keyword1.DATA}}
+				激活账户：{{keyword2.DATA}}
+				{{remark.DATA}}
+		 */
+		
+		//first.DATA
+		WxTemplateData first = new WxTemplateData();
+		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setValue("账户激活成功通知");
+		WxTemplateData keyword1 = new WxTemplateData();
+		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword1.setValue(DateUtils.getDateTime());
+		WxTemplateData keyword2 = new WxTemplateData();
+		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setValue(username);
+		WxTemplateData remark = new WxTemplateData();
+		String content="感谢您的支持，详情请前往快递中心咨询";
+		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setValue(content);
+		
+		WxTemplate template = new WxTemplate();
+		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setTouser(toUser);
+		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
+		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_2);
+		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
+		wxTemplateDatas.put("keyword1", keyword1);
+		wxTemplateDatas.put("keyword2", keyword2);
+		wxTemplateDatas.put("remark", remark);
+		template.setData(wxTemplateDatas);
+		//获取Token
+    	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
+		String accessToken = wxAccessTokenManager.getAccessToken();
+		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String jsonString = JSONObject.fromObject(template).toString();
+		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
+		logger.info("msg is " + jsonObject);
+		int result = 0;
+        if (null != jsonObject) {  
+             if (0 != jsonObject.getInt("errcode")) {  
+                 result = jsonObject.getInt("errcode");  
+                 logger.error("错误 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));  
+             }  
+         }
+        logger.info("模板消息发送结果："+result);
+		logger.info("send msg end");
+		return null;
 	}
 	
 	/**

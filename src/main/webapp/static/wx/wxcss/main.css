@@ -44,7 +44,7 @@
 	width:10%;
 	height:40px;
 	float:left;
-	background:url(../images/arrowLeft.png) no-repeat right center;
+	background:url(../static/wx/wx/images/arrowLeft.png) no-repeat right center;
 	background-size:90%;
 }
 
@@ -97,7 +97,7 @@
 	background: #5787f7;
 }
 
-/* 遮罩层 */
+/* 閬僵灞� */
 #goodcover {
 	position: absolute;
 	top: 0%;

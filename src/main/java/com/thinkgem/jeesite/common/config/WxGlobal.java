@@ -36,7 +36,7 @@ public class WxGlobal {
 
 	//微信模板
 	public static String TEMPLATE_Msg_1 = "DQjKDzP4EQqrA6r_abDDYJjyNZ9071tuDls2DeNrJZA";
-	
+	public static String TEMPLATE_Msg_2 = "43WT2ikE7JLLBMcBRPqZyW_HgLiDjpoX6X7h05_Mscw";
 	//微信模板颜色
 	public static String TEMPLATE_Msg_COLOR_1 = "#173177";
 	
@@ -44,6 +44,9 @@ public class WxGlobal {
 	
 	//测试OPEN_ID
 	public static String TEST_OPEN_ID = "ouboC0mSlX4erWMYpj67sSLLdksU";
+	//ouboC0t-H5ie5jHxb9ECPsvnY7Ow
+	//ouboC0n6QJOO1OcgwoeNh4XNCfjk
+	//ouboC0mSlX4erWMYpj67sSLLdksU
 
 	
 	public static String getUserClick(String redirectUrl,boolean isBase) {
