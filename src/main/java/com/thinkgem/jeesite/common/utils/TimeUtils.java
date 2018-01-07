@@ -321,4 +321,19 @@ public class TimeUtils {
         return true;
     }
     
+    /**
+     * 时间是否过期了
+     * @param expiredDt 过期时间
+     * @return
+     */
+    public static boolean isExpired(long expiredDt) {
+    	long nowDt = System.currentTimeMillis(); //系统当前的毫秒数
+    	if (expiredDt <= 0||expiredDt>nowDt) { 
+    		//过期时间小于等于零时,或者过期时间大于当前时间时，没过期
+    		return false;
+    	} else { //大于过期时间 即过期
+    		return true;
+    	}
+    }
+    
 }

@@ -36,6 +36,23 @@
 		WHERE a.open_id = #{openId}
 	</select>
 	
+	
+	<select id="findByIdCard" resultType="SysWxUserCheck">
+		SELECT 
+			<include refid="sysWxUserCheckColumns"/>
+		FROM sys_wx_user_check a
+		<include refid="sysWxUserCheckJoins"/>
+		WHERE a.id_card = #{0} AND a.state = #{1}
+	</select>
+	
+	<select id="findByPhone" resultType="SysWxUserCheck">
+		SELECT 
+			<include refid="sysWxUserCheckColumns"/>
+		FROM sys_wx_user_check a
+		<include refid="sysWxUserCheckJoins"/>
+		WHERE a.phone = #{0} AND a.state = #{1}
+	</select>
+	
 	<select id="findByIdCardAndPhone" resultType="SysWxUserCheck">
 		SELECT 
 			<include refid="sysWxUserCheckColumns"/>

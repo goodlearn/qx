@@ -287,6 +287,8 @@ transform: translateY(-4px) rotate(0deg);
   margin: 10px 10px 10px 0px;
   border-radius: 13px;
   color: #fff;
+  border: none;
+  outline: none;
 }
 .userInputCont .inputTypeCont select{
   width: 70%;

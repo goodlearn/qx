@@ -17,6 +17,10 @@ public interface SysWxUserCheckDao extends CrudDao<SysWxUserCheck> {
 	
 	public SysWxUserCheck findByIdCardAndPhone(String idCard,String phone,String state);
 	
+	public SysWxUserCheck findByPhone(String phone,String state);
+	
+	public SysWxUserCheck findByIdCard(String idCard,String state);
+	
 	public SysWxUserCheck findByOpenId(String openId);
 	
 }

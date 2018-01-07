@@ -84,6 +84,24 @@ public class WxService extends BaseService implements InitializingBean {
 	}
 	
 	/**
+	 * 依据电话查询(未激活的)
+	 * @param idCard
+	 * @return
+	 */
+	public SysWxUserCheck findUserCheckByPhone(String phone) {
+		return sysWxUserCheckDao.findByPhone(phone,DictUtils.getDictValue("未激活", "userCheckState", "0"));
+	}
+	
+	/**
+	 * 依据身份证查询(未激活的)
+	 * @param idCard
+	 * @return
+	 */
+	public SysWxUserCheck findUserCheckByIdCard(String idCard) {
+		return sysWxUserCheckDao.findByIdCard(idCard,DictUtils.getDictValue("未激活", "userCheckState", "0"));
+	}
+	
+	/**
 	 * 依据微信号查询审核信息
 	 */
 	public SysWxUserCheck findByOpenId(String openId) {

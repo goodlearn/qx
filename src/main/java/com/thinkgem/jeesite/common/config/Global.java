@@ -63,6 +63,13 @@ public class Global {
 	public final static String POST_METHOD = "POST";
 	
 	/**
+	 * 手机验证码前缀
+	 */
+	public final static String PREFIX_MOBLIE_CODE = "mobile_";
+	public final static int MOBILE_TIMES = 5;
+	public final static int MOBILE_CODE_SIZE = 4;
+	
+	/**
 	 * 微信消息类型
 	 */
 	/** 

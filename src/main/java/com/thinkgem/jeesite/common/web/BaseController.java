@@ -236,4 +236,15 @@ public abstract class BaseController {
 		return jsonResult;
 	}
 	
+	/**
+	 * 返回数据 携带检验码和参数
+	 */
+	protected String backJsonWithCode(String code,String message){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", code);
+		map.put("message", message);
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		return jsonResult;
+	}
+	
 }

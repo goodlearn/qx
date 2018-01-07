@@ -3,13 +3,17 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
 
 /**
  * Cache工具类
@@ -23,6 +27,39 @@ public class CacheUtils {
 	
 	private static final String SYS_CACHE = "sysCache";
 
+	//手机验证码缓存Key
+	private static List<String> phoneMsgCacheKeies = new ArrayList<String>();
+	
+	//添加手机验证码缓存Key
+	public static void putPhoneMsgCacheKey(String key) {
+		phoneMsgCacheKeies.add(key);
+	}
+	
+	//清除过期手机验证码
+	public static void clearPhoneMsgCacheKeies() {
+		Iterator<String> its = phoneMsgCacheKeies.iterator();
+		List<String> emptyKeies = new ArrayList<String>();
+		while(its.hasNext()) {
+			String key = its.next();
+			PhoneMsgCache phoneMsgCache = (PhoneMsgCache)get(key);
+			if(null == phoneMsgCache) {
+				//已经空了 准备移除掉
+				emptyKeies.add(key);
+			}else {
+				long timeOut = phoneMsgCache.getTimeOut();
+				if(System.currentTimeMillis() > timeOut) {
+					//已经超时了
+					emptyKeies.add(key);
+					remove(key);//移除缓存
+				}
+			}
+		}
+		//有移除的对象
+		if(emptyKeies.size()>0) {
+			phoneMsgCacheKeies.removeAll(emptyKeies);
+		}
+	}
+	
 	/**
 	 * 获取SYS_CACHE缓存
 	 * @param key
