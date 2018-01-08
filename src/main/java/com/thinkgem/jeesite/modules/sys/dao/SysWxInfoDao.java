@@ -25,4 +25,9 @@ public interface SysWxInfoDao extends CrudDao<SysWxInfo> {
 	 */
 	public SysWxInfo findByIdCard(String idCard);
 	
+	/**
+	 * 依据openId查询管理员信息
+	 */
+	public SysWxInfo findOperatorByOpenId(String openId);
+	
 }

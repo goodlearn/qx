@@ -34,7 +34,10 @@
 				<form:input path="state" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>快递公司：</label>
-				<form:input path="company" htmlEscape="false" maxlength="100" class="input-medium"/>
+				<form:select path="company" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('expressCompany')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>

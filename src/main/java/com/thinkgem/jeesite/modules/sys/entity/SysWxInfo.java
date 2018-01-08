@@ -18,6 +18,7 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 	private static final long serialVersionUID = 1L;
 	private String openId;		// 微信关联号
 	private String idCard;		// 身份证号
+	private User user;//关联的管理员
 	
 	public SysWxInfo() {
 		super();
@@ -25,6 +26,14 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 
 	public SysWxInfo(String id){
 		super(id);
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@SupCol(isUnique="true")

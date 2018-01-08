@@ -88,18 +88,25 @@ public class SysExpressController extends BaseController {
 		if (!beanValidator(model, sysExpress)){
 			return editForm(sysExpress, model);
 		}
-		
+		String redirectUrl = "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
 		//验证快递单号
 		String expressId = sysExpress.getExpressId();
-		if(null!=expressId) {
+		if(null==expressId) {
 			addMessage(model, "快递单号不能为空");
-			return addForm(sysExpress, model);
+			return redirectUrl;
 		}
-		String state = DictUtils.getDictValue("已完结", "expressState", "0");
+		
+		String expressState = sysExpress.getState();
+		String startState = DictUtils.getDictValue("已入库", "expressState", "0");
+		if(null == expressState || !expressState.equals(startState)) {
+			addMessage(model, "快递状态非入库状态，快递单号为:"+expressId);
+			return redirectUrl;
+		}
+		String state = DictUtils.getDictValue("已完结", "expressState", "1");
 		sysExpress.setState(state);
 		sysExpressService.end(sysExpress,UserUtils.getUser());
 		
-		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/endFormList";
+		return redirectUrl;
 	}
 	
 	/**
@@ -191,12 +198,12 @@ public class SysExpressController extends BaseController {
 		
 		//验证快递单号
 		String expressId = sysExpress.getExpressId();
-		if(null!=expressId) {
+		if(null==expressId) {
 			addMessage(redirectAttributes, "快递单号不能为空");
 			return editForm(sysExpress, model);
 		}
 		
-		sysExpressService.save(sysExpress,UserUtils.getUser());
+		sysExpressService.updateExpress(sysExpress);
 		addMessage(redirectAttributes, "保存快递表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}

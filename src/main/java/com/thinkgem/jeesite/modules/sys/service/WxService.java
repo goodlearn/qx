@@ -19,6 +19,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
@@ -56,7 +57,7 @@ import net.sf.json.JSONObject;
 @Service
 public class WxService extends BaseService implements InitializingBean {
 	
-	private static final String defaultLoginNameForQuery = "wxuser";
+	private final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID
 	
 	@Autowired
 	private SysWxUserDao sysWxUserDao;
@@ -113,6 +114,16 @@ public class WxService extends BaseService implements InitializingBean {
 		return sysWxUserCheckDao.findByOpenId(openId);
 	}
 	
+	/**
+	 * 依据微信号查询审核信息
+	 */
+	public SysWxInfo findUserManagerByOpenId(String openId) {
+		if(StringUtils.isEmpty(openId)) {
+			return null;
+		}
+		return sysWxInfoDao.findOperatorByOpenId(openId);
+	}
+	
 	
 	/**
 	 * 保存注册信息 等待审核
@@ -122,12 +133,15 @@ public class WxService extends BaseService implements InitializingBean {
 	@Transactional(readOnly = false)
 	public SysWxUserCheck saveSysWxUserCheck(SysWxUserCheck param) {
 		 //不存在  保存
-		User paramUser = new User();
-			paramUser.setLoginName(defaultLoginNameForQuery);
-			User user = userDao.getByLoginName(paramUser);
-			if(null == user) {
-				logger.info("No wxuser");
-				return null;//没有操作用户
+		//获取操作人信息 默认为微信用户
+		String openId = param.getOpenId();
+		if(null == openId) {
+			return null;
+		}
+		User user = UserUtils.get(DEFAULT_ID_SYS_MANAGER);
+		if(null == user) {
+			logger.info("No wxuser");
+			return null;
 		}
 		param.setId(IdGen.uuid());
 		param.setCreateBy(user);
@@ -136,6 +150,18 @@ public class WxService extends BaseService implements InitializingBean {
 		param.setUpdateDate(new Date());
 		sysWxUserCheckDao.insert(param);
 		return param;
+	}
+	
+	/**
+	 * 依据ID查询用户信息
+	 * @param idCard
+	 * @return
+	 */
+	public SysWxUser findSysUserById(String id) {
+		if(null!=id) {
+			return sysWxUserDao.get(id);
+		}
+		return null;
 	}
 	
 	/**
@@ -349,22 +375,21 @@ public class WxService extends BaseService implements InitializingBean {
 		 SysWxInfo queryResult = sysWxInfoDao.findByOpenId(openId);
 		 if(null == queryResult) {
 			 //不存在  保存
-			 User paramUser = new User();
-				paramUser.setLoginName(defaultLoginNameForQuery);
-				User user = userDao.getByLoginName(paramUser);
-				if(null == user) {
-					logger.info("No wxuser");
-					return null;//没有操作用户
-			 }
-			 SysWxInfo sysWxInfo = new SysWxInfo();
-			 sysWxInfo.setId(IdGen.uuid());
-			 sysWxInfo.setOpenId(openId);
-			 sysWxInfo.setCreateBy(user);
-			 sysWxInfo.setCreateDate(new Date());
-			 sysWxInfo.setUpdateBy(user);
-			 sysWxInfo.setUpdateDate(new Date());
-			 sysWxInfoDao.insert(sysWxInfo);
-			 return sysWxInfo;//不存在 保存成功
+			//获取操作人信息 默认为微信用户
+			User user = UserUtils.get(DEFAULT_ID_SYS_MANAGER);
+			if(null == user) {
+				logger.info("No wxuser");
+				return null;
+			}
+			SysWxInfo sysWxInfo = new SysWxInfo();
+			sysWxInfo.setId(IdGen.uuid());
+			sysWxInfo.setOpenId(openId);
+			sysWxInfo.setCreateBy(user);
+			sysWxInfo.setCreateDate(new Date());
+			sysWxInfo.setUpdateBy(user);
+			sysWxInfo.setUpdateDate(new Date());
+			sysWxInfoDao.insert(sysWxInfo);
+			return sysWxInfo;//不存在 保存成功
 		 }else {
 			 return queryResult;//存在
 		 }
@@ -405,13 +430,29 @@ public class WxService extends BaseService implements InitializingBean {
 		sysWxInfoDao.insert(sysWxInfo);
 	}
 	
+	
+	//更新个人信息
+	@Transactional(readOnly = false)
+	public SysWxUser modifyWxUser(SysWxUser sysWxUser,String openId) {
+		User user = UserUtils.get(DEFAULT_ID_SYS_MANAGER);
+		if(null == user) {
+			logger.info("No wxuser");
+			return null;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		//添加操作信息
+		sysWxUser.setUpdateBy(user);
+		sysWxUser.setUpdateDate(new Date());
+		updateWxInfo(idCard,openId,user);//更新微信表
+		sysWxUserDao.update(sysWxUser);//更新用户表
+		return sysWxUser;
+	}
 	//保存个人用户信息 需要将微信关联
 	@Transactional(readOnly = false)
 	public SysWxUser saveWxUserInfo(SysWxUser sysWxUser,String openId) {
-		//获取操作人信息 默认为微信用户
-		User paramUser = new User();
-		paramUser.setLoginName(defaultLoginNameForQuery);
-		User user = userDao.getByLoginName(paramUser);
+		//获取操作人信息 默认为系统管理员
+		User user = UserUtils.get(DEFAULT_ID_SYS_MANAGER);
 		if(null == user) {
 			logger.info("No wxuser");
 			return null;
@@ -497,46 +538,6 @@ public class WxService extends BaseService implements InitializingBean {
 			return null;
 		}
 		return user;
-	}
-	
-	//修改个人信息，需要将微信的数据一同更新
-	@Transactional(readOnly = false)
-	public void modifyWxUserInfo(SysWxUser sysWxUser,String openId) {
-		//获取操作人信息 默认为微信用户
-		User paramUser = new User();
-		paramUser.setLoginName(defaultLoginNameForQuery);
-		User user = userDao.getByLoginName(paramUser);
-		if(null == user) {
-			logger.info("No wxuser");
-			return;
-		}
-		
-		SysWxUser queryResult = sysWxUserDao.get(sysWxUser);
-		if(null == queryResult) {
-			return;
-		}
-		
-		String idCard = sysWxUser.getIdCard();
-		if(null != idCard) {
-			queryResult.setIdCard(idCard);
-		}
-		
-		String phone = sysWxUser.getPhone();
-		if(null != phone) {
-			queryResult.setPhone(phone);
-		}
-		
-		String name = sysWxUser.getName();
-		if(null != name) {
-			queryResult.setName(name);
-		}
-		queryResult.setCreateBy(user);
-		queryResult.setCreateDate(new Date());
-		queryResult.setUpdateBy(user);
-		queryResult.setUpdateDate(new Date());
-		sysWxUserDao.update(queryResult);
-		
-		addOrUpdateWxInfo(idCard,openId,user);//更新微信信息
 	}
 	
 	

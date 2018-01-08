@@ -69,8 +69,6 @@ public class WxControl extends BaseController {
 	private final String WX_EXPRESS_ADD = "modules/wxp/addExpress";
 	//取快递页面
 	private final String WX_EXPRESS_PICK = "modules/wxp/pickExpress";
-	//验证手机号页面
-	private final String WX_PHONE_MODIFY = "modules/wxp/wxPhoneModify";
 	//审核页面
 	private final String WX_WAIT_VALIDATE = "modules/wxp/waitValidate";
 	//错误页面
@@ -81,6 +79,7 @@ public class WxControl extends BaseController {
 	 */
 	private final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+	private final String ERR_USER_ID_NULL = "用户不存在";
 	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
 	private final String ERR_NAME_NULL = "姓名不能为空";
 	private final String ERR_CODE_NULL = "验证码不能为空";
@@ -104,6 +103,7 @@ public class WxControl extends BaseController {
 	private final String ERR_NO_USER = "未检测到操作用户";
 	private final String ERR_OLD_PHONE_PATTERN = "旧手机号码格式不正确";
 	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
+	private final String ERR_SAME_OLD_NEW_PHONE = "新旧手机号码一致";
 	private final String ERR_EXPREE_NOT_ID_CARD = "未查询到快递信息";
 
 	
@@ -277,7 +277,16 @@ public class WxControl extends BaseController {
 	        	model.addAttribute("openId", openId);
 	        }*/
 	        //本地测试时使用，实体环境删除 将上一句注释的话显示
-	        model.addAttribute("openId",WxGlobal.TEST_OPEN_ID);
+	        String openId = request.getParameter("openId");
+	        if(null == openId) {
+	        	openId = WxGlobal.TEST_OPEN_ID;
+	        }
+	        model.addAttribute("openId",openId);
+	        
+	        //查询是否是快递管理人员
+	        if(null!=wxService.findUserManagerByOpenId(openId)) {
+	        	model.addAttribute("isManager",1);//是快递人员
+	        }
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -493,6 +502,8 @@ public class WxControl extends BaseController {
 		//是否已经超时
 		long timeOut = phoneMsgCache.getTimeOut();
 		if(System.currentTimeMillis() > timeOut) {
+			//移除缓存验证码 已经完成验证了
+			CacheUtils.remove(cacheKey);
 			return backJsonWithCode(errCode_7,ERR_CODE_TIME_OUT);
 		}
 		
@@ -563,6 +574,135 @@ public class WxControl extends BaseController {
 			return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
 		}
 	}
+	
+	/**
+	 * 修改个人信息
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
+	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String name = request.getParameter("name").trim();
+		String userId = request.getParameter("userId").trim();
+		String userNewPhone = request.getParameter("usernewPhone").trim();
+		String msg = request.getParameter("username").trim();
+		String openId = request.getParameter("openId").trim();
+		String usernum = request.getParameter("usernum").trim();//老手机号
+		
+		final String successCode = "0";//成功码
+		final String errCode_1 = "1";//验证码不能为空
+		final String errCode_2 = "2";//验证码长度为固定值
+		final String errCode_3 = "3";//姓名不能为空
+		final String errCode_4 = "4";//身份证不能为空
+		final String errCode_5 = "5";//电话号不能为空
+		final String errCode_6 = "6";//请获取验证码
+		final String errCode_7 = "7";//验证码已超时
+		final String errCode_8 = "8";//验证码错误
+		final String errCode_9 = "9";//身份处于审核状态
+		final String errCode_10 = "10";//请输入原手机号码
+		final String errCode_11 = "11";//原手机号码输入错误
+		final String errCode_12 = "12";//无操作用户
+		final String errCode_13 = "13";//手机号码格式不正确
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+
+		//验证码不能为空
+		if(StringUtils.isEmpty(msg)) {
+			return backJsonWithCode(errCode_1,MSG_PHONE_CODE_MSG);
+		}
+		
+		//验证码长度为固定值
+		if(msg.length()!=Global.MOBILE_CODE_SIZE) {
+			return backJsonWithCode(errCode_2,ERR_CODE_SIZE);
+		}
+		
+		//姓名不能为空
+		if(StringUtils.isEmpty(name)) {
+			return backJsonWithCode(errCode_3,ERR_NAME_NULL);
+		}
+		
+		//ID不能为空
+		if(StringUtils.isEmpty(userId)) {
+			return backJsonWithCode(errCode_4,ERR_USER_ID_NULL);
+		}
+		
+		//电话号不能为空
+		if(StringUtils.isEmpty(usernum)||StringUtils.isEmpty(userNewPhone)) {
+			return backJsonWithCode(errCode_5,ERR_PHONE_NULL);
+		}
+		
+		//手机号码格式不正确
+		if(!PhoneUtils.validatePhone(usernum)||!PhoneUtils.validatePhone(userNewPhone)) {
+			return backJsonWithCode(errCode_13,ERR_NEW_PHONE_PATTERN);
+		}
+		
+		if(usernum.equals(userNewPhone)) {
+			return backJsonWithCode(errCode_13,ERR_SAME_OLD_NEW_PHONE);
+		}
+		
+		//验证码缓存
+		String cacheKey = Global.PREFIX_MOBLIE_CODE + userNewPhone;
+		PhoneMsgCache phoneMsgCache = (PhoneMsgCache)CacheUtils.get(cacheKey);
+		if(null==phoneMsgCache) {
+			return backJsonWithCode(errCode_6,ERR_CODE);
+		}
+		
+		//是否已经超时
+		long timeOut = phoneMsgCache.getTimeOut();
+		if(System.currentTimeMillis() > timeOut) {
+			//移除缓存验证码 已经完成验证了
+			CacheUtils.remove(cacheKey);
+			return backJsonWithCode(errCode_7,ERR_CODE_TIME_OUT);
+		}
+		
+		//验证码错误
+		String cacheCode = (String)phoneMsgCache.getValue();
+		if(!msg.equalsIgnoreCase(cacheCode)) {
+			return backJsonWithCode(errCode_8,ERR_CODE_INPUT);
+		}
+		
+		SysWxUser modifyWxUser = wxService.findSysUserById(userId);
+		//用户不能为空
+		if(null == modifyWxUser) {
+			return backJsonWithCode(errCode_4,ERR_USER_ID_NULL);
+		}
+		String idCard = modifyWxUser.getIdCard();
+		
+		//该身份证号是否处于审核状态(非正常手段绕过之前的页面监测)
+		SysWxUserCheck sysWxUserCheck = wxService.findUserCheckByIdCard(idCard);
+		if(null != sysWxUserCheck) {
+			//有信息，处于审核状态
+			return backJsonWithCode(errCode_9,ERR_NO_ACTIVE);
+		}
+		
+		//手机号校验
+		String originPhone = modifyWxUser.getPhone();
+		if(!originPhone.equals(usernum)) {
+			//旧手机号码验证错误
+			return backJsonWithCode(errCode_11,ERR_NOT_SAME_OLD_PHONE);
+		}else {
+			//号码输入正确，更改信息
+			modifyWxUser.setName(name);
+			modifyWxUser.setPhone(userNewPhone);
+			if(null!=wxService.modifyWxUser(modifyWxUser,openId)) {
+				//移除缓存验证码 已经完成验证了
+				CacheUtils.remove(cacheKey);
+				CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
+				return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
+			}else {
+				//操作异常
+				return backJsonWithCode(errCode_12,ERR_NO_USER);
+			}
+		}
+	}
+
 	
 	//录入快递信息
 	@ResponseBody
@@ -682,94 +822,6 @@ public class WxControl extends BaseController {
 		}
 		return jsonResult;
 	}
-	
-	
-	
-	
-	//验证手机号
-	@RequestMapping(value="/checkPhone",method=RequestMethod.POST)
-	public String checkPhone(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
-		String phone = request.getParameter("phone");
-		String idCard = request.getParameter("idCard");
-		String openId = request.getParameter("openId");
-		
-		//身份证不能为空
-		if(null == idCard) {
-			model.addAttribute("message", "身份证号不能为空");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_PERSON_INDEX;
-		}
-		
-		//电话号不能为空
-		if(null == phone) {
-			model.addAttribute("message", "电话不能为空");
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_PERSON_INDEX;
-		}
-		
-		SysWxUser repeatUser = wxService.findByIdCard(idCard);
-		if(null == repeatUser) {
-			//没有该用户
-			model.addAttribute("idCard", idCard);
-			model.addAttribute("phone", phone);
-			return WX_PERSON_INDEX;
-		}else {
-			String originPhone = repeatUser.getPhone();
-			if(phone.equals(originPhone)) {
-				//验证成功 修改数据
-				repeatUser.setPhone(phone);
-				model.addAttribute("sysWxUser", repeatUser);
-				model.addAttribute("openId", openId);
-				wxService.modifyWxUserInfo(repeatUser,openId);
-				model.addAttribute("message", "添加成功!");
-				return WX_ID_CARD_USERINFO_MODIFY;
-			}else {
-				model.addAttribute("idCard", idCard);
-				model.addAttribute("phone", phone);
-				model.addAttribute("message", "与原号码不匹配!,请重新添加");
-				return WX_ID_CARD_USERINFO_ADD;
-			}
-		}
-	}
-	
-	//修改个人信息
-	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
-	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
-		String name = request.getParameter("name");
-		String phone = request.getParameter("phone");
-		String openId = request.getParameter("openId");
-		String id = request.getParameter("id");
-		
-		//电话号不能为空
-		if(null == phone) {
-			model.addAttribute("message", "电话不能为空");
-			model.addAttribute("openId", openId);
-			model.addAttribute("phone", phone);
-			return WX_ID_CARD_USERINFO_MODIFY;
-		}
-		
-		//电话号码重复查询
-		if(null != wxService.findByPhone(phone)) {
-			model.addAttribute("message", "该电话号已经注册，请更换其它电话号，如被他人绑定，请前往快递点联系快递人员");
-			model.addAttribute("phone", phone);
-			model.addAttribute("openId", openId);
-			return WX_ID_CARD_USERINFO_ADD;
-		}
-		
-		
-		SysWxUser sysWxUser = wxService.getSysWxUser(openId);
-		sysWxUser.setId(id);
-		sysWxUser.setName(name);
-		//sysWxUser.setIdCard(idCard);
-		sysWxUser.setPhone(phone);
-		wxService.modifyWxUserInfo(sysWxUser,openId);
-		//model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
-		model.addAttribute("openId", openId);
-		return WX_USER_HOME;
-	}
-
 	
 	/**
 	 * 授权回调

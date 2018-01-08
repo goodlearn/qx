@@ -110,6 +110,14 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	//入库后发送模板消息
 	@Transactional(readOnly = false)
+	public void updateExpress(SysExpress sysExpress) {
+		
+		//默认保存数据
+		super.dao.update(sysExpress);
+	}
+	
+	//入库后发送模板消息
+	@Transactional(readOnly = false)
 	public void save(SysExpress sysExpress,User user) {
 		
 		//默认保存数据

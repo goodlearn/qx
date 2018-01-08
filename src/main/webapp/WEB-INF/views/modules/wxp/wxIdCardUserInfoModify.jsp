@@ -203,47 +203,25 @@
 		<form>
 			<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 			<input type="hidden" id="openId" name="openId" value="${openId}">
+			<input type="hidden" id="userId" name="userId" value="${sysWxUser.id}">
 			<div class="userInputCont">
 				<div class="inputTypeCont">
 					<div class="inputTitle">姓名</div>
-					<input type="text" class="commonInput" name="username" placeholder="请输入真实姓名..." value="${sysWxUser.name}" disabled>
+					<input type="text" class="commonInput" name="name" id="name" placeholder="请输入真实姓名..." value="${sysWxUser.name}" disabled>
 				</div>
 				<div class="inputTypeCont">
 					<div class="inputTitle">手机</div>
-					<input type="text" class="commonInputFunc userOldPhone" name="usernum" placeholder="请输入原手机号码..." value="${sysWxUser.phone}" disabled>
+					<input type="text" class="commonInputFunc userOldPhone" id="usernum" name="usernum" placeholder="请输入原手机号码..." value="${sysWxUser.phone}" disabled>
 					<div class="commonFuncBtnModify userModifyPhone"></div>
 				</div>
 				<div class="inputTypeCont userNewPhoneDiv">
 					<div class="inputTitle">新手机</div>
-					<input type="text" class="commonInput" name="usernewPhone" placeholder="请输入新手机号码...">
+					<input type="text" class="commonInput" id="usernewPhone" name="usernewPhone" placeholder="请输入新手机号码...">
 				</div>
 				<div class="inputTypeCont userNewPhoneDiv">
 					<div class="inputTitle">短信</div>
-					<input type="text" class="verifiInput" name="username" placeholder="请输入验证码...">
+					<input type="text" class="verifiInput" id="username" name="username" placeholder="请输入验证码...">
 					<input type="button" class="verifiBtn" value="发送验证码">
-				</div>
-				<div class="gapText">输入地址信息，方便快递员配送</div>
-				<div class="inputTypeCont">
-					<div class="inputTitle">校区</div>
-					<select>
-						<option>请选择校区</option>
-						<option>大专校区</option>
-						<option>机电校区</option>
-						<option>体育校区</option>
-					</select>
-				</div>
-				<div class="inputTypeCont">
-					<div class="inputTitle">公寓</div>
-					<select>
-						<option>请选择公寓</option>
-						<option>1号公寓</option>
-						<option>2号公寓</option>
-						<option>3号公寓</option>
-					</select>
-				</div>
-				<div class="inputTypeCont userSelectNumCont">
-					<div class="inputTitle">宿舍</div>
-					<input type="text" class="commonInput selectNumInput" name="username" placeholder="请输入宿舍号码..." disabled>
 				</div>
 			</div>
 		</form>
@@ -323,6 +301,84 @@
 </div>
 <script type="text/javascript">
 	$(function() {
+		
+		var pageContextVal = $("#PageContext").val();
+		
+		//提交数据
+		$(".submitBtn").click(function(){
+			var name = $("#name").val();
+			var usernum = $("#usernum").val();
+			var usernewPhone = $("#usernewPhone").val();
+			var username = $("#username").val();
+			var openId = $("#openId").val();
+			var userId = $("#userId").val();
+			$.ajax({
+			    type:'POST',
+			    url:pageContextVal+'/wx/modifyPersonUserInfo',
+			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'openId':openId,'username':username,'userId':userId},
+			    dataType: "json",
+			    success:function(data){
+			    	var prompt = "操作提示";
+			    	var code = data.code;
+			    	var message = data.message;
+			    	if(code == "0"){
+			    		rzAlert(prompt,message);
+			    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId;
+			    	}else if(code == "10"){
+						rzAlert(prompt,message);
+						$("#oldPhone").show();
+			    	}else{
+			    		rzAlert(prompt,message);
+			    	}
+		    	},
+			    error:function(){
+				      
+			    }
+			});
+		});
+		
+		//发送验证码
+		$(".verifiBtn").click(function(){
+			var newPhone = $("#usernewPhone").val();
+			$.ajax({
+			    type:'POST',
+			    url:pageContextVal+'/wx/sendWxPhoneMsgCode',
+			    data:{'phone':newPhone},
+			    dataType: "json",
+			    success:function(data){
+			    	//var result = JSON.parse(data);
+			    	if(data.code == "0"){
+			    		alert(data.message);
+			    		$(".verifiBtn").attr('disabled', 'disabled');
+						$(".verifiBtn").css({"background":"#888888"});
+						var countNum = 60;
+
+						$(".verifiBtn").val("重发短信("+countNum+")");
+
+						var timer = setInterval(function(){
+							--countNum;
+							if (countNum == 0) {
+								$(".verifiBtn").attr('disabled', false);
+								$(".verifiBtn").css({"background":"#1f72ff"});
+								$(".verifiBtn").val("发送验证码");
+								window.clearInterval(timer);
+							} else { 
+								$(".verifiBtn").val("重发短信("+countNum+")");
+								console.log(countNum);
+							}
+						},1000);
+			    	}else if(data.code == "1"){
+			    		alert(data.message);
+			    	}else if(data.code == "2"){
+			    		alert(data.message);
+			    	}
+			    },
+			    error:function(){
+			      
+			    }
+			});
+		});
+		
 		var initFunc = function(){
 			var windowH = $(window).height();
 			var windowW = $(window).width();
@@ -344,27 +400,6 @@
 			$(".userOldPhone").val("");
 			$(".userOldPhone").attr("disabled",false);
 			$(".userNewPhoneDiv").fadeIn();
-		});
-
-		$(".verifiBtn").click(function(){
-			$(".verifiBtn").attr('disabled', 'disabled');
-			$(".verifiBtn").css({"background":"#888888"});
-			var countNum = 60;
-
-			$(".verifiBtn").val("重发短信("+countNum+")");
-
-			var timer = setInterval(function(){
-				--countNum;
-				if (countNum == 0) {
-					$(".verifiBtn").attr('disabled', false);
-					$(".verifiBtn").css({"background":"#1f72ff"});
-					$(".verifiBtn").val("发送验证码");
-					window.clearInterval(timer);
-				} else { 
-					$(".verifiBtn").val("重发短信("+countNum+")");
-					console.log(countNum);
-				}
-			},1000);
 		});
 
 		var selectNum  = ['1','01'];
@@ -421,26 +456,9 @@
 				$(this).addClass("select").siblings().removeClass("select").addClass('unselect');
 			}
 			selectNum[1] = $(this).text();
-		});
+			})
+		})
 
-		// 用户类型选择
-		// setTimeout(function(){
-		// 	$("#coverCont").fadeIn();
-		// 	$(".userTypeCont").show();
-		// },500);
-
-		// // user type select
-		// $(".userTypeCont .userType .teacherType").click(function(){
-		// 	$("#coverCont").fadeOut();
-		// 	$(".userTypeCont").hide();
-		// });
-
-		// $(".userTypeCont .userType .studentType").click(function(){
-		// 	$("#coverCont").fadeOut();
-		// 	$(".userTypeCont").hide();
-		// });
-
-	});
 </script>
 </body>
 </html>

@@ -45,10 +45,12 @@
 				<p class="funIcon userFunColor4">乐</p>
 				<p class="funTxt">我要寄件</p>
 			</div>
-			<div class="userFun">
-				<p class="funIcon userFunColor4">啊</p>
-				<p class="funTxt">快递助手</p>
-			</div>
+			<c:if test="${not empty isManager}">
+				<div class="userFun">
+					<p class="funIcon userFunColor4">啊</p>
+					<p class="funTxt">快递助手</p>
+				</div>
+			</c:if>
 		</div>
 	</div>
 

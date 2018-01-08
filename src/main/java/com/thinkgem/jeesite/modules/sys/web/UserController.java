@@ -28,6 +28,7 @@ import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.IdcardUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
@@ -106,6 +107,27 @@ public class UserController extends BaseController {
 			addMessage(model, "保存用户'" + user.getLoginName() + "'失败，登录名已存在");
 			return form(user, model);
 		}
+		
+		String name = user.getName();
+		String idCard = user.getIdCard();
+		List<String> roleIdListParam = user.getRoleIdList();
+		if(null == name) {
+			addMessage(model, "用户名为空");
+			return form(user, model);
+		}
+		if(null == idCard) {
+			addMessage(model, "身份证为空");
+			return form(user, model);
+		}
+		if(!IdcardUtils.validateCard(idCard)) {
+			addMessage(model, "身份证格式不正确");
+			return form(user, model);
+		}
+		if(null == roleIdListParam) {
+			addMessage(model, "请勾选用户角色");
+			return form(user, model);
+		}
+		
 		// 角色数据有效性验证，过滤不在授权内的角色
 		List<Role> roleList = Lists.newArrayList();
 		List<String> roleIdList = user.getRoleIdList();

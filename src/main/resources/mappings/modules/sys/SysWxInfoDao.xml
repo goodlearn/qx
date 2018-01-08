@@ -14,8 +14,30 @@
 		a.del_flag AS "delFlag"
 	</sql>
 	
+	<sql id="sysWxInfoColumnsManager">
+		a.id AS "id",
+		a.open_id AS "openId",
+		a.id_card AS "idCard",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u.id AS "user.id",
+		u.name AS "user.name"
+	</sql>
+	
 	<sql id="sysWxInfoJoins">
 	</sql>
+    
+    <select id="findOperatorByOpenId" resultType="SysWxInfo">
+		SELECT 
+			<include refid="sysWxInfoColumnsManager"/>
+		FROM sys_wx_info a
+		LEFT JOIN sys_user u ON u.id_card = a.id_card
+		WHERE a.open_id = #{openId}
+	</select>
     
 	<select id="get" resultType="SysWxInfo">
 		SELECT 
