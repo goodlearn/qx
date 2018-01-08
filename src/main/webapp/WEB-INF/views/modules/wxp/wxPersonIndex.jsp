@@ -117,6 +117,8 @@
 					    	var message = data.message;
 					    	if(code == "0"){
 					    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId; 
+					    	}else if(code == "1"){
+					    		window.location.href= pageContextVal+"/wx/reqUserCheckState?openId="+openId;
 					    	}else{
 					    		rzAlert(prompt,message);
 					    	}

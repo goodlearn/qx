@@ -80,6 +80,7 @@ public class WxControl extends BaseController {
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
 	private final String ERR_ID_EXPRESS_NULL = "快递号不能为空";
 	private final String ERR_USER_ID_NULL = "用户不存在";
+	private final String ERR_USER_NOT_REG = "用户未注册";
 	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
 	private final String ERR_NAME_NULL = "姓名不能为空";
 	private final String ERR_CODE_NULL = "验证码不能为空";
@@ -123,7 +124,7 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/index",method=RequestMethod.GET)
 	public String index(HttpServletRequest request, HttpServletResponse response,Model model) {
-		 AliyunSendMsgUtils.sendMsg("15904793789", "1234");
+		 // AliyunSendMsgUtils.sendMsg("15904793789", "1234");
 		 return null;
 	}
 	
@@ -258,6 +259,27 @@ public class WxControl extends BaseController {
 	}
 	
 	/**
+	 * 页面跳转-点击个人中心，未注册进入注册页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqUserCheckState",method=RequestMethod.GET)
+	public String reqUserCheckState(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取微信号
+		//是否获取到微信号
+		String isGetOpenId = validateOpenId(openId,model);
+		if(null!=isGetOpenId) {
+			//没有获取到，跳转到错误页面
+			return isGetOpenId;
+		}
+	    logger.info("openId is " + openId);
+	    model.addAttribute("openId",openId);
+		return WX_USER_CHECK_START;
+	}
+	
+	/**
 	 * 页面跳转-注册完成后进入个人首页
 	 * @param request
 	 * @param response
@@ -293,6 +315,7 @@ public class WxControl extends BaseController {
 		
 		String successCode = "0";
 		String errCode_1 = "1";
+		String errCode_2 = "2";
 		
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
@@ -302,11 +325,11 @@ public class WxControl extends BaseController {
 		//用户不存在,返回注册页面
 		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
 		if(null == sysWxUserCheck) {
-			
+			return backJsonWithCode(errCode_1,ERR_USER_NOT_REG);//用户未注册
 		}
 		String state = sysWxUserCheck.getState();
 		if("0".equals(state)) {
-			return backJsonWithCode(errCode_1,ERR_NO_ACTIVE);//用户已注册，但未激活，返回审核等待状态
+			return backJsonWithCode(errCode_2,ERR_NO_ACTIVE);//用户已注册，但未激活，返回审核等待状态
 		}
 		
 		return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
@@ -327,13 +350,14 @@ public class WxControl extends BaseController {
 	        response.setCharacterEncoding("UTF-8"); 
 	        String code=request.getParameter("code");//获取code
 	        logger.info("code is " + code);
-	        /*Map<String,String> map = wxService.getOpenIdInfo(code);
+	        String openId = null;
+	     /*   Map<String,String> map = wxService.getOpenIdInfo(code);
 	        if(null != map) {
-	        	String openId = map.get("openid");
+	        	openId = map.get("openId");
 	        	model.addAttribute("openId", openId);
 	        }*/
 	        //本地测试时使用，实体环境删除 将上一句注释的话显示
-	        String openId = request.getParameter("openId");
+	        openId = request.getParameter("openId");
 	        if(null == openId) {
 	        	openId = WxGlobal.TEST_OPEN_ID;
 	        }
