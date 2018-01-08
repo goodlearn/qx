@@ -233,6 +233,13 @@ public class WxService extends BaseService implements InitializingBean {
 	}
 	
 	/**
+	 * 查询快递
+	 */
+	public List<SysExpress> findNoActiveByIdCard(String idCard) {
+		return sysExpressDao.findNoActiveByIdCard(idCard);
+	}
+	
+	/**
 	 * 保存快递
 	 */
 	@Transactional(readOnly = false)
@@ -430,6 +437,35 @@ public class WxService extends BaseService implements InitializingBean {
 		sysWxInfoDao.insert(sysWxInfo);
 	}
 	
+	//查询快递
+	public SysExpress findExpressByExpressId(String expressId) {
+		return sysExpressDao.findByExpressId(expressId);
+	}
+	
+	//取货
+	@Transactional(readOnly = false)
+	public void endExpress(String expressId,String openId) {
+		SysExpress sysExpress = findExpressByExpressId(expressId);
+		String state = DictUtils.getDictValue("已完结", "expressState", "1");
+		sysExpress.setState(state);
+		//查询操作人员
+		User user = findOperator(openId);
+		sysExpress.setUpdateBy(user);;
+		sysExpress.setUpdateDate(new Date());
+		//默认保存数据
+		sysExpress.setMsgState(queryMsgState(sysExpress));
+		sysExpressDao.update(sysExpress);
+		
+		/**
+		 * 发送模板消息
+		 */
+		if(null == openId) {
+			logger.info("save sendMsg is null ");
+		}else {
+			String userName = user.getName();
+			sendMessageEndExpress(openId,userName,"0");	
+		}
+	}
 	
 	//更新个人信息
 	@Transactional(readOnly = false)
@@ -598,7 +634,7 @@ public class WxService extends BaseService implements InitializingBean {
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
-		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setUrl(null);
 		template.setTouser(toUser);
 		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
 		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_2);
@@ -664,12 +700,12 @@ public class WxService extends BaseService implements InitializingBean {
 		keyword4.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
 		keyword4.setValue(username);
 		WxTemplateData remark = new WxTemplateData();
-		String content="您的快递取走,谢谢合作";
+		String content="您的快递已取走,谢谢您的合作";
 		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
-		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setUrl(null);
 		template.setTouser(toUser);
 		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
 		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);
@@ -742,7 +778,7 @@ public class WxService extends BaseService implements InitializingBean {
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
-		template.setUrl("https://www.toutiao.com/i6505228910123287054/");
+		template.setUrl(null);
 		template.setTouser(toUser);
 		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
 		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);

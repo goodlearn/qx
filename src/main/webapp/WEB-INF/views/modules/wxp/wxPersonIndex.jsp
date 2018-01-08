@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>锡职快递服务平台</title>
@@ -8,7 +9,8 @@
 	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
 	<link href="${ctxStatic}/wx/wxcss/main.css" type="text/css" rel="stylesheet" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
-	
+	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 </head>
 <body>
 	<div class="content">
@@ -103,7 +105,27 @@
 			var clickNum = $(this).index();
 			switch(clickNum){
 				//个人中心
-				case(0): window.location.href= pageContextVal+"/wx/userHome?openId="+openId; break;
+				case(0): 
+					$.ajax({
+					    type:'GET',
+					    url:pageContextVal+'/wx/checkActive',
+					    data:{'openId':openId},
+					    dataType: "json",
+					    success:function(data){
+					    	var prompt = "操作提示";
+					    	var code = data.code;
+					    	var message = data.message;
+					    	if(code == "0"){
+					    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId; 
+					    	}else{
+					    		rzAlert(prompt,message);
+					    	}
+				    	},
+					    error:function(){
+						      
+					    }
+					});
+					break;
 				case(1): window.location.href= ""; break;
 				case(2): window.location.href="./delivery.html"; break;
 				case(3): window.location.href="./sendexpress.html"; break;

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>取货助手 -- 锡职快递服务平台</title>
@@ -39,7 +40,6 @@
 			width: 90%;
 			margin: 20px auto 20px; 
 			font-size: 14px;
-			display: none;
 		}
 		.expUserInfoCont .expUserInfoDiv{
 			width: 100%;
@@ -62,12 +62,12 @@
 		}
 		.expUserInfoCont .expUserInfoDiv .expUserInfo .userName{
 			font-weight: bolder;
-			background: url(../static/wx/wximages/username.png) no-repeat center left;
+			background: url(../images/username.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
 		.expUserInfoCont .expUserInfoDiv .expUserInfo .userPhone{
-			background: url(../static/wx/wximages/userphone.png) no-repeat center left;
+			background: url(../images/userphone.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
@@ -101,7 +101,7 @@
 			float: left;
 			font-size: 12px;
 			color: #888888;
-			background: url(../static/wx/wximages/userdate.png) no-repeat center left;
+			background: url(../images/userdate.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 			line-height: 40px;
@@ -115,6 +115,14 @@
 			border-radius: 5px;
 			line-height: 26px;
 			margin-top: 7px;
+		}
+
+		.expUserInfoNull{
+			width: 100%;
+			line-height: 150px;
+			text-align: center;
+			color: #888888;
+			display: none;
 		}
 		
 	</style>
@@ -157,82 +165,103 @@
 	</div>
 
 	<div class="expUserInfoCont"> 
-		<div class="expUserInfoDiv">
-			<div class="expUserInfo">
-				<p class="userName">张三</p>
-				<p class="userPhone">18811012138</p>
-				<p class="userAdress">锡林郭勒职业学院大专校区1号公寓202</p>
-				<div class="expComp">中通快递</div>
-			</div>
-			<div class="expUserOrderInfo">
-				<p class="SendOrderDate">20180105110</p>
-				<p class="SendOrderConfBtn">确认收货</p>
-			</div>
-		</div>
-		<div class="expUserInfoDiv">
-			<div class="expUserInfo">
-				<p class="userName">张三</p>
-				<p class="userPhone">18811012138</p>
-				<p class="userAdress">锡林郭勒职业学院大专校区1号公寓202</p>
-				<div class="expComp">中通快递</div>
-			</div>
-			<div class="expUserOrderInfo">
-				<p class="SendOrderDate">20180105111</p>
-				<p class="SendOrderConfBtn">确认收货</p>
-			</div>
+		<div class="expUserInfoNull">
+			暂无查到相关信息
 		</div>
 	</div>
 
 </div>
 <script type="text/javascript">
 	$(function() {
+		var pageContextVal = $("#PageContext").val();
+		function rzGetExpInfo(name,phone,expComp,address,expNum) {
+			var $expUserInfoDiv = $("<div class='expUserInfoDiv'></div>");
+
+			var $expUserInfo = $("<div class='expUserInfo'></div>");
+			$expUserInfoDiv.append($expUserInfo);
+			var $userName = $("<p class='userName'>"+name+"</p>");
+			$expUserInfo.append($userName);
+			var $userPhone = $("<p class='userPhone'>"+phone+"</p>");
+			$expUserInfo.append($userPhone);
+			var $userAddress = $("<p class='userAdress'>"+address+"</p>");
+			$expUserInfo.append($userAddress);
+			var $expComp = $("<div class='expComp'>"+expComp+"</div>");
+			$expUserInfo.append($expComp);
+
+			var $expUserOrderInfo = $("<div class='expUserOrderInfo'></div>")
+			$expUserInfoDiv.append($expUserOrderInfo);
+			var $SendOrderDate = $("<p class='SendOrderDate'>"+expNum+"</p>");
+			$expUserOrderInfo.append($SendOrderDate);
+			var $SendOrderConfBtn = $("<p class='SendOrderConfBtn'>确认收货</p>");
+			$expUserOrderInfo.append($SendOrderConfBtn);
+
+			$SendOrderConfBtn.bind("click",function(){
+				var state = confirm("确认取货？");
+				if(!state){
+				   return false;
+				}
+				var expNum = $(this).siblings().first().text();
+				var openId = $("#openId").val();
+				 $.ajax({
+				     type:'POST',
+				     url:pageContextVal+'/wx/endExpress',
+				     data:{'expNum':expNum,'openId':openId},
+				     dataType: "json",
+				     success:function(data){
+				    	switch(data.code){
+					    	case "1" : alert(data.message); break;
+							case "0" : 
+						     	alert("取货成功");
+						     	$expUserInfoDiv.remove();
+						     	//$(this).parent().parent().hide();
+								break;
+				    	}
+				     },
+				     error:function(){
+				     	alert("操作失败");
+				     }
+				    
+				 });
+			});
+
+			$(".expUserInfoCont").append($expUserInfoDiv);
+		}
+
 		$(".searchInfoBtn").click(function() {
 			var expPickUserId = $("#expPickUserId").val();
-			var pageContextVal = $("#PageContext").val();
 			var openId = $("#openId").val();
-			$.ajax({
-			    type:'POST',
-			    url:pageContextVal+'/wx/endExpress',
-			    data:{'userId':expPickUserId,'openId':openId},
-			    dataType: "json",
-			    success:function(data){
-			    	var prompt = "操作提示";
-			    	var message = data.message;
-			    	if(data.code == "0"){
-			    		rzAlert(prompt,message);
-			    		$("#expPickUserId").val("");
-			    	}else{
-			    		rzAlert(prompt,message);
-			    	}
-			    },
-			    error:function(){
+			 $.ajax({
+			     type:'POST',
+			     url:pageContextVal+'/wx/queryExpress',
+			     data:{'idCard':expPickUserId,'openId':openId},
+				 dataType: "json",
+			     success:function(data){
+			    	    var jsontmp3 = data;
+						$(".expUserInfoNull").hide();
+						switch(jsontmp3.code) {
+							case "1" : alert(jsontmp3.message); break;
+							case "2" : alert(jsontmp3.message); break;
+							case "0" : 
+								$(".expUserInfoNull").hide();
+								if (jsontmp3.num == 0) {
+									$(".expUserInfoNull").show();
+									return;
+								}
+								$(".expUserInfoCont").empty();
+								for(var i=0; i < jsontmp3.num; i++){
+									//alert(expInfo);
+									var expInfo = jsontmp3.expressList[i];
+									rzGetExpInfo(expInfo.name,expInfo.phone,expInfo.company,expInfo.address,expInfo.expressId);
+								}
+								break;
+						}
+			     },
+			     error:function(){
 			      
-			    }
-			});
-
-			$(".expUserInfoCont").fadeIn();
+			     }
+			 });
 		});
 
-		$(".SendOrderConfBtn").click(function(){
-			var state = confirm("确认取货？");
-			if(!state){
-			   return false;
-			}
-			var expNum = $(this).siblings().first().text();
-			$.ajax({
-			    type:'POST',
-			    url:'#',
-			    data:{'expNum':expNum},
-			    success:function(data){
-			    	alert("取货成功");
-			    	$(this).parent().parent().hide();
-			    },
-			    error:function(){
-			    	alert("操作失败");
-			    }
-			    
-			});
-		});
 	});
 </script>
 </body>

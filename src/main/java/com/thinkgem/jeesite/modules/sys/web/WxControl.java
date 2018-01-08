@@ -38,14 +38,13 @@ import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
 import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping(value = "wx")
 public class WxControl extends BaseController {
 	
-	@Autowired
-	private SysWxUserService sysWxUserService;
 	
 	@Autowired
 	private WxMenuManager wxMenuManager;
@@ -79,6 +78,7 @@ public class WxControl extends BaseController {
 	 */
 	private final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+	private final String ERR_ID_EXPRESS_NULL = "快递号不能为空";
 	private final String ERR_USER_ID_NULL = "用户不存在";
 	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
 	private final String ERR_NAME_NULL = "姓名不能为空";
@@ -105,10 +105,12 @@ public class WxControl extends BaseController {
 	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
 	private final String ERR_SAME_OLD_NEW_PHONE = "新旧手机号码一致";
 	private final String ERR_EXPREE_NOT_ID_CARD = "未查询到快递信息";
+	private final String ERR_EXPREE_NOT_EXIST = "快递不存在";
+	private final String ERR_EXPREE_NOT_ENTER = "快递状态非入库状态";
 
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
-	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功";
+	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功,请前往快递中心审核身份信息";
 	private final String MSG_EXPRESS_SAVE_SUCCESS = "快递录入成功";
 	private final String MSG_EXPRESS_QUERY_SUCCESS = "查找成功";
 	
@@ -254,7 +256,61 @@ public class WxControl extends BaseController {
 	public String reqPickExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		return getRedirectUrl(request,model,WX_EXPRESS_PICK);
 	}
+	
+	/**
+	 * 页面跳转-注册完成后进入个人首页
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqPersonIndex",method=RequestMethod.GET)
+	public String reqPersonIndex(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取微信号
+		//是否获取到微信号
+		String isGetOpenId = validateOpenId(openId,model);
+		if(null!=isGetOpenId) {
+			//没有获取到，跳转到错误页面
+			return isGetOpenId;
+		}
+	    logger.info("openId is " + openId);
+	    model.addAttribute("openId",openId);
+		return WX_PERSON_INDEX;
+	}
 		
+	
+	/**
+	 * 页面验证-是否是审核状态
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/checkActive",method=RequestMethod.GET)
+	public String checkActive(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String openId = request.getParameter("openId");//获取微信号
+		
+		String successCode = "0";
+		String errCode_1 = "1";
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
+		//用户不存在,返回注册页面
+		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
+		if(null == sysWxUserCheck) {
+			
+		}
+		String state = sysWxUserCheck.getState();
+		if("0".equals(state)) {
+			return backJsonWithCode(errCode_1,ERR_NO_ACTIVE);//用户已注册，但未激活，返回审核等待状态
+		}
+		
+		return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
+	}
 	/**
 	 * 获取个人首页
 	 * 微信点击个人首页后，微信重定向访问地址
@@ -478,7 +534,7 @@ public class WxControl extends BaseController {
 		}
 		
 		//身份证号格式
-		if(IdcardUtils.validateCard(idCard)) {
+		if(!IdcardUtils.validateCard(idCard)) {
 			return backJsonWithCode(errCode_4,ERR_ID_CARD_PATTERN);
 		}
 		
@@ -709,7 +765,8 @@ public class WxControl extends BaseController {
 	@RequestMapping(value="/saveExpress",method=RequestMethod.POST)
 	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		String phone=request.getParameter("phone");//获取phone
-		String expressId=request.getParameter("expressId");//获取phone
+		String expressId=request.getParameter("expressId");//获取快递单号
+		String company=request.getParameter("company");//获取公司
 		String openId=request.getParameter("openId");//获取phone
 		
 		final String successCode = "0";//成功码
@@ -751,16 +808,22 @@ public class WxControl extends BaseController {
 		sysExpress.setState(state);
 		sysExpress.setExpressId(expressId);
 		sysExpress.setPhone(phone);
+		if(!StringUtils.isEmpty(company)) {
+			sysExpress.setCompany(company);
+		}else {
+			sysExpress.setCompany("0");
+		}
 		wxService.saveExpress(sysExpress,user);
 		model.addAttribute("openId",openId);
 		return backJsonWithCode(successCode,MSG_EXPRESS_SAVE_SUCCESS);
 	}
 	
-	//收取快递信息
+	//查询快递
 	@ResponseBody
-	@RequestMapping(value="/endExpress",method=RequestMethod.POST)
-	public String endExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String userId=request.getParameter("userId");//获取userId
+	@RequestMapping(value="/queryExpress",method=RequestMethod.POST)
+	public String queryExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		String idCard=request.getParameter("idCard");//获取idCard
 		String openId=request.getParameter("openId");//获取openId
 		
 		final String successCode = "0";//成功码
@@ -773,19 +836,13 @@ public class WxControl extends BaseController {
 		}
 
 		//身份证号
-		if(StringUtils.isEmpty(userId)) {
+		if(StringUtils.isEmpty(idCard)) {
 			return backJsonWithCode(errCode_1,ERR_ID_CARD_NULL);
 		}
 		
 		//身份证号格式
-		if(!IdcardUtils.validateCard(userId)) {
+		if(!IdcardUtils.validateCard(idCard)) {
 			return backJsonWithCode(errCode_2,ERR_ID_CARD_PATTERN);
-		}
-		
-		//验证快递单号
-		List<SysExpress> sysExpresses = wxService.findExpressByIdCard(userId);
-		if(null == sysExpresses || sysExpresses.size() == 0) {
-			return backJsonWithCode(errCode_1,ERR_EXPREE_NOT_ID_CARD);
 		}
 		
 		//查询操作人员
@@ -794,6 +851,75 @@ public class WxControl extends BaseController {
 			return backJsonWithCode(errCode_2,ERR_NO_USER);
 		}
 		
+		//验证快递单号
+		List<SysExpress> sysExpresses = wxService.findNoActiveByIdCard(idCard);
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", successCode);
+		
+		if(null == sysExpresses || sysExpresses.size() == 0) {
+			map.put("num", 0);
+		}else {
+			List<JsonSysExpress> jsonList = new ArrayList<JsonSysExpress>();
+			for(SysExpress index:sysExpresses) {
+				JsonSysExpress temp = new JsonSysExpress();
+				temp.setExpressId(index.getExpressId());
+				temp.setAddress("空地址");
+				temp.setName(index.getSysWxUser().getName());
+				temp.setPhone(index.getPhone());
+				temp.setCompany(DictUtils.getDictLabel(index.getState(), "expressCompany", "其它"));
+				jsonList.add(temp);
+			}
+			
+			map.put("num", sysExpresses.size());
+			map.put("expressList", jsonList);
+		}
+		
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		logger.info("快递信息是："+jsonResult);
+		return jsonResult;
+	}
+	
+	//收取快递信息
+	@ResponseBody
+	@RequestMapping(value="/endExpress",method=RequestMethod.POST)
+	public String endExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String expNum = request.getParameter("expNum");//获取userId
+		String openId = request.getParameter("openId");//获取openId
+		
+		final String successCode = "0";//成功码
+		final String errCode_1 = "1";//错误码
+		
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
+		//快递号不能为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_ID_EXPRESS_NULL);
+		}
+		
+		//查询操作人员
+		User user = wxService.findOperator(openId);
+		if(null == user) {
+			return backJsonWithCode(errCode_1,ERR_NO_USER);
+		}
+		
+		//快递为空
+		SysExpress sysExpress = wxService.findExpressByExpressId(expNum);
+		if(null == sysExpress) {
+			return backJsonWithCode(errCode_1,ERR_EXPREE_NOT_EXIST);
+		}
+		
+		//快递非入库状态
+		String expressState = sysExpress.getState();
+		String startState = DictUtils.getDictValue("已入库", "expressState", "0");
+		if(null == expressState || !expressState.equals(startState)) {
+			return backJsonWithCode(errCode_1,ERR_EXPREE_NOT_ENTER);
+		}
+		
+		wxService.endExpress(expNum, openId);
 		return backJsonWithCode(successCode,MSG_EXPRESS_QUERY_SUCCESS);
 	}
 	
@@ -856,7 +982,7 @@ public class WxControl extends BaseController {
 	        	}else {
 	        		//有身份信息
 	        		model.addAttribute("openId",sysWxInfo.getOpenId());
-	        		model.addAttribute("sysWxUser", sysWxUserService.getByIdCard(idCard));
+	        		model.addAttribute("sysWxUser", wxService.findByIdCard(idCard));
 	        		retPage = WX_ID_CARD_USERINFO_MODIFY;
 		        	return retPage;
 	        	}

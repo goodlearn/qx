@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.common.entity;
 
 import java.io.Serializable;
 
+import com.thinkgem.jeesite.common.config.Global;
+
 /**
  * 手机短信缓存对象
  * @author wzy
@@ -22,7 +24,7 @@ public class PhoneMsgCache implements Serializable{
 		//注册时间
 		setRegTime(System.currentTimeMillis());
 		//过期时间30分钟
-		setTimeOut(System.currentTimeMillis()+1000*60*30);
+		setTimeOut(Global.MOBILE_CODE_TOME_OUT());
 		setPrompt(false);
 		setSendTimes(defaultTimes);//第一次发送
 	}

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>快递助手 -- 锡职快递服务平台</title>
@@ -8,6 +9,7 @@
 	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
 	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expAssistantCont{

@@ -23,4 +23,10 @@ public interface SysExpressDao extends CrudDao<SysExpress> {
 	//获取快递
 	public List<SysExpress> findByIdCard(String idCard);
 	
+	//获取快递
+	public List<SysExpress> findNoActiveByIdCard(String idCard);
+	
+	//获取快递
+	public SysExpress findByExpressId(String expressId);
+	
 }

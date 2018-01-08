@@ -25,7 +25,7 @@
 			<include refid="sysWxUserCheckColumns"/>
 		FROM sys_wx_user_check a
 		<include refid="sysWxUserCheckJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.id = #{id} 
 	</select>
 	
 	<select id="findByOpenId" resultType="SysWxUserCheck">
@@ -67,7 +67,7 @@
 		FROM sys_wx_user_check a
 		<include refid="sysWxUserCheckJoins"/>
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.state = '0'
 			<if test="idCard != null and idCard != ''">
 				AND a.id_card = #{idCard}
 			</if>
@@ -79,9 +79,6 @@
 			</if>
 			<if test="phone != null and phone != ''">
 				AND a.phone = #{phone}
-			</if>
-			<if test="state != null and state != ''">
-				AND a.state = #{state}
 			</if>
 		</where>
 		<choose>

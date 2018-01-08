@@ -34,12 +34,6 @@
 			<li><label>手机：</label>
 				<form:input path="phone" htmlEscape="false" maxlength="200" class="input-medium"/>
 			</li>
-			<li><label>激活状态：</label>
-				<form:select path="state" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('userCheckState')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>

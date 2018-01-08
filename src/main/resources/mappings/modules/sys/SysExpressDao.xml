@@ -15,6 +15,7 @@
 		a.del_flag AS "delFlag",
 		a.state AS "state",
 		a.msg_state AS "msgState",
+		wxu.name AS "sysWxUser.name",
 		uc.name AS "createBy.name",
 		uu.name AS "updateBy.name"
 	</sql>
@@ -31,6 +32,22 @@
 		FROM sys_express a
 		<include refid="sysExpressJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findNoActiveByIdCard" resultType="SysExpress">
+		SELECT 
+			<include refid="sysExpressColumns"/>
+		FROM sys_express a
+		<include refid="sysExpressJoins"/>
+		WHERE wxu.id_card = #{idCard} AND a.state = '0' 
+	</select>
+	
+	<select id="findByExpressId" resultType="SysExpress">
+		SELECT 
+			<include refid="sysExpressColumns"/>
+		FROM sys_express a
+		<include refid="sysExpressJoins"/>
+		WHERE a.express_id = #{expressId}
 	</select>
 	
 	<select id="findByIdCard" resultType="SysExpress">

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>实名认证 -- 锡职快递服务平台</title>
@@ -191,7 +192,7 @@
 			    	var message = data.message;
 			    	if(code == "0"){
 			    		rzAlert(prompt,message);
-			    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId;
+			    		window.location.href= pageContextVal+"/wx/reqPersonIndex?openId="+openId;
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
 						$("#oldPhone").show();

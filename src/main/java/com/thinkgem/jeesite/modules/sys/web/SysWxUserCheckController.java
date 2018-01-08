@@ -86,7 +86,7 @@ public class SysWxUserCheckController extends BaseController {
 		
 		sysWxUserCheck.setState(DictUtils.getDictValue("已激活", "userCheckState", "1"));
 		sysWxUserCheckService.save(sysWxUserCheck);
-		
+		addMessage(redirectAttributes, "用户已激活");
 		model.addAttribute("sysWxUserCheck", sysWxUserCheck);
 		return retPath;
 	}

@@ -83,7 +83,7 @@ public class SysWxUserController extends BaseController {
 		
 		//验证快递单号
 		String idCard = sysWxUser.getIdCard();
-		if(null!=idCard) {
+		if(null==idCard) {
 			addMessage(model, "身份证不能为空");
 			return form(sysWxUser, model);
 		}

@@ -31,7 +31,10 @@
 				<form:input path="phone" htmlEscape="false" maxlength="200" class="input-medium"/>
 			</li>
 			<li><label>快递状态：</label>
-				<form:input path="state" htmlEscape="false" maxlength="100" class="input-medium"/>
+				<form:select path="state" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('expressState')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</li>
 			<li><label>快递公司：</label>
 				<form:select path="company" class="input-medium">

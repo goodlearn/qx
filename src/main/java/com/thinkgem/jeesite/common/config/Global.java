@@ -66,8 +66,11 @@ public class Global {
 	 * 手机验证码前缀
 	 */
 	public final static String PREFIX_MOBLIE_CODE = "mobile_";
-	public final static int MOBILE_TIMES = 5;
+	public final static int MOBILE_TIMES = 4;
 	public final static int MOBILE_CODE_SIZE = 4;
+	public static long MOBILE_CODE_TOME_OUT() {
+		return System.currentTimeMillis()+1000*60*5;
+	} 
 	
 	/**
 	 * 微信消息类型

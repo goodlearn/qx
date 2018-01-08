@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>录入快递 -- 锡职快递服务平台</title>
@@ -70,6 +71,16 @@
 						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
 						<div class="commonFuncBtnScan"></div>
 					</div>
+					<div class="inputTypeCont">
+						<div class="inputTitle">公司</div>
+						<select id="company" name="company">  
+                             <c:forEach var="dict" items="${fns:getDictList('expressCompany')}">  
+                                <option value="${dict.value}">  
+                                ${dict.label}  
+                                </option>  
+                              </c:forEach>  
+                         </select>  
+					</div>
 				</div>
 			</form>
 			<div class="submitBtn">录入信息</div>
@@ -84,11 +95,12 @@
 			var pageContextVal = $("#PageContext").val();
 			var expressId = $("#expressId").val();
 			var phone = $("#phone").val();
+			var company = $("#company").val();
 			var openId = $("#openId").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/saveExpress',
-			    data:{'expressId':expressId,'phone':phone,'openId':openId},
+			    data:{'expressId':expressId,'phone':phone,'company':company,'openId':openId},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";
