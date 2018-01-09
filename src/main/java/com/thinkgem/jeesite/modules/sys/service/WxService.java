@@ -831,8 +831,6 @@ public class WxService extends BaseService implements InitializingBean {
         //文本消息
         if (msgType.equals(Global.WX_REQ_MESSAGE_TYPE_TEXT)) {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
-        	String url = String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,WxGlobal.OAUTHREDIRECTURL);
-    		logger.info("request code from url: {}", url);
         	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.OAUTHREDIRECTURL,true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);

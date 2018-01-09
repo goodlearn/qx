@@ -165,7 +165,7 @@ public class SysExpressController extends BaseController {
 		
 		//验证快递单号
 		String expressId = sysExpress.getExpressId();
-		if(null!=expressId) {
+		if(null==expressId) {
 			addMessage(model, "快递单号不能为空");
 			return addForm(sysExpress, model);
 		}

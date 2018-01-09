@@ -82,7 +82,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			System.out.println("批量操作取货:"+sysExpressId);
 		}
 		for(SysExpress sysExpress:sysExpresses) {
-			save(sysExpress,UserUtils.getUser());
+			updateState(sysExpress,UserUtils.getUser());
 		}
 	}
 	
@@ -114,6 +114,25 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		
 		//默认保存数据
 		super.dao.update(sysExpress);
+	}
+	
+	//入库后发送模板消息
+	@Transactional(readOnly = false)
+	public void updateState(SysExpress sysExpress,User user) {
+		sysExpress.setMsgState(wxService.queryMsgState(sysExpress));
+		sysExpress.setUpdateBy(user);
+		sysExpress.setUpdateDate(new Date());
+		this.dao.update(sysExpress);
+		/**
+		 * 发送模板消息
+		 */
+		String openId = wxService.getOpenIdForMsg(sysExpress);
+		if(null == openId) {
+			logger.info("save sendMsg is null ");
+		}else {
+			String userName = user.getName();
+			wxService.sendMessageExpress(openId,userName,"0");	
+		}
 	}
 	
 	//入库后发送模板消息

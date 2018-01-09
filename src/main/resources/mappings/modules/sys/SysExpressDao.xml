@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.express_id AS "expressId",
 		a.phone AS "phone",
+		a.pick_up_code AS "pickUpCode",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -148,6 +149,7 @@
 			del_flag,
 			state,
 			msg_state,
+			pick_up_code,
 			company
 		) VALUES (
 			#{id},
@@ -161,6 +163,7 @@
 			#{delFlag},
 			#{state},
 			#{msgState},
+			#{pickUpCode},
 			#{company}
 		)
 	</insert>
@@ -174,6 +177,7 @@
 			remarks = #{remarks},
 			msg_state = #{msgState},
 			state = #{state},
+			pick_up_code = #{pickUpCode},
 			company= #{company}
 		WHERE id = #{id}
 	</update>

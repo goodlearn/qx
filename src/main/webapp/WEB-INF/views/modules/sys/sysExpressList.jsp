@@ -54,6 +54,7 @@
 				<th>手机</th>
 				<th>快递状态</th>
 				<th>快递公司</th>
+				<th>取货码</th>
 				<th>信息发送状态</th>
 				<th>创建人</th>
 				<th>创建时间</th>
@@ -76,6 +77,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.company,'expressCompany','其它')}
+				</td>
+				<td>
+					${sysExpress.pickUpCode}
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.msgState, 'expressMsgState', '0')}

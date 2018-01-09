@@ -4,6 +4,16 @@
 <head>
 	<title>取货管理</title>
 	<meta name="decorator" content="default"/>
+	<style type="text/css">
+	.funcBtn{
+		padding:2px 10px;
+		margin-left:8px;
+		background:#0099cc;
+		border-radius:5px;
+		color:#fff;
+		display:inline-block;
+	}
+	</style>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			
@@ -15,10 +25,11 @@
         	return false;
         }
 		
-		function checkBatchEnd(ids, formname) {
+		function checkBatchEnd(formname) {
+			var checkboxAll = $("input[name='sysExpressIds']");
 	        var flag = false;
-	        for (i = 0; i < ids.length; i++) {
-	            if (ids[i].checked) {
+	        for (i = 0; i < checkboxAll.length; i++) {
+	            if (checkboxAll[i].checked) {
 	                flag = true;
 	                break;
 	            }
@@ -33,15 +44,18 @@
 	        }
 	    }
 		
-		function CheckAll(elementsA, elementsB) {
-	        for (i = 0; i < elementsA.length; i++) {
-	            elementsA[i].checked = true;
-	        }
-	        if (elementsB.checked == false) {
-	            for (j = 0; j < elementsA.length; j++) {
-	                elementsA[j].checked = false;
-	            }
-	        }
+		function CheckAll() {
+			var checkboxAll = $("input[name='sysExpressIds']");
+			if($("#selectAll").is(":checked")){
+				for (i = 0; i < checkboxAll.length; i++) {
+					checkboxAll[i].checked = true;
+		        }
+			} else {
+				for (j = 0; j < checkboxAll.length; j++) {
+					checkboxAll[j].checked = false;
+	           }
+			}
+		
 	    }
 	</script>
 </head>
@@ -68,7 +82,7 @@
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
-	<form:form id="batchForm" name="batchForm" modelAttribute="sysExpressIds" action="${ctx}/sys/sysExpress/endBatchForm" method="post" class="breadcrumb form-search">
+	<form:form id="batchForm" name="batchForm" action="${ctx}/sys/sysExpress/endBatchForm" method="post" class="breadcrumb form-search">
 		<sys:message content="${message}"/>
 		<table id="contentTable" class="table table-striped table-bordered table-condensed">
 			<thead>
@@ -77,6 +91,8 @@
 					<th>快递单号</th>
 					<th>手机</th>
 					<th>快递状态</th>
+					<th>快递公司</th>
+					<th>取货码</th>
 					<th>创建人</th>
 					<th>创建时间</th>
 					<th>上次操作人</th>
@@ -87,7 +103,7 @@
 			<tbody>
 			<c:forEach items="${page.list}" var="sysExpress">
 				<tr>
-					<td><input name="sysExpressIds" type="checkbox" value="${sysExpress.id}"></td>
+					<td><input id="sysExpressIds" name="sysExpressIds" type="checkbox" value="${sysExpress.id}"></td>
 					<td><a href="${ctx}/sys/sysExpress/detailForm?id=${sysExpress.id}">
 						${sysExpress.expressId}
 					</a></td>
@@ -96,6 +112,12 @@
 					</td>
 					<td>
 						${fns:getDictLabel(sysExpress.state, 'expressState', '0')}
+					</td>
+					<td>
+						${fns:getDictLabel(sysExpress.company,'expressCompany','其它')}
+					</td>
+					<td>
+						${sysExpress.pickUpCode}
 					</td>
 					<td>
 						${sysExpress.createBy.name}
@@ -117,12 +139,8 @@
 			</tbody>
 		</table>
 		<li class="btns">
-			<input name="checkbox" type="checkbox" 
-                onClick="CheckAll(batchForm.sysExpressIds,batchForm.checkbox)"> [全选/反选] [
-                <a style="color:red;cursor:pointer;" onClick="checkBatchEnd(batchForm.sysExpressIds,batchForm)">批量取货</a>]
-            <div id="ch" style="display: none">
-                <input name="delid" type="checkbox" value="0">
-            </div>
+			<input id="selectAll" name="selectAllBtn" onClick="CheckAll()" type="checkbox">全选/反选
+            <div class="funcBtn" onClick="checkBatchEnd(batchForm)">批量取货</div>
 		</li>
 	</form:form>
 	<div class="pagination">${page}</div>

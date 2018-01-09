@@ -72,6 +72,10 @@
 						<div class="commonFuncBtnScan"></div>
 					</div>
 					<div class="inputTypeCont">
+						<div class="inputTitle">取货码</div>
+						<input type="text" id="pickUpCode" class="commonInputFunc" name="pickUpCode" placeholder="请输入取货码">
+					</div>
+					<div class="inputTypeCont">
 						<div class="inputTitle">公司</div>
 						<select id="company" name="company">  
                              <c:forEach var="dict" items="${fns:getDictList('expressCompany')}">  
@@ -97,10 +101,11 @@
 			var phone = $("#phone").val();
 			var company = $("#company").val();
 			var openId = $("#openId").val();
+			var pickUpCode = $("#pickUpCode").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/saveExpress',
-			    data:{'expressId':expressId,'phone':phone,'company':company,'openId':openId},
+			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode,'openId':openId},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";

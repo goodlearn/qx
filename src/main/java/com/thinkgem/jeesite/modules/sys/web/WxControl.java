@@ -792,7 +792,8 @@ public class WxControl extends BaseController {
 		String phone=request.getParameter("phone");//获取phone
 		String expressId=request.getParameter("expressId");//获取快递单号
 		String company=request.getParameter("company");//获取公司
-		String openId=request.getParameter("openId");//获取phone
+		String openId=request.getParameter("openId");//获取openId
+		String pickUpCode=request.getParameter("pickUpCode");//获取phone
 		
 		final String successCode = "0";//成功码
 		final String errCode_1 = "1";//快递单号不能为空
@@ -833,6 +834,11 @@ public class WxControl extends BaseController {
 		sysExpress.setState(state);
 		sysExpress.setExpressId(expressId);
 		sysExpress.setPhone(phone);
+		if(!StringUtils.isEmpty(pickUpCode)) {
+			sysExpress.setPickUpCode(pickUpCode);
+		}else {
+			sysExpress.setPickUpCode("0");
+		}
 		if(!StringUtils.isEmpty(company)) {
 			sysExpress.setCompany(company);
 		}else {
@@ -889,10 +895,10 @@ public class WxControl extends BaseController {
 			for(SysExpress index:sysExpresses) {
 				JsonSysExpress temp = new JsonSysExpress();
 				temp.setExpressId(index.getExpressId());
-				temp.setAddress("空地址");
+				temp.setAddress(index.getPickUpCode());//取货码
 				temp.setName(index.getSysWxUser().getName());
 				temp.setPhone(index.getPhone());
-				temp.setCompany(DictUtils.getDictLabel(index.getState(), "expressCompany", "其它"));
+				temp.setCompany(DictUtils.getDictLabel(index.getCompany(), "expressCompany", "其它"));
 				jsonList.add(temp);
 			}
 			
