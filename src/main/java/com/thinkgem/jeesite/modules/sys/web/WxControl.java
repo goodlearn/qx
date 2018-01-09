@@ -478,6 +478,7 @@ public class WxControl extends BaseController {
 			
 			String code = CasUtils.getRandomDigitalString(4);//验证码
 			logger.info("验证码是:"+code);
+			//AliyunSendMsgUtils.sendMsg(phoneNumber, code);//测试环境先注释
 			phoneMsgCache.setValue(code);
 			phoneMsgCache.setSendTimes(++sendTimes);
 			//注册时间
