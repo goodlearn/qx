@@ -24,7 +24,6 @@
 			<div class="forminput">
 				<input type="text" name="expressNum" placeholder="请输入快递单号...">
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-				<input id="openId" type="hidden" value="${openId}" />
 				<div class="submBtn"></div>
 			</div>
 		</form>
@@ -100,7 +99,6 @@
 	<script type="text/javascript">
 	$(function(){
 		var pageContextVal = $("#PageContext").val();
-		var openId = $("#openId").val();
 		$(".userFun").click(function(){
 			var clickNum = $(this).index();
 			switch(clickNum){
@@ -109,16 +107,16 @@
 					$.ajax({
 					    type:'GET',
 					    url:pageContextVal+'/wx/checkActive',
-					    data:{'openId':openId},
+					    data:{'openId':"person"},
 					    dataType: "json",
 					    success:function(data){
 					    	var prompt = "操作提示";
 					    	var code = data.code;
 					    	var message = data.message;
 					    	if(code == "0"){
-					    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId; 
+					    		window.location.href= pageContextVal+"/wx/userHome"; 
 					    	}else if(code == "1"){
-					    		window.location.href= pageContextVal+"/wx/reqUserCheckState?openId="+openId;
+					    		window.location.href= pageContextVal+"/wx/reqUserCheckState";
 					    	}else{
 					    		rzAlert(prompt,message);
 					    	}
@@ -131,7 +129,7 @@
 				case(1): window.location.href= ""; break;
 				case(2): window.location.href="./delivery.html"; break;
 				case(3): window.location.href="./sendexpress.html"; break;
-				case(4): window.location.href= pageContextVal+"/wx/reqExpressAssist?openId="+openId; break;
+				case(4): window.location.href= pageContextVal+"/wx/reqExpressAssist"; break;
 				//快递分析
 				//送货上门
 				//我要寄件

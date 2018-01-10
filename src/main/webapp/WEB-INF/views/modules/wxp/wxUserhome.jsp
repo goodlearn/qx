@@ -126,7 +126,6 @@
 			</div>
 			<div class="headerProm">
 				<p>请及时完善个人信息，方便快递员配送</p>
-				<input id="openId" type="hidden" value="${openId}" />
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 				<div class="editUserInfo">
 					完善个人信息
@@ -156,7 +155,6 @@
 </div>
 <script type="text/javascript">
 	$(function() {
-		var openId = $("#openId").val();
 		var pageContextVal = $("#PageContext").val();
 		var initFun = function(){
 			var windowH = $(window).height();
@@ -179,7 +177,7 @@
 
 		// user Info Edit
 		$(".editUserInfo").click(function(){
-			window.location.href=pageContextVal+"/wx/reqUserInfoEdit?openId="+openId; 
+			window.location.href=pageContextVal+"/wx/reqUserInfoEdit"; 
 		});
 		$(".expUserInfo").click(function(){
 			window.location.href="userLazyboard.html"; 

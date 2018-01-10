@@ -11,6 +11,7 @@
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
 	<style type="text/css">
 		.userInfoEditCont{
 			width: 100%;
@@ -203,7 +204,6 @@
 
 		<form>
 			<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-			<input type="hidden" id="openId" name="openId" value="${openId}">
 			<input type="hidden" id="userId" name="userId" value="${sysWxUser.id}">
 			<div class="userInputCont">
 				<div class="inputTypeCont">
@@ -307,16 +307,27 @@
 		
 		//提交数据
 		$(".submitBtn").click(function(){
+			
+			// 手机号码
+			var usernum = $.trim($("#usernum").val());
+			if (!CheckPhoneNum(usernum)) {
+				rzAlert("操作提示","原手机号码格式不对！");
+				return false;
+			}
+
+			var usernewPhone = $.trim($("#usernewPhone").val());
+			if (!CheckPhoneNum(usernewPhone)) {
+				rzAlert("操作提示","新手机号码格式不对！");
+				return false;
+			}
+			
 			var name = $("#name").val();
-			var usernum = $("#usernum").val();
-			var usernewPhone = $("#usernewPhone").val();
 			var username = $("#username").val();
-			var openId = $("#openId").val();
 			var userId = $("#userId").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/modifyPersonUserInfo',
-			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'openId':openId,'username':username,'userId':userId},
+			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'username':username,'userId':userId},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";
@@ -324,7 +335,7 @@
 			    	var message = data.message;
 			    	if(code == "0"){
 			    		rzAlert(prompt,message);
-			    		window.location.href= pageContextVal+"/wx/userHome?openId="+openId;
+			    		window.location.href= pageContextVal+"/wx/userHome";
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
 						$("#oldPhone").show();
@@ -349,7 +360,7 @@
 			    success:function(data){
 			    	//var result = JSON.parse(data);
 			    	if(data.code == "0"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    		$(".verifiBtn").attr('disabled', 'disabled');
 						$(".verifiBtn").css({"background":"#888888"});
 						var countNum = 60;
@@ -369,9 +380,9 @@
 							}
 						},1000);
 			    	}else if(data.code == "1"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    	}else if(data.code == "2"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    	}
 			    },
 			    error:function(){
@@ -432,7 +443,7 @@
 
 		$(".selectOkBtn").click(function(){
 			if (!$(".userFloorNum li").hasClass('select') || !$(".userRoomNum li").hasClass('select')) {
-				alert("请选择楼层和宿舍号！");
+				rzAlert("操作提示","请选择楼层和宿舍号！");
 				return;
 			}
 			var userSelectTxt = selectNum[0] + selectNum[1];

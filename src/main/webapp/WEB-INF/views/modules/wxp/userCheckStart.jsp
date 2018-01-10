@@ -11,6 +11,7 @@
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
 	<style type="text/css">
 		.content{
 			overflow: hidden;
@@ -122,7 +123,6 @@
 		<div class="infoCheckEditCont" id="newUserReg">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-				<input id="openId" type="hidden" value="${openId}" />
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">姓名</div>
@@ -173,18 +173,63 @@
 		});
 
 		$(".userRegSubmitBtn").click(function(){
+			// 信息验证
+
+			// 名字
+			var username = $.trim($("#inputUserName").val());
+			if (username.length > 20) {
+				rzAlert("操作提示","名字长度超过20");
+				return false;
+			}
+			if (!CheckUserName(username)) {
+				rzAlert("操作提示","姓名不能为空！");
+				return false;
+			}
+
+			// 身份证
+			var userid = $.trim($("#inputUserId").val());
+			if (!CheckUserId(userid)) {
+				rzAlert("操作提示","身份证格式不对！");
+				return false;
+			}
+
+			// 手机号码
+			var userphone = $.trim($("#inputUserPhone").val());
+			if (!CheckPhoneNum(userphone)) {
+				rzAlert("操作提示","手机号码格式不对！");
+				return false;
+			}
+
+			var useroldphone = $.trim($("#inputUserOldPhone").val());
+			if (!CheckPhoneNum(useroldphone)) {
+				rzAlert("操作提示","手机号码格式不对！");
+				return false;
+			}
+
+			var state = 2;  //1:新用户注册  2：新微信绑定 
+			switch(state){
+				case 1: 
+					rzAlert("操作提示","正在审核中，请耐心等待");
+					break;
+				case 2:
+					rzAlert("操作提示","用户已绑定，请输入原手机号码");
+					$("#oldPhone").show();
+					break;
+			}
+		});
+		
+		$(".userRegSubmitBtn").click(function(){
 			//$(".msgcover").fadeIn();
 			//$(".coverMsgCont").fadeIn();
 			var name = $("#name").val();
 			var idCard = $("#idCard").val();
 			var phone = $("#phone").val();
 			var msg = $("#msg").val();
-			var openId = $("#openId").val();
 			var oldPhone = $("#originPhone").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/savePersonUserInfo',
-			    data:{'name':name,'idCard':idCard,'phone':phone,'msg':msg,'openId':openId,'oldPhone':oldPhone},
+			    data:{'name':name,'idCard':idCard,'phone':phone,'msg':msg,'oldPhone':oldPhone},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";
@@ -192,7 +237,7 @@
 			    	var message = data.message;
 			    	if(code == "0"){
 			    		rzAlert(prompt,message);
-			    		window.location.href= pageContextVal+"/wx/reqPersonIndex?openId="+openId;
+			    		window.location.href= pageContextVal+"/wx/reqPersonIndex";
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
 						$("#oldPhone").show();
@@ -216,7 +261,7 @@
 			    success:function(data){
 			    	//var result = JSON.parse(data);
 			    	if(data.code == "0"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    		$(".verifiBtn").attr('disabled', 'disabled');
 			    		$(".verifiBtn").css({"background":"#888888"});
 						var countNum = 60;
@@ -233,9 +278,9 @@
 							}
 						},1000);
 			    	}else if(data.code == "1"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    	}else if(data.code == "2"){
-			    		alert(data.message);
+			    		rzAlert("操作提示",data.message);
 			    	}
 			    },
 			    error:function(){

@@ -104,7 +104,6 @@
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
 				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/savePersonUserInfo" method="post">
-					<input type="hidden" name="openId" value="${openId}">
 					<div class="userInputCont">
 						<div class="inputTypeCont">
 							<div class="inputTitle">姓名</div>

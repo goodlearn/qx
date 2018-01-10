@@ -11,6 +11,7 @@
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expPickCont{
 			padding-bottom: 20px;
@@ -150,7 +151,6 @@
 		<div class="expPickInput">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-				<input type="hidden" id="openId" name="openId" value="${openId}">
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">证件</div>
@@ -201,15 +201,14 @@
 				   return false;
 				}
 				var expNum = $(this).siblings().first().text();
-				var openId = $("#openId").val();
 				 $.ajax({
 				     type:'POST',
 				     url:pageContextVal+'/wx/endExpress',
-				     data:{'expNum':expNum,'openId':openId},
+				     data:{'expNum':expNum},
 				     dataType: "json",
 				     success:function(data){
 				    	switch(data.code){
-					    	case "1" : alert(data.message); break;
+					    	case "1" : rzAlert("操作提示",data.message); break;
 							case "0" : 
 						     	alert("取货成功");
 						     	$expUserInfoDiv.remove();
@@ -218,7 +217,7 @@
 				    	}
 				     },
 				     error:function(){
-				     	alert("操作失败");
+				    	 rzAlert("操作提示","操作失败");
 				     }
 				    
 				 });
@@ -228,19 +227,25 @@
 		}
 
 		$(".searchInfoBtn").click(function() {
-			var expPickUserId = $("#expPickUserId").val();
-			var openId = $("#openId").val();
+			
+			// 身份证格式校验
+			var expPickUserId = $.trim($("#expPickUserId").val());
+			if (!CheckUserId(expPickUserId)) {
+				rzAlert("操作提示","身份证格式不对！");
+				return false;
+			}
+			
 			 $.ajax({
 			     type:'POST',
 			     url:pageContextVal+'/wx/queryExpress',
-			     data:{'idCard':expPickUserId,'openId':openId},
+			     data:{'idCard':expPickUserId},
 				 dataType: "json",
 			     success:function(data){
 			    	    var jsontmp3 = data;
 						$(".expUserInfoNull").hide();
 						switch(jsontmp3.code) {
-							case "1" : alert(jsontmp3.message); break;
-							case "2" : alert(jsontmp3.message); break;
+							case "1" : rzAlert("操作提示",jsontmp3.message); break;
+							case "2" : rzAlert("操作提示",jsontmp3.message); break;
 							case "0" : 
 								$(".expUserInfoNull").hide();
 								if (jsontmp3.num == 0) {

@@ -43,4 +43,27 @@ $(function() {
 		$( this ).css({'animation-delay': (index/10)+'s'});
 	});
 
+	// 设置导航跳转连接
+	function setHeaderNav() {
+		var rooturl = window.location.href;
+		var rooturlarray = rooturl.split("/");
+		var headNav = $(".headerNavCont a");
+		var navArray = [
+			"/wx/getPersonIndex",
+			"/wx/userHome",
+			"#",
+			"#",
+			"#",
+			"/wx/reqExpressAssist"
+		];
+
+		for (var i = 0; i < headNav.length; i++) {
+			headNav[i].href = rooturlarray[0]+"//"+rooturlarray[2]+navArray[i];
+			if(i == 2 || i == 3 || i == 4){
+				headNav[i].style.display = "none";
+			}
+		}
+	}
+	setHeaderNav();
+
 });

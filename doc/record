@@ -30,5 +30,10 @@ ALTER TABLE sys_wx_user_check MODIFY  state VARCHAR(100) default '0';
 ALTER TABLE sys_express ADD CONSTRAINT express_expressid UNIQUE(express_id)
 ALTER TABLE sys_express ADD COLUMN pick_up_code varchar(100) default '0' COMMENT '取货码'
 
+DELETE FROM sys_express;
+DELETE FROM sys_wx_info;
+DELETE FROM sys_wx_user;
+DELETE FROM sys_wx_user_check;
+
 http://localhost:8080/wx/clickUrl?url=index
 http://localhost:8080/wx/getPersonIndex?code=021V5uGz0BH7vg1sRZDz0Fe8Gz0V5uGT

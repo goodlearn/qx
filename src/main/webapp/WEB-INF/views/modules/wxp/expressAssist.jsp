@@ -102,7 +102,6 @@
 		</div>
 	</div>
 	<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-	<input id="openId" type="hidden" value="${openId}" />
 	<div class="expAssistantCont">
 		<div class="controw1">
 			<p>录入快递</p>
@@ -125,7 +124,6 @@
 
 <script type="text/javascript">
 	var pageContextVal = $("#PageContext").val();
-	var openId = $("#openId").val();
 	$(function() {
 		var initFunc = function(){
 			var windowH = $(window).height();
@@ -144,13 +142,13 @@
 
 		//hyperlink
 		$(".controw1").click(function(){
-			window.location.href= pageContextVal+"/wx/reqAddExpress?openId="+openId;;
+			window.location.href= pageContextVal+"/wx/reqAddExpress";
 		});
 		$(".controw2Left1").click(function(){
 			window.location.href="expassitant/expsend.html";
 		});
 		$(".controw2right").click(function(){
-			window.location.href= pageContextVal+"/wx/reqPickExpress?openId="+openId;;
+			window.location.href= pageContextVal+"/wx/reqPickExpress";
 		});
 		$(".controw2Left2").click(function(){
 			window.location.href="expassitant/expdelivery.html";

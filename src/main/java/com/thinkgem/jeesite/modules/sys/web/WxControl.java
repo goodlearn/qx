@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,6 +26,7 @@ import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
 import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
+import com.thinkgem.jeesite.common.utils.DeviceUtils;
 import com.thinkgem.jeesite.common.utils.IdcardUtils;
 import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -108,7 +111,7 @@ public class WxControl extends BaseController {
 	private final String ERR_EXPREE_NOT_ID_CARD = "未查询到快递信息";
 	private final String ERR_EXPREE_NOT_EXIST = "快递不存在";
 	private final String ERR_EXPREE_NOT_ENTER = "快递状态非入库状态";
-
+	private final String ERR_REDIRECT_URL = "重定向地址未获取";
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
 	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功,请前往快递中心审核身份信息";
@@ -128,6 +131,51 @@ public class WxControl extends BaseController {
 		 return null;
 	}
 	
+	@ModelAttribute
+	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
+		//获取微信号
+		String openId = getOpenId(request, response);//获取微信号
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
+			model.addAttribute("errUrl",WX_ERROR);
+			return WX_ERROR;
+		}else {
+			model.addAttribute("openId",openId);
+		}
+	    logger.info("openId is " + openId);
+		return null;
+	}
+	
+	//获取openId
+	private String getOpenId(HttpServletRequest request, HttpServletResponse response) {
+		 String openId = null;
+		 try {
+			  request.setCharacterEncoding("UTF-8");  
+		      response.setCharacterEncoding("UTF-8"); 
+		      String code=request.getParameter("code");//获取code
+		      StringBuffer sb = request.getRequestURL();
+		      String redirectUrl = sb.toString();
+		      if(StringUtils.isEmpty(redirectUrl)) {
+		    	  return null;//异常错误
+		      }
+		        
+		      if(StringUtils.isEmpty(code)) {
+		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
+		        	return null;
+		      }
+		        
+		      logger.info("code is " + code);
+		      Map<String,String> map = wxService.getOpenIdInfo(code);
+		      if(null != map) {
+		        	openId = map.get("openId");
+		      }
+		 }catch(Exception e) {
+			 e.printStackTrace();
+		 }
+		 return openId;
+	}
+		
 	
 	
 	/**
@@ -140,13 +188,22 @@ public class WxControl extends BaseController {
 	 * 如果微信号查询到，但是没有激活，返回未审核页面
 	 * 如果用户已注册，也已经激活，返回空值
 	 */
-	private String validateRegAndActiveByOpenId(String openId) {
+	private String validateRegAndActiveByOpenId(String openId,Model model) {
+		if(null == openId) {
+			model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
+			model.addAttribute("errUrl",WX_ERROR);
+			return WX_ERROR;//微信号为空
+		}
 		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
 		if(null == sysWxUserCheck) {
+			model.addAttribute("message",ERR_USER_ID_NULL);
+			model.addAttribute("errUrl",WX_USER_CHECK_START);
 			return WX_USER_CHECK_START;//用户不存在,返回注册页面
 		}
 		String state = sysWxUserCheck.getState();
 		if("0".equals(state)) {
+			model.addAttribute("message",ERR_NO_ACTIVE);
+			model.addAttribute("errUrl",WX_WAIT_VALIDATE);
 			return WX_WAIT_VALIDATE;//用户已注册，但未激活，返回审核等待状态
 		}
 		return null;//用户已注册，也已经激活，返回空值
@@ -169,32 +226,7 @@ public class WxControl extends BaseController {
 		return null;//微信号 标识微信号已获取
 	}
 	
-	
-	/**
-	 * 页面跳转
-	 * @param request
-	 * @param model
-	 * @param url 想要跳转的页面
-	 * @return
-	 */
-	private String getRedirectUrl(HttpServletRequest request,Model model,String url) {
-		String openId = request.getParameter("openId");//获取微信号
-		//是否获取到微信号
-		String isGetOpenId = validateOpenId(openId,model);
-		if(null!=isGetOpenId) {
-			//没有获取到，跳转到错误页面
-			return isGetOpenId;
-		}
-	    logger.info("openId is " + openId);
-	    model.addAttribute("openId",openId);
-		//是否已经注册并且激活
-		String isRegAndActive = validateRegAndActiveByOpenId(openId);
-		if(null!=isRegAndActive) {
-			//未注册或者未激活 跳转到指定页面
-			return isRegAndActive;
-		}
-		return url;
-	}
+
 	
 	/**
 	 * 页面跳转-完善个人信息页面
@@ -205,20 +237,21 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqUserInfoEdit",method=RequestMethod.GET)
 	public String reqUserInfoEdit(HttpServletRequest request, HttpServletResponse response,Model model) {
-		
-		String isReirectUrl = getRedirectUrl(request,model,null);//验证是否跳转
-		
-		//验证出现错误 进行跳转
-		if(null!=isReirectUrl) {
-			return isReirectUrl;//跳转
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
 		}
-		//获取个人信息
-		String openId = request.getParameter("openId");//获取微信号
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
 		SysWxUser sysWxUser = wxService.findSysUserByOpenId(openId);
 		if(null != sysWxUser) {
 			model.addAttribute("sysWxUser",sysWxUser);
 		}
-		model.addAttribute("openId",openId);
 		return WX_ID_CARD_USERINFO_MODIFY;
 	}
 	
@@ -231,7 +264,18 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqExpressAssist",method=RequestMethod.GET)
 	public String reqExpressAssist(HttpServletRequest request, HttpServletResponse response,Model model) {
-		return getRedirectUrl(request,model,WX_EXPRESS_ASSIST);
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
+		return WX_EXPRESS_ASSIST;
 	}
 	
 	/**
@@ -243,7 +287,18 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqAddExpress",method=RequestMethod.GET)
 	public String reqAddExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		return getRedirectUrl(request,model,WX_EXPRESS_ADD);
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
+		return WX_EXPRESS_ADD;
 	}
 	
 	/**
@@ -255,7 +310,18 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqPickExpress",method=RequestMethod.GET)
 	public String reqPickExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		return getRedirectUrl(request,model,WX_EXPRESS_PICK);
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
+		return WX_EXPRESS_PICK;
 	}
 	
 	/**
@@ -267,15 +333,18 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqUserCheckState",method=RequestMethod.GET)
 	public String reqUserCheckState(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取微信号
-		//是否获取到微信号
-		String isGetOpenId = validateOpenId(openId,model);
-		if(null!=isGetOpenId) {
-			//没有获取到，跳转到错误页面
-			return isGetOpenId;
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
 		}
 	    logger.info("openId is " + openId);
-	    model.addAttribute("openId",openId);
 		return WX_USER_CHECK_START;
 	}
 	
@@ -288,7 +357,12 @@ public class WxControl extends BaseController {
 	 */
 	@RequestMapping(value="/reqPersonIndex",method=RequestMethod.GET)
 	public String reqPersonIndex(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取微信号
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册
+	    String openId = (String)model.asMap().get("openId");
 		//是否获取到微信号
 		String isGetOpenId = validateOpenId(openId,model);
 		if(null!=isGetOpenId) {
@@ -296,7 +370,6 @@ public class WxControl extends BaseController {
 			return isGetOpenId;
 		}
 	    logger.info("openId is " + openId);
-	    model.addAttribute("openId",openId);
 		return WX_PERSON_INDEX;
 	}
 		
@@ -311,12 +384,15 @@ public class WxControl extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/checkActive",method=RequestMethod.GET)
 	public String checkActive(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String openId = request.getParameter("openId");//获取微信号
-		
-		String successCode = "0";
 		String errCode_1 = "1";
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String successCode = "0";
 		String errCode_2 = "2";
-		
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
@@ -334,6 +410,7 @@ public class WxControl extends BaseController {
 		
 		return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
 	}
+	
 	/**
 	 * 获取个人首页
 	 * 微信点击个人首页后，微信重定向访问地址
@@ -345,24 +422,12 @@ public class WxControl extends BaseController {
 	@RequestMapping(value="/getPersonIndex",method=RequestMethod.GET)
 	public String getPersonIndex(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
-			// 将请求、响应的编码均设置为UTF-8（防止中文乱码）  
-	        request.setCharacterEncoding("UTF-8");  
-	        response.setCharacterEncoding("UTF-8"); 
-	        String code=request.getParameter("code");//获取code
-	        logger.info("code is " + code);
-	        String openId = null;
-	     /*   Map<String,String> map = wxService.getOpenIdInfo(code);
-	        if(null != map) {
-	        	openId = map.get("openId");
-	        	model.addAttribute("openId", openId);
-	        }*/
-	        //本地测试时使用，实体环境删除 将上一句注释的话显示
-	        openId = request.getParameter("openId");
-	        if(null == openId) {
-	        	openId = WxGlobal.TEST_OPEN_ID;
-	        }
-	        model.addAttribute("openId",openId);
-	        
+			String errUrl = (String)model.asMap().get("errUrl");
+			if(null != errUrl) {
+				return errUrl;
+			}
+			//是否已经注册并且激活
+		    String openId = (String)model.asMap().get("openId");
 	        //查询是否是快递管理人员
 	        if(null!=wxService.findUserManagerByOpenId(openId)) {
 	        	model.addAttribute("isManager",1);//是快递人员
@@ -372,6 +437,8 @@ public class WxControl extends BaseController {
 		}
 		return WX_PERSON_INDEX;
 	}
+	
+	
 	
 	
 	/**
@@ -385,14 +452,16 @@ public class WxControl extends BaseController {
 	@RequestMapping(value="/userHome",method=RequestMethod.GET)
 	public String userHome(HttpServletRequest request, HttpServletResponse response,Model model) throws Exception {
 		
-		String openId = request.getParameter("openId");//获取微信号
-		
-		//验证微信号、是否注册、是否激活
-		String isSendUrl = getRedirectUrl(request,model,null);
-		
-		//验证未通过
-		if(null != isSendUrl) {
-			return isSendUrl;
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
 		}
 		 
 		//依据openId获取个人信息 如果没有个人信息 那么跳转到个人信息注册页面 如果有跳转到个人信息userHome页面
@@ -511,15 +580,26 @@ public class WxControl extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
 	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		final String errCode_1 = "1";//验证码不能为空
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
 		String name = request.getParameter("name").trim();
 		String idCard = request.getParameter("idCard").trim();
 		String phone = request.getParameter("phone").trim();
 		String msg = request.getParameter("msg").trim();
-		String openId = request.getParameter("openId").trim();
 		String oldPhone = request.getParameter("oldPhone").trim();//老手机号
 		
 		final String successCode = "0";//成功码
-		final String errCode_1 = "1";//验证码不能为空
 		final String errCode_2 = "2";//验证码长度为固定值
 		final String errCode_3 = "3";//姓名不能为空
 		final String errCode_4 = "4";//身份证不能为空
@@ -667,15 +747,26 @@ public class WxControl extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
 	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		final String errCode_1 = "1";//验证码不能为空
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
 		String name = request.getParameter("name").trim();
 		String userId = request.getParameter("userId").trim();
 		String userNewPhone = request.getParameter("usernewPhone").trim();
 		String msg = request.getParameter("username").trim();
-		String openId = request.getParameter("openId").trim();
 		String usernum = request.getParameter("usernum").trim();//老手机号
 		
 		final String successCode = "0";//成功码
-		final String errCode_1 = "1";//验证码不能为空
 		final String errCode_2 = "2";//验证码长度为固定值
 		final String errCode_3 = "3";//姓名不能为空
 		final String errCode_4 = "4";//身份证不能为空
@@ -789,14 +880,25 @@ public class WxControl extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/saveExpress",method=RequestMethod.POST)
 	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		final String errCode_1 = "1";//验证码不能为空
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
 		String phone=request.getParameter("phone");//获取phone
 		String expressId=request.getParameter("expressId");//获取快递单号
 		String company=request.getParameter("company");//获取公司
-		String openId=request.getParameter("openId");//获取openId
 		String pickUpCode=request.getParameter("pickUpCode");//获取phone
 		
 		final String successCode = "0";//成功码
-		final String errCode_1 = "1";//快递单号不能为空
 		final String errCode_2 = "2";//手机号不能为空
 		final String errCode_3 = "3";//手机号格式错误
 		final String errCode_4 = "4";//未检测到操作人员
@@ -854,11 +956,21 @@ public class WxControl extends BaseController {
 	@RequestMapping(value="/queryExpress",method=RequestMethod.POST)
 	public String queryExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		final String errCode_1 = "1";//验证码不能为空
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
 		String idCard=request.getParameter("idCard");//获取idCard
-		String openId=request.getParameter("openId");//获取openId
 		
 		final String successCode = "0";//成功码
-		final String errCode_1 = "1";//身份证号不能为空
 		final String errCode_2 = "2";//身份证号格式错误
 		
 		//微信号为空
@@ -915,11 +1027,22 @@ public class WxControl extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/endExpress",method=RequestMethod.POST)
 	public String endExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		final String errCode_1 = "1";//验证码不能为空
+		//是否已经注册并且激活
+		String openId = (String)model.asMap().get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
 		String expNum = request.getParameter("expNum");//获取userId
-		String openId = request.getParameter("openId");//获取openId
 		
 		final String successCode = "0";//成功码
-		final String errCode_1 = "1";//错误码
 		
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {

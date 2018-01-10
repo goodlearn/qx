@@ -6,11 +6,13 @@
 	<title>录入快递 -- 锡职快递服务平台</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	
 	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
 	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expEnterCont{
 			padding-bottom: 20px;
@@ -59,7 +61,6 @@
 		<div class="expEnterInput">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-				<input type="hidden" id="openId" name="openId" value="${openId}">
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
@@ -93,19 +94,32 @@
 </div>
 <script type="text/javascript">
 	$(function() {
+		
 		$(".submitBtn").click(function(){
+			
+			//检测快递单号
+			var expressId = $.trim($("#expressId").val());
+			if (!CheckExpNum(expressId)) {
+				rzAlert("操作提示","快递单号格式不正确！");
+				return false;
+			}
+
+			// 手机号码
+			var phone = $.trim($("#phone").val());
+			if (!CheckPhoneNum(phone)) {
+				rzAlert("操作提示","手机号码格式不对！");
+				return false;
+			}
+			
 			//$(".msgcover").fadeIn();
 			//$(".coverMsgCont").fadeIn();
 			var pageContextVal = $("#PageContext").val();
-			var expressId = $("#expressId").val();
-			var phone = $("#phone").val();
 			var company = $("#company").val();
-			var openId = $("#openId").val();
 			var pickUpCode = $("#pickUpCode").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/saveExpress',
-			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode,'openId':openId},
+			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";

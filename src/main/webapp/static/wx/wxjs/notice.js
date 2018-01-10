@@ -13,18 +13,18 @@ function rzAlert(msgTitle,msgTxt){
 
 	var $coverMsgCont = $("<div></div>");
 	$coverMsgCont.css({
-		"width":"48%",
+		"width":"56%",
 		"padding":"20px 2%",
 		"background":"#fff",
 		"position":"relative",
-		"left":"25%",
+		"left":"20%",
 		"top":"calc(50% - 123px)",
 		"border-radius":"10px",
 		"overflow":"hidden"
 	});
 	$msgCover.append($coverMsgCont);
 
-	var $closeimg = $("<img src='wximages/close.gif' alt=''>");
+	var $closeimg = $("<img src='images/close.gif' alt=''>");
 	$closeimg.css({
 		"display":"block",
 		"float":"right",
@@ -41,7 +41,7 @@ function rzAlert(msgTitle,msgTxt){
 	});
 	$coverMsgCont.append($closeimg);
 
-	var $noticeimg = $("<img src='wximages/noticeIcon.png' alt=''>");
+	var $noticeimg = $("<img src='images/noticeIcon.png' alt=''>");
 	$noticeimg.css({
 		"display":"block",
 		"width":"90px",
@@ -83,3 +83,4 @@ function rzAlert(msgTitle,msgTxt){
 		});
 	},2000)
 }
+
