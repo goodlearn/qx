@@ -68,8 +68,13 @@ public class Global {
 	public final static String PREFIX_MOBLIE_CODE = "mobile_";
 	public final static int MOBILE_TIMES = 4;
 	public final static int MOBILE_CODE_SIZE = 4;
+	
 	public static long MOBILE_CODE_TOME_OUT() {
 		return System.currentTimeMillis()+1000*60*5;
+	} 
+	
+	public static long WX_CODE_TOME_OUT() {
+		return System.currentTimeMillis()+1000*60*30;
 	} 
 	
 	/**

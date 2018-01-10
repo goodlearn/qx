@@ -204,6 +204,7 @@
 
 		<form>
 			<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+			<input id="wxCode" type="hidden" value="${wxCode}" />
 			<input type="hidden" id="userId" name="userId" value="${sysWxUser.id}">
 			<div class="userInputCont">
 				<div class="inputTypeCont">
@@ -304,7 +305,8 @@
 	$(function() {
 		
 		var pageContextVal = $("#PageContext").val();
-		
+		var wxCodeVal = $("#wxCode").val();
+
 		//提交数据
 		$(".submitBtn").click(function(){
 			
@@ -326,8 +328,8 @@
 			var userId = $("#userId").val();
 			$.ajax({
 			    type:'POST',
-			    url:pageContextVal+'/wx/modifyPersonUserInfo',
-			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'username':username,'userId':userId},
+			    url:pageContextVal+'/ul/modifyPersonUserInfo',
+			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'username':username,'userId':userId,'code':wxCodeVal},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";

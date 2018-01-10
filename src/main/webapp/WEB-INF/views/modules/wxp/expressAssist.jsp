@@ -142,13 +142,13 @@
 
 		//hyperlink
 		$(".controw1").click(function(){
-			window.location.href= pageContextVal+"/wx/reqAddExpress";
+			window.location.href= pageContextVal+"/ul/reqAddExpress";
 		});
 		$(".controw2Left1").click(function(){
 			window.location.href="expassitant/expsend.html";
 		});
 		$(".controw2right").click(function(){
-			window.location.href= pageContextVal+"/wx/reqPickExpress";
+			window.location.href= pageContextVal+"/ul/reqPickExpress";
 		});
 		$(".controw2Left2").click(function(){
 			window.location.href="expassitant/expdelivery.html";

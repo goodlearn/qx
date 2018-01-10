@@ -1,10 +1,6 @@
 // 正则测试快递单号函数
 function CheckExpNum(expNum) {
 	//检测数字
-	
-	if (expNum.length < 18) {
-		return false;
-	}
 	var reg = new RegExp(/^[1-9]\d*$/);
 	if (reg.test(expNum)) {
 		return true;

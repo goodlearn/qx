@@ -49,8 +49,8 @@ $(function() {
 		var rooturlarray = rooturl.split("/");
 		var headNav = $(".headerNavCont a");
 		var navArray = [
-			"/wx/getPersonIndex",
-			"/wx/userHome",
+			"/ul/getPersonIndex",
+			"/ul/userHome",
 			"#",
 			"#",
 			"#",

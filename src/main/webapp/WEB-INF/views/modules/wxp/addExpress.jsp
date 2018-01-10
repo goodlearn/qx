@@ -61,6 +61,7 @@
 		<div class="expEnterInput">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+				<input id="wxCode" type="hidden" value="${wxCode}" />
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
@@ -115,11 +116,12 @@
 			//$(".coverMsgCont").fadeIn();
 			var pageContextVal = $("#PageContext").val();
 			var company = $("#company").val();
+			var wxCode = $("#wxCode").val();
 			var pickUpCode = $("#pickUpCode").val();
 			$.ajax({
 			    type:'POST',
-			    url:pageContextVal+'/wx/saveExpress',
-			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode},
+			    url:pageContextVal+'/ul/saveExpress',
+			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode,'code':wxCode},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";

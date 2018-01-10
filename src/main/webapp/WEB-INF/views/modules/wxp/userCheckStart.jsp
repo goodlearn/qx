@@ -123,6 +123,7 @@
 		<div class="infoCheckEditCont" id="newUserReg">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+				<input id="wxCode" type="hidden" value="${wxCode}" />
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">姓名</div>
@@ -158,6 +159,7 @@
 <script type="text/javascript">
 	$(function() {
 		var pageContextVal = $("#PageContext").val();
+		var wxCodeVal = $("#wxCode").val();
 		var windowW = $(window).width();
 		if (windowW > 600) {
 			windowW = 600;
@@ -228,8 +230,8 @@
 			var oldPhone = $("#originPhone").val();
 			$.ajax({
 			    type:'POST',
-			    url:pageContextVal+'/wx/savePersonUserInfo',
-			    data:{'name':name,'idCard':idCard,'phone':phone,'msg':msg,'oldPhone':oldPhone},
+			    url:pageContextVal+'/ul/savePersonUserInfo',
+			    data:{'name':name,'idCard':idCard,'phone':phone,'msg':msg,'oldPhone':oldPhone,'wxCode':wxCodeVal},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";
@@ -237,7 +239,7 @@
 			    	var message = data.message;
 			    	if(code == "0"){
 			    		rzAlert(prompt,message);
-			    		window.location.href= pageContextVal+"/wx/reqPersonIndex";
+			    		window.location.href= pageContextVal+"/ul/reqPersonIndex";
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
 						$("#oldPhone").show();

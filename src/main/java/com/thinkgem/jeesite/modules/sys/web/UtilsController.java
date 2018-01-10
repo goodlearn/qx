@@ -16,13 +16,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
+import com.thinkgem.jeesite.common.entity.WxCodeCache;
 import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
@@ -45,15 +45,14 @@ import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
 import com.alibaba.fastjson.JSONObject;
 
 @Controller
-@RequestMapping(value = "wx")
-public class WxControl extends BaseController {
-	
-	
-	@Autowired
-	private WxMenuManager wxMenuManager;
+@RequestMapping(value = "ul")
+public class UtilsController extends BaseController {
 	
 	@Autowired
 	private WxService wxService;
+	
+	
+
 	
 	//首页
 	private final String WX_PERSON_INDEX = "modules/wxp/wxPersonIndex";
@@ -133,17 +132,26 @@ public class WxControl extends BaseController {
 	
 	@ModelAttribute
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
-		//获取微信号
-		String openId = getOpenId(request, response);//获取微信号
-		//微信号为空
-		if(StringUtils.isEmpty(openId)) {
-			model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
-			model.addAttribute("errUrl",WX_ERROR);
-			return WX_ERROR;
-		}else {
-			model.addAttribute("openId",openId);
+		try {
+			
+	/*		if(!DeviceUtils.isWeChat(request)) {
+				response.sendRedirect(request.getRequestURL().toString());
+			}*/
+			//获取微信号
+			//String openId = getOpenId(request, response);//获取微信号
+			String openId = WxGlobal.TEST_OPEN_ID;
+			//微信号为空
+			if(StringUtils.isEmpty(openId)) {
+				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
+				model.addAttribute("errUrl",WX_ERROR);
+				return WX_ERROR;
+			}else {
+				model.addAttribute("openId",openId);
+			}
+		    logger.info("openId is " + openId);
+		}catch(Exception ex) {
+			ex.printStackTrace();
 		}
-	    logger.info("openId is " + openId);
 		return null;
 	}
 	
@@ -163,12 +171,45 @@ public class WxControl extends BaseController {
 		      if(StringUtils.isEmpty(code)) {
 		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
 		        	return null;
-		      }
-		        
-		      logger.info("code is " + code);
-		      Map<String,String> map = wxService.getOpenIdInfo(code);
-		      if(null != map) {
-		        	openId = map.get("openId");
+		      }else {
+		    	  /**
+		    	   * 不为空的情况两种一种是微信服务器返回的新code 一种是用户强制刷新的旧code
+		    	   * 旧code 获取缓存
+		    	   * 新code 添加缓存 
+		    	   */
+		    	  //是否是旧缓存
+		    	  WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
+		    	  if(null == wxCodeCache) {
+		    		  logger.info("No Code Cache,New Code Cache:"+code);
+		    		  //没有缓存过 添加缓存
+		    		  //获取openID
+		    		  Map<String,String> map = wxService.getOpenIdInfo(code);
+				      if(null != map) {
+				        	openId = map.get("openId");
+				      }
+				      if(null !=openId) {
+				    	  logger.info("Add New Code Cache:"+openId);
+				    	  //获取openID之后 缓存数据
+			    		  wxCodeCache = new WxCodeCache(openId);
+			    		  //记录键值 为之后删除
+			    		  CacheUtils.putWxCodeKey(code, openId);  
+			    		  CacheUtils.put(code, wxCodeCache);
+				      }
+		    	  }else {
+		    		  logger.info("Code Cache:"+code);
+		    		  //缓存过
+		    		  //查看过期时间
+		    		  long timeOut = wxCodeCache.getTimeOut();
+		    		  if(System.currentTimeMillis() > timeOut) {
+		    			   //移除缓存 过时了
+		    			  CacheUtils.remove(code);
+		    		  }
+		    		  logger.info("Code Cache Clear All TimeOut");
+		    		  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
+		    		  openId = wxCodeCache.getOpenId();//缓存的openId
+		    		  logger.info("Cahce OpenId Is " + openId);
+		    	  }
+		    	  logger.info("code is " + code);
 		      }
 		 }catch(Exception e) {
 			 e.printStackTrace();
@@ -198,6 +239,7 @@ public class WxControl extends BaseController {
 		if(null == sysWxUserCheck) {
 			model.addAttribute("message",ERR_USER_ID_NULL);
 			model.addAttribute("errUrl",WX_USER_CHECK_START);
+			model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 			return WX_USER_CHECK_START;//用户不存在,返回注册页面
 		}
 		String state = sysWxUserCheck.getState();
@@ -252,6 +294,7 @@ public class WxControl extends BaseController {
 		if(null != sysWxUser) {
 			model.addAttribute("sysWxUser",sysWxUser);
 		}
+		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_ID_CARD_USERINFO_MODIFY;
 	}
 	
@@ -298,6 +341,7 @@ public class WxControl extends BaseController {
 			//未注册或者未激活 跳转到指定页面
 			return isRegAndActive;
 		}
+		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_EXPRESS_ADD;
 	}
 	
@@ -321,6 +365,7 @@ public class WxControl extends BaseController {
 			//未注册或者未激活 跳转到指定页面
 			return isRegAndActive;
 		}
+		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_EXPRESS_PICK;
 	}
 	
@@ -345,6 +390,7 @@ public class WxControl extends BaseController {
 			return isRegAndActive;
 		}
 	    logger.info("openId is " + openId);
+	    model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_USER_CHECK_START;
 	}
 	
@@ -373,43 +419,6 @@ public class WxControl extends BaseController {
 		return WX_PERSON_INDEX;
 	}
 		
-	
-	/**
-	 * 页面验证-是否是审核状态
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/checkActive",method=RequestMethod.GET)
-	public String checkActive(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String errCode_1 = "1";
-		String errUrl = (String)model.asMap().get("errUrl");
-		if(null != errUrl) {
-			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
-		}
-		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String successCode = "0";
-		String errCode_2 = "2";
-		//微信号为空
-		if(StringUtils.isEmpty(openId)) {
-			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
-		}
-		
-		//用户不存在,返回注册页面
-		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
-		if(null == sysWxUserCheck) {
-			return backJsonWithCode(errCode_1,ERR_USER_NOT_REG);//用户未注册
-		}
-		String state = sysWxUserCheck.getState();
-		if("0".equals(state)) {
-			return backJsonWithCode(errCode_2,ERR_NO_ACTIVE);//用户已注册，但未激活，返回审核等待状态
-		}
-		
-		return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
-	}
 	
 	/**
 	 * 获取个人首页
@@ -479,94 +488,7 @@ public class WxControl extends BaseController {
 		}
 	}
 	
-	/**
-	 * 发送微信验证码
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value="/sendWxPhoneMsgCode",method=RequestMethod.POST)
-	@ResponseBody
-	public String sendWxPhoneMsgCode(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String phoneNumber = request.getParameter("phone").trim();
-		String successCode = "0";
-		String errorCode = "1";
-		String promotCode = "2";//提示用户耐心等待
-		//手机号不能为空
-		if(StringUtils.isEmpty(phoneNumber)) {
-			return backJsonWithCode(errorCode,ERR_PHONE_NULL);
-		}
-		
-		//手机号码格式不正确
-		if(!PhoneUtils.validatePhone(phoneNumber)) {
-			return backJsonWithCode(errorCode,ERR_PHONE_PATTERN);
-		}
-		
-		//用户已经注册（未激活）
-		if(null!=wxService.findUserCheckByPhone(phoneNumber)) {
-			return backJsonWithCode(errorCode,ERR_SAME_PHONE_NO_ACTIVE);
-		}
-		
-		//用户已经注册
-		if(null!=wxService.findByPhone(phoneNumber)) {
-			return backJsonWithCode(errorCode,ERR_SAME_PHONE);
-		}
-		
-		//手机号码前缀 moblie_123456789
-		String cacheKey = Global.PREFIX_MOBLIE_CODE + phoneNumber;
-		
-		PhoneMsgCache phoneMsgCache = (PhoneMsgCache)CacheUtils.get(cacheKey);
-		
-		//已经发送过验证码
-		if(null != phoneMsgCache) {
-			
-			//如果注册时间和当前不是同一天 注册次数恢复为初始值
-			if(!CasUtils.isSameDay(phoneMsgCache.getRegTime(), System.currentTimeMillis())) {
-				phoneMsgCache.resetSendTime();
-			}
-			
-			//用户可能没收到短信，会点击多次，需要限制用户点击次数，不能超过规定次数
-			
-			//是否提示用户，如果没有，需要提示用户耐心等待
-			if(!phoneMsgCache.isPrompt()) {
-				//提示
-				phoneMsgCache.setPrompt(true);//记录已经提示过了
-				return backJsonWithCode(promotCode,ERR_PROMPT_USER_CONFIRE);
-				
-				
-				
-			}
-			
-			//提示过后仍然点击获取验证码
-			//验证注册次数
-			int sendTimes = phoneMsgCache.getSendTimes();
-			if(sendTimes > Global.MOBILE_TIMES) {
-				return backJsonWithCode(errorCode,ERR_TOO_MONEY);
-			}
-			
-			String code = CasUtils.getRandomDigitalString(4);//验证码
-			logger.info("验证码是:"+code);
-			//AliyunSendMsgUtils.sendMsg(phoneNumber, code);//测试环境先注释
-			phoneMsgCache.setValue(code);
-			phoneMsgCache.setSendTimes(++sendTimes);
-			//注册时间
-			phoneMsgCache.setRegTime(System.currentTimeMillis());
-			//过期时间30分钟
-			phoneMsgCache.setTimeOut(System.currentTimeMillis()+1000*60*30);
-			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
-		}else {
-			//没发送过验证码，发送验证码
-			String code = CasUtils.getRandomString(Global.MOBILE_CODE_SIZE);//验证码
-			logger.info("验证码是:"+code);
-			phoneMsgCache = new PhoneMsgCache(code);
-			CacheUtils.put(cacheKey, phoneMsgCache);//缓存
-			CacheUtils.putPhoneMsgCacheKey(cacheKey);//添加缓存key 方便之后移除
-			//发送验证码
-			//AliyunSendMsgUtils.sendMsg(phoneNumber, code);//测试环境先注释
-			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
-		}
-	}
+	
 	
 	
 	/**
@@ -1076,164 +998,6 @@ public class WxControl extends BaseController {
 		wxService.endExpress(expNum, openId);
 		return backJsonWithCode(successCode,MSG_EXPRESS_QUERY_SUCCESS);
 	}
-	
-	//获取页面(测试时使用，运行时可删除)
-	@RequestMapping(value="/clickUrl",method=RequestMethod.GET)
-	@ResponseBody
-	public String clickUrl(HttpServletRequest request, HttpServletResponse response) {
-		String urlParam = request.getParameter("url");
-		String url = null;
-		String jsonResult = null;
-		switch(urlParam) {
-			case "index":
-				//首页
-				url = WxGlobal.getUserClick("https://x.xlhtszgh.cn/kd/wx/oAuthRedirectSo",true);
-				break;
-			case "tiePerson":
-				//绑定个人中心
-				url = WxGlobal.getUserClick("https://x.xlhtszgh.cn/kd/wx/oAuthRedirectSo",false);
-				break;
-		}
-		if(null != url) {
-			jsonResult = JSONObject.toJSONString(url);
-			logger.info("url是:"+url);
-		}else {
-			logger.info("url不存在");
-		}
-		return jsonResult;
-	}
-	
-	/**
-	 * 授权回调
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value="/oAuthRedirectSo",method=RequestMethod.GET)
-	public String oAuthRedirectSo(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String retPage = null;
-		try {
-			// 将请求、响应的编码均设置为UTF-8（防止中文乱码）  
-	        request.setCharacterEncoding("UTF-8");  
-	        response.setCharacterEncoding("UTF-8"); 
-	        String code=request.getParameter("code");//获取code
-	        logger.info("code is " + code);
-	        
-	        SysWxInfo sysWxInfo = new SysWxInfo();
-	        sysWxInfo = wxService.saveOpenId(code);
-	        if(null == sysWxInfo) {
-	        	retPage = "/error/500.jsp";
-	        	return retPage;
-	        }else {
-	        	String idCard = sysWxInfo.getIdCard();
-	        	if(null == idCard) {
-	        		//没有身份信息
-	        		model.addAttribute("sysWxInfo", sysWxInfo);
-	        		model.addAttribute("openId", sysWxInfo.getOpenId());
-	        		retPage = WX_ID_CARD_USERINFO_ADD;
-		        	return retPage;
-	        	}else {
-	        		//有身份信息
-	        		model.addAttribute("openId",sysWxInfo.getOpenId());
-	        		model.addAttribute("sysWxUser", wxService.findByIdCard(idCard));
-	        		retPage = WX_ID_CARD_USERINFO_MODIFY;
-		        	return retPage;
-	        	}
-	        }
-		}catch(Exception ex) {
-			 logger.info("request getUserAccessToken error");
-			 ex.printStackTrace();
-		}
-		return retPage;
-	}
-	
-	/**
-	 * 微信接口测试-创建菜单
-	 * @param model
-	 * @return
-	 */
-	//创建菜单
-	@RequestMapping(value = {"createMenu"})
-	public String wxCreateMenu(Model model) {
-		wxMenuManager.createMenu();
-		return null;
-	}
-	
-	/**
-	 * 生成access_token
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = {"getAt"})
-	public String wxAccessToken(Model model) {
-		WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
-		wtUtils.getAccessToken();
-		return null;
-	}
-	
-	/**
-	 * 接收微信消息
-	 * @param request
-	 * @param response
-	 */
-	@RequestMapping(value="/doGet",method=RequestMethod.POST)
-	public void wxAcceptMsg(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("微信消息进入");
-	    try {
-        	// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
-        	request.setCharacterEncoding("UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            //解析微信返回的xml  
-            String retMsg = wxService.WxPostMsgProcess(request);//返回消息
-            PrintWriter out = response.getWriter();
-            out.print(retMsg);
-            out.close();
-        }catch(Exception ex) {
-        	System.out.println("接收微信消息出错");
-        	ex.printStackTrace();
-        }
-	    System.out.println("微信消息处理完成");
-	}
-	
-	/**
-	 * 认证微信服务器
-	 * @param request
-	 * @param response
-	 */
-	@RequestMapping(value="/doGet",method=RequestMethod.GET)
-	public void wxServerCertification(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("开始签名校验");
-		try {
-			//提取参数			
-			String signature = request.getParameter("signature");
-			String timestamp = request.getParameter("timestamp");
-			String nonce = request.getParameter("nonce");
-			String echostr = request.getParameter("echostr");
-			 
-			ArrayList<String> array = new ArrayList<String>();
-			array.add(signature);
-			array.add(timestamp);
-			array.add(nonce);
-			//排序
-			String sortString = wxService.sort(timestamp, nonce);
-			//加密
-			String mytoken = wxService.sha1(sortString);
-			//比对
-			//校验签名
-		    if (mytoken != null && mytoken != "" && mytoken.equals(signature)) {
-		        System.out.println("签名校验通过。");
-		        response.getWriter().println(echostr); //如果检验成功输出echostr，微信服务器接收到此输出，才会确认检验完成。
-		    } else {
-		        System.out.println("签名校验失败。");
-		    }
-		}catch(Exception ex) {
-			System.out.println("签名校验失败，出现异常。");
-			ex.printStackTrace();
-		}
-		System.out.println("签名校验结束");
-	}
-	
-	
+
 	
 }

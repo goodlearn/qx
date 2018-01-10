@@ -4,8 +4,11 @@
 package com.thinkgem.jeesite.common.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.shiro.cache.Cache;
@@ -14,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
+import com.thinkgem.jeesite.common.entity.WxCodeCache;
 
 /**
  * Cache工具类
@@ -29,10 +33,55 @@ public class CacheUtils {
 
 	//手机验证码缓存Key
 	private static List<String> phoneMsgCacheKeies = new ArrayList<String>();
+	//code和openId的对应 如果是新code获取的openId后，将之前的code移除掉的关联
+	private static Map<String,String> wxCodeOpenRelations = new HashMap<String,String>();
+	
+	//移除微信code缓存
+	public static void removeWxCodeKey(String key) {
+		remove(key);
+	}
+	
+	//添加微信code缓存Key
+	public static void putWxCodeKey(String code,String openId) {
+		wxCodeOpenRelations.put(openId, code);
+	}
 	
 	//添加手机验证码缓存Key
 	public static void putPhoneMsgCacheKey(String key) {
 		phoneMsgCacheKeies.add(key);
+	}
+	
+	//openId的缓存
+	public static String getCodeByOpenId(String openId) {
+		return wxCodeOpenRelations.get(openId);
+	}
+	
+	//openId的缓存清除掉
+	public static String removeCodeByOpenId(String openId) {
+		return wxCodeOpenRelations.remove(openId);
+	}
+	
+	//清除过期微信code
+	public static void clearWxCodeCacheKeies() {
+		Set<Entry<String, String>> entrySet = wxCodeOpenRelations.entrySet();
+		Iterator<Entry<String, String>> its = entrySet.iterator();
+		while(its.hasNext()) {
+			Entry<String, String> key = its.next();
+			String cacheKey = key.getValue();//code
+			String cacheValue = key.getKey();//openId
+			WxCodeCache wxCodeCache = (WxCodeCache)get(cacheKey);
+			if(null == wxCodeCache) {
+				//已经空了 准备移除掉
+				wxCodeOpenRelations.remove(cacheValue);
+			}else {
+				long timeOut = wxCodeCache.getTimeOut();
+				if(System.currentTimeMillis() > timeOut) {
+					//已经超时了
+					wxCodeOpenRelations.remove(cacheValue);
+					remove(cacheKey);//移除缓存
+				}
+			}
+		}
 	}
 	
 	//清除过期手机验证码

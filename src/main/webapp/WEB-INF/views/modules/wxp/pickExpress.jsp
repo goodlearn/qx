@@ -151,6 +151,7 @@
 		<div class="expPickInput">
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+				<input id="wxCode" type="hidden" value="${wxCode}" />
 				<div class="userInputCont">
 					<div class="inputTypeCont">
 						<div class="inputTitle">证件</div>
@@ -174,6 +175,7 @@
 <script type="text/javascript">
 	$(function() {
 		var pageContextVal = $("#PageContext").val();
+		var wxCodeVal = $("#wxCode").val();
 		function rzGetExpInfo(name,phone,expComp,address,expNum) {
 			var $expUserInfoDiv = $("<div class='expUserInfoDiv'></div>");
 
@@ -203,8 +205,8 @@
 				var expNum = $(this).siblings().first().text();
 				 $.ajax({
 				     type:'POST',
-				     url:pageContextVal+'/wx/endExpress',
-				     data:{'expNum':expNum},
+				     url:pageContextVal+'/ul/endExpress',
+				     data:{'expNum':expNum,'code':wxCodeVal},
 				     dataType: "json",
 				     success:function(data){
 				    	switch(data.code){
@@ -237,8 +239,8 @@
 			
 			 $.ajax({
 			     type:'POST',
-			     url:pageContextVal+'/wx/queryExpress',
-			     data:{'idCard':expPickUserId},
+			     url:pageContextVal+'/ul/queryExpress',
+			     data:{'idCard':expPickUserId,'code':wxCodeVal},
 				 dataType: "json",
 			     success:function(data){
 			    	    var jsontmp3 = data;

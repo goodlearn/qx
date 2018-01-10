@@ -103,7 +103,7 @@
 		${message}
 		<div class="solidCont">
 			<div class="infoCheckEditCont">
-				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/wx/savePersonUserInfo" method="post">
+				<form id="saveForm" class="form-signin" action="${pageContext.request.contextPath}/ul/savePersonUserInfo" method="post">
 					<div class="userInputCont">
 						<div class="inputTypeCont">
 							<div class="inputTitle">姓名</div>

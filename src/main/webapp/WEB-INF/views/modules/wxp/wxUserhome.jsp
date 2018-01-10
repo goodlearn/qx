@@ -177,7 +177,7 @@
 
 		// user Info Edit
 		$(".editUserInfo").click(function(){
-			window.location.href=pageContextVal+"/wx/reqUserInfoEdit"; 
+			window.location.href=pageContextVal+"/ul/reqUserInfoEdit"; 
 		});
 		$(".expUserInfo").click(function(){
 			window.location.href="userLazyboard.html"; 

@@ -104,32 +104,12 @@
 			switch(clickNum){
 				//个人中心
 				case(0): 
-					$.ajax({
-					    type:'GET',
-					    url:pageContextVal+'/wx/checkActive',
-					    data:{'openId':"person"},
-					    dataType: "json",
-					    success:function(data){
-					    	var prompt = "操作提示";
-					    	var code = data.code;
-					    	var message = data.message;
-					    	if(code == "0"){
-					    		window.location.href= pageContextVal+"/wx/userHome"; 
-					    	}else if(code == "1"){
-					    		window.location.href= pageContextVal+"/wx/reqUserCheckState";
-					    	}else{
-					    		rzAlert(prompt,message);
-					    	}
-				    	},
-					    error:function(){
-						      
-					    }
-					});
+					window.location.href= pageContextVal+"/ul/userHome"; 
 					break;
 				case(1): window.location.href= ""; break;
 				case(2): window.location.href="./delivery.html"; break;
 				case(3): window.location.href="./sendexpress.html"; break;
-				case(4): window.location.href= pageContextVal+"/wx/reqExpressAssist"; break;
+				case(4): window.location.href= pageContextVal+"/ul/reqExpressAssist"; break;
 				//快递分析
 				//送货上门
 				//我要寄件
