@@ -21,6 +21,10 @@ public class WxGlobal {
 	//发送模板小希URL
 	public static String TMPLATE_MSG_URL = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
 	
+	//JSAPITICKET
+	public static String JS_API_TICKET_REQ_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
+
+	
 	//菜单请求
 	public static String MENUREQUESTURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
 

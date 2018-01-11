@@ -29,6 +29,7 @@ import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DeviceUtils;
 import com.thinkgem.jeesite.common.utils.IdcardUtils;
 import com.thinkgem.jeesite.common.utils.PhoneUtils;
+import com.thinkgem.jeesite.common.utils.WxJsSkdUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
@@ -66,6 +67,22 @@ public class WxController extends BaseController {
 	private final String WX_ID_CARD_USERINFO_ADD = "modules/wxp/wxIdCardUserInfoAdd";
 	//修改个人信息
 	private final String WX_ID_CARD_USERINFO_MODIFY = "modules/wxp/wxIdCardUserInfoModify";
+	
+	/**
+	 * 测试使用(开发可删除)
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/getJsApiSign",method=RequestMethod.GET)
+	public String getJsApiSign(HttpServletRequest request, HttpServletResponse response,Model model) {
+		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		System.out.println("jspApiTicket sign:"+jsonResult);
+		return jsonResult;
+	}
 	
 	/**
 	 * 发送微信验证码

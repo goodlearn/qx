@@ -85,16 +85,24 @@
 }
 
 .userFunColor1{
-	background: #0cbc80;
+	background: url(../wximages/userhomeicon.png) no-repeat;
+	background-size: cover;
 }
 .userFunColor2{
-	background: #fea900;
+	background: url(../wximages/userboardicon.png) no-repeat;
+	background-size: cover;
 }
 .userFunColor3{
-	background: #13c73f;
+	background: url(../wximages/userdeliveryicon.png) no-repeat;
+	background-size: cover;
 }
 .userFunColor4{
-	background: #5787f7;
+	background: url(../wximages/usersendexpicon.png) no-repeat;
+	background-size: cover;
+}
+.userFunColor5{
+	background: url(../wximages/expassistanticon.png) no-repeat;
+	background-size: cover;
 }
 
 /* 遮罩层 */

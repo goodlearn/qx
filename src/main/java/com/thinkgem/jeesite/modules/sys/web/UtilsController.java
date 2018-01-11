@@ -30,6 +30,7 @@ import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DeviceUtils;
 import com.thinkgem.jeesite.common.utils.IdcardUtils;
 import com.thinkgem.jeesite.common.utils.PhoneUtils;
+import com.thinkgem.jeesite.common.utils.WxJsSkdUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
@@ -381,6 +382,19 @@ public class UtilsController extends BaseController {
 			//未注册或者未激活 跳转到指定页面
 			return isRegAndActive;
 		}
+		
+		//获取jsApiTicket
+		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
+		String retCode = map.get("code");
+		if("0".equals(retCode)) {
+			model.addAttribute("appId",WxGlobal.APPID);
+			model.addAttribute("timestamp",map.get("timestamp"));
+			model.addAttribute("nonceStr",map.get("nonceStr"));
+			model.addAttribute("signature",map.get("signature"));
+		}else {
+			logger.info("jsApiTicket is null");
+		}
+		
 		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_EXPRESS_ADD;
 	}

@@ -13,6 +13,7 @@
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/jweixin-1.2.0.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expEnterCont{
 			padding-bottom: 20px;
@@ -59,6 +60,10 @@
 		</div>
 		${message}
 		<div class="expEnterInput">
+				<input id="timestamp" type="hidden" value="${timestamp}" />
+				<input id="noncestr" type="hidden" value="${nonceStr}" />
+				<input id="signature" type="hidden" value="${signature}" />
+				<input id="appId" type="hidden" value="${appId}" />
 			<form>
 				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 				<input id="wxCode" type="hidden" value="${wxCode}" />
@@ -151,7 +156,43 @@
 		$(window).resize(function(){
 			initFun();
 		});
-	});
+		
+		// JSSDK
+		var timestamp = $("#timestamp").val();//时间戳
+        var nonceStr = $("#noncestr").val();//随机串
+        var signature = $("#signature").val();//签名
+        var appId = $("#appId").val();//签名
+        wx.config({
+            debug : true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId : appId, // 必填，公众号的唯一标识
+            timestamp : timestamp, // 必填，生成签名的时间戳
+            nonceStr : nonceStr, // 必填，生成签名的随机串
+            signature : signature,// 必填，签名，见附录1
+            jsApiList : [ 'scanQRCode' ]
+        // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+
+        $(".commonFuncBtnScan").click(function(){
+        	wx.scanQRCode({
+                // 默认为0，扫描结果由微信处理，1则直接返回扫描结果
+                needResult : 1,
+                desc : 'scanQRCode desc',
+                success : function(res) {
+                    //扫码后获取结果参数赋值给Input
+                    var url = res.resultStr;
+                    alert(url);
+                    //商品条形码，取","后面的
+                    // if(url.indexOf(",")>=0){
+                    //     var tempArray = url.split(',');
+                    //     var tempNum = tempArray[1];
+                    //     $("#id_securityCode_input").val(tempNum);
+                    // }else{
+                    //     $("#id_securityCode_input").val(url);
+                    // }
+                }
+            });
+		});
+	})
 </script>
 </body>
 </html>

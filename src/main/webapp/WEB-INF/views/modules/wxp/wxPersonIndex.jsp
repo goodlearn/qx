@@ -31,24 +31,24 @@
 	<div class="funContdiv">
 		<div class="funCont">
 			<div class="userFun">
-				<p class="funIcon userFunColor1">节</p>
+				<p class="funIcon userFunColor1"></p>
 				<p class="funTxt">个人中心</p>
 			</div>
 			<div class="userFun">
-				<p class="funIcon userFunColor2">日</p>
+				<p class="funIcon userFunColor2"></p>
 				<p class="funTxt">懒人排行</p>
 			</div>
 			<div class="userFun">
-				<p class="funIcon userFunColor3">快</p>
+				<p class="funIcon userFunColor3"></p>
 				<p class="funTxt">送货上门</p>
 			</div>
 			<div class="userFun">
-				<p class="funIcon userFunColor4">乐</p>
+				<p class="funIcon userFunColor4"></p>
 				<p class="funTxt">我要寄件</p>
 			</div>
 			<c:if test="${not empty isManager}">
 				<div class="userFun">
-					<p class="funIcon userFunColor4">啊</p>
+					<p class="funIcon userFunColor5"></p>
 					<p class="funTxt">快递助手</p>
 				</div>
 			</c:if>
