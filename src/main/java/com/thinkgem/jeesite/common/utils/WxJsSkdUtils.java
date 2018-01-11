@@ -40,8 +40,7 @@ public class WxJsSkdUtils {
 			//获取jsApiTicket
 			String jsApiTicket = wtUtils.getJsApiTicket(accessToken);
 			
-			StringBuffer sb = request.getRequestURL();
-		    String url = sb.toString();
+		    String url = BasePathUtils.getFullPath(request);
 		    map = WxJsSkdUtils.sign(jsApiTicket, url);
 		    map.put("appId", WxGlobal.APPID);//成功
 		    map.put("code", "0");//成功
@@ -88,7 +87,7 @@ public class WxJsSkdUtils {
         ret.put("nonceStr", nonce_str);
         ret.put("timestamp", timestamp);
         ret.put("signature", signature);
-
+        System.out.println("signature:"+signature);
         return ret;
     }
 
