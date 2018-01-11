@@ -34,6 +34,7 @@ public class BasePathUtils {
 			return realPath;
 		}
 	
+		
 		/**
 		* 获取完整的URL地址，包括参数
 		* */

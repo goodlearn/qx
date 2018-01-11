@@ -80,7 +80,7 @@ public class WxAccessTokenManager {
 		       		 retJsapiTicket = jsonObject.getString("ticket");
 		           	 map.put("time", nowDate + "");
 		           	 map.put("jsapi_ticket", retJsapiTicket);
-		             System.out.println("jsapi_ticket" + jsapi_ticket);  
+		             System.out.println("jsapi_ticket is " + retJsapiTicket);  
 	       		 }else {
 	       			System.out.println("errorCode jsApiTicket" + errcode);  
 	       		 }

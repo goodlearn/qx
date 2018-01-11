@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ public class WxJsSkdUtils {
 	//获取签名
 	public static Map<String, String> getJsApiSign(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, String> map = new HashMap<String,String>();
-		String jsonResult = null;
 		try {
 			//获取AccessToken
 			WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
@@ -41,6 +41,12 @@ public class WxJsSkdUtils {
 			String jsApiTicket = wtUtils.getJsApiTicket(accessToken);
 			
 		    String url = BasePathUtils.getFullPath(request);
+		    
+		    //根据服务器配置更改url中的协议是http还是https 因为nignx可能进行了转换
+		    String isChangePro = DictUtils.getDictValue("协议", "protocol", "http");
+		    if("https".equals(isChangePro)) {
+		    	url.replace("http", "https");
+		    }
 		    map = WxJsSkdUtils.sign(jsApiTicket, url);
 		    map.put("appId", WxGlobal.APPID);//成功
 		    map.put("code", "0");//成功

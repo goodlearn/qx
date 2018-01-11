@@ -24,6 +24,7 @@ import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
 import com.thinkgem.jeesite.common.entity.WxCodeCache;
 import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
+import com.thinkgem.jeesite.common.utils.BasePathUtils;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DeviceUtils;
@@ -78,6 +79,16 @@ public class WxController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/getJsApiSign",method=RequestMethod.GET)
 	public String getJsApiSign(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		 String url = BasePathUtils.getFullPath(request);
+		    
+	    //根据服务器配置更改url中的协议是http还是https 因为nignx可能进行了转换
+	    String isChangePro = DictUtils.getDictValue("protocol", "severControl", "http");
+	    if("https".equals(isChangePro)) {
+	    	url = url.replace("http", "https");
+	    }
+	    System.out.println("url is "+url);
+		
 		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
 		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
 		System.out.println("jspApiTicket sign:"+jsonResult);
