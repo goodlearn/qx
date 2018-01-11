@@ -77,6 +77,9 @@ public class Global {
 		return System.currentTimeMillis()+1000*60*30;
 	} 
 	
+	public static int WX_CODE_TIME_OUT_INT() {
+		return (int) (WX_CODE_TOME_OUT()/1000);
+	}
 	/**
 	 * 微信消息类型
 	 */

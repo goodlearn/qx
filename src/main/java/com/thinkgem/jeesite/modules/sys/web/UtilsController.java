@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -111,6 +112,7 @@ public class UtilsController extends BaseController {
 	private final String ERR_EXPREE_NOT_EXIST = "快递不存在";
 	private final String ERR_EXPREE_NOT_ENTER = "快递状态非入库状态";
 	private final String ERR_REDIRECT_URL = "重定向地址未获取";
+	private final String ERR_CLIENT_MECHINE = "请在微信客户端打开";
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
 	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功,请前往快递中心审核身份信息";
@@ -134,12 +136,15 @@ public class UtilsController extends BaseController {
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
 			
-	/*		if(!DeviceUtils.isWeChat(request)) {
-				response.sendRedirect(request.getRequestURL().toString());
-			}*/
+			if(!DeviceUtils.isWeChat(request)) {
+				logger.info("不是微信浏览器访问");
+				model.addAttribute("message",ERR_CLIENT_MECHINE);
+				model.addAttribute("errUrl",WX_ERROR);
+				return null;
+			}
 			//获取微信号
-			//String openId = getOpenId(request, response);//获取微信号
-			String openId = WxGlobal.TEST_OPEN_ID;
+			String openId = getOpenId(request, response);//获取微信号
+			//String openId = WxGlobal.TEST_OPEN_ID;
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -161,14 +166,39 @@ public class UtilsController extends BaseController {
 		 try {
 			  request.setCharacterEncoding("UTF-8");  
 		      response.setCharacterEncoding("UTF-8"); 
-		      String code=request.getParameter("code");//获取code
+		      
+		      String code = null;
+		      Cookie[] cookies = request.getCookies();
+		      if(cookies!=null){
+		      		for(Cookie cookie : cookies){
+		      			if(cookie.getName().equals("code")){
+		      				code = cookie.getValue();
+		      				logger.info("初始化获取Code:"+code);
+		      				//如果服务器已经移除code 那么code要重新请求
+		      				 WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
+		      				  if(null == wxCodeCache) {
+		    		    		  //服务器已经移除
+		    		    		  code = null;//置空
+		    		    		  cookie.setMaxAge(0);//移除cookie
+		    		    	  }
+		      			}
+		      		}
+		      }
+		      
+		      
+		      if(null == code) {
+		    	  code = request.getParameter("code");//微信服务器返回了code
+		      }
+		      
 		      StringBuffer sb = request.getRequestURL();
 		      String redirectUrl = sb.toString();
 		      if(StringUtils.isEmpty(redirectUrl)) {
+		    	  logger.info("初始化跳转页面异常");
 		    	  return null;//异常错误
 		      }
 		        
 		      if(StringUtils.isEmpty(code)) {
+		    	  	logger.info("前往微信服务器获取Code");
 		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
 		        	return null;
 		      }else {
@@ -177,6 +207,9 @@ public class UtilsController extends BaseController {
 		    	   * 旧code 获取缓存
 		    	   * 新code 添加缓存 
 		    	   */
+		    	  
+		    	  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
+		    	  
 		    	  //是否是旧缓存
 		    	  WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
 		    	  if(null == wxCodeCache) {
@@ -194,6 +227,14 @@ public class UtilsController extends BaseController {
 			    		  //记录键值 为之后删除
 			    		  CacheUtils.putWxCodeKey(code, openId);  
 			    		  CacheUtils.put(code, wxCodeCache);
+			    		  
+			    		  /**
+			    		   * 存放cookie
+			    		   */
+			    		  Cookie userCookie=new Cookie("code",code);
+			    		  userCookie.setMaxAge(Global.WX_CODE_TIME_OUT_INT());
+			    		  userCookie.setPath("/");
+			    		  response.addCookie(userCookie);
 				      }
 		    	  }else {
 		    		  logger.info("Code Cache:"+code);
@@ -205,7 +246,6 @@ public class UtilsController extends BaseController {
 		    			  CacheUtils.remove(code);
 		    		  }
 		    		  logger.info("Code Cache Clear All TimeOut");
-		    		  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
 		    		  openId = wxCodeCache.getOpenId();//缓存的openId
 		    		  logger.info("Cahce OpenId Is " + openId);
 		    	  }
