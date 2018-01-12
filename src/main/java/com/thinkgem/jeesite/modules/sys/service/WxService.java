@@ -349,7 +349,7 @@ public class WxService extends BaseService implements InitializingBean {
 	 */
 	public Map<String,String> getOpenIdInfo(String code) {
 		Map<String,String> ret = new HashMap<String,String>();
-		String url = String.format(WxGlobal.USERINFO_TOKEN_URL,WxGlobal.APPID,WxGlobal.APPSECREST,code);
+		String url = String.format(WxGlobal.getUserInfoTokenUrl(),WxGlobal.getAppId(),WxGlobal.getAppSecret(),code);
 		logger.info("request accessToken from url: {}", url);
 		JSONObject jsonObject = WxUrlUtils.httpRequest(url, Global.GET_METHOD, null);
 		if(null != jsonObject) {
@@ -620,24 +620,24 @@ public class WxService extends BaseService implements InitializingBean {
 		
 		//first.DATA
 		WxTemplateData first = new WxTemplateData();
-		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setColor(WxGlobal.getTemplateMsgColor_1());
 		first.setValue("账户激活成功通知");
 		WxTemplateData keyword1 = new WxTemplateData();
-		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword1.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword1.setValue(DateUtils.getDateTime());
 		WxTemplateData keyword2 = new WxTemplateData();
-		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword2.setValue(username);
 		WxTemplateData remark = new WxTemplateData();
 		String content="感谢您的支持，详情请前往快递中心咨询";
-		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setColor(WxGlobal.getTemplateMsgColor_1());
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
 		template.setUrl(null);
 		template.setTouser(toUser);
-		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
-		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_2);
+		template.setTopcolor(WxGlobal.getTemplateMsgColor_2());
+		template.setTemplate_id(WxGlobal.getTemplateMsg_2());
 		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
 		wxTemplateDatas.put("keyword1", keyword1);
 		wxTemplateDatas.put("keyword2", keyword2);
@@ -646,7 +646,7 @@ public class WxService extends BaseService implements InitializingBean {
 		//获取Token
     	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
 		String accessToken = wxAccessTokenManager.getAccessToken();
-		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String url = String.format(WxGlobal.getTemplateMsgUrl(),accessToken);
 		String jsonString = JSONObject.fromObject(template).toString();
 		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
 		logger.info("msg is " + jsonObject);
@@ -684,31 +684,31 @@ public class WxService extends BaseService implements InitializingBean {
 		
 		//first.DATA
 		WxTemplateData first = new WxTemplateData();
-		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setColor(WxGlobal.getTemplateMsgColor_1());
 		first.setValue("您收到一个订单");
 		WxTemplateData keyword1 = new WxTemplateData();
-		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword1.setColor(WxGlobal.getTemplateMsgColor_1());
 		String state = DictUtils.getDictLabel("1","expressState","已完结");
 		keyword1.setValue(state);
 		WxTemplateData keyword2 = new WxTemplateData();
-		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword2.setValue(DateUtils.getDateTime());
 		WxTemplateData keyword3 = new WxTemplateData();
-		keyword3.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword3.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword3.setValue(money);
 		WxTemplateData keyword4 = new WxTemplateData();
-		keyword4.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword4.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword4.setValue(username);
 		WxTemplateData remark = new WxTemplateData();
 		String content="您的快递已取走,谢谢您的合作";
-		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setColor(WxGlobal.getTemplateMsgColor_1());
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
 		template.setUrl(null);
 		template.setTouser(toUser);
-		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
-		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);
+		template.setTopcolor(WxGlobal.getTemplateMsgColor_2());
+		template.setTemplate_id(WxGlobal.getTemplateMsg_1());
 		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
 		wxTemplateDatas.put("keyword1", keyword1);
 		wxTemplateDatas.put("keyword2", keyword2);
@@ -719,7 +719,7 @@ public class WxService extends BaseService implements InitializingBean {
 		//获取Token
     	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
 		String accessToken = wxAccessTokenManager.getAccessToken();
-		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String url = String.format(WxGlobal.getTemplateMsgUrl(),accessToken);
 		String jsonString = JSONObject.fromObject(template).toString();
 		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
 		logger.info("msg is " + jsonObject);
@@ -757,31 +757,31 @@ public class WxService extends BaseService implements InitializingBean {
 		
 		//first.DATA
 		WxTemplateData first = new WxTemplateData();
-		first.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		first.setColor(WxGlobal.getTemplateMsgColor_1());
 		first.setValue("您收到一个订单");
 		WxTemplateData keyword1 = new WxTemplateData();
-		keyword1.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword1.setColor(WxGlobal.getTemplateMsgColor_1());
 		String state = DictUtils.getDictLabel("0","expressState","已入库");
 		keyword1.setValue(state);
 		WxTemplateData keyword2 = new WxTemplateData();
-		keyword2.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword2.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword2.setValue(DateUtils.getDateTime());
 		WxTemplateData keyword3 = new WxTemplateData();
-		keyword3.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword3.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword3.setValue(money);
 		WxTemplateData keyword4 = new WxTemplateData();
-		keyword4.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		keyword4.setColor(WxGlobal.getTemplateMsgColor_1());
 		keyword4.setValue(username);
 		WxTemplateData remark = new WxTemplateData();
 		String content="你的快递已到，请携带身份证前往易度空间领取";
-		remark.setColor(WxGlobal.TEMPLATE_Msg_COLOR_1);
+		remark.setColor(WxGlobal.getTemplateMsgColor_1());
 		remark.setValue(content);
 		
 		WxTemplate template = new WxTemplate();
 		template.setUrl(null);
 		template.setTouser(toUser);
-		template.setTopcolor(WxGlobal.TOP_Msg_COLOR_1);
-		template.setTemplate_id(WxGlobal.TEMPLATE_Msg_1);
+		template.setTopcolor(WxGlobal.getTemplateMsgColor_2());
+		template.setTemplate_id(WxGlobal.getTemplateMsg_1());
 		Map<String,WxTemplateData> wxTemplateDatas = new HashMap<String,WxTemplateData>();
 		wxTemplateDatas.put("keyword1", keyword1);
 		wxTemplateDatas.put("keyword2", keyword2);
@@ -792,7 +792,7 @@ public class WxService extends BaseService implements InitializingBean {
 		//获取Token
     	WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
 		String accessToken = wxAccessTokenManager.getAccessToken();
-		String url = String.format(WxGlobal.TMPLATE_MSG_URL,accessToken);
+		String url = String.format(WxGlobal.getTemplateMsgUrl(),accessToken);
 		String jsonString = JSONObject.fromObject(template).toString();
 		JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.POST_METHOD,jsonString); 
 		logger.info("msg is " + jsonObject);
@@ -831,7 +831,7 @@ public class WxService extends BaseService implements InitializingBean {
         //文本消息
         if (msgType.equals(Global.WX_REQ_MESSAGE_TYPE_TEXT)) {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
-        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.OAUTHREDIRECTURL,true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
+        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.getOauthRedirectUrlIndex(),true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);
         	wechatMsg.setCreateTime(new Date().getTime() + "");
@@ -845,7 +845,7 @@ public class WxService extends BaseService implements InitializingBean {
         	// 订阅
             if (eventType.equals(Global.WX_EVENT_TYPE_SUBSCRIBE)) {
             	WechatTextMsg wechatMsg = new WechatTextMsg();
-            	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.OAUTHREDIRECTURL,true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
+            	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.getOauthRedirectUrlIndex(),true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
             	wechatMsg.setToUserName(fromUserName);
             	wechatMsg.setFromUserName(toUserName);
             	wechatMsg.setCreateTime(new Date().getTime() + "");
@@ -877,7 +877,7 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	//排序
 	public String sort(String timestamp, String nonce) {
-		 String[] strArray = { WxGlobal.WX_TOKEN, timestamp, nonce };
+		 String[] strArray = { WxGlobal.getCertificationToken(), timestamp, nonce };
 		 Arrays.sort(strArray);
 		 StringBuilder sbuilder = new StringBuilder();
 		    for (String str : strArray) {

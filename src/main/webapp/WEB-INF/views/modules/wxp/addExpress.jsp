@@ -15,6 +15,9 @@
 	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/jweixin-1.2.0.js" type="text/javascript"></script>
 	<style type="text/css">
+		.content{
+			position: relative;
+		}
 		.expEnterCont{
 			padding-bottom: 20px;
 		}
@@ -36,6 +39,59 @@
 			background: #1f72ff;
 			color: #fff;
 			font-weight: bolder;
+		}
+		
+		.stopvoicerecord{
+			width: 40%; 
+			height: 50px;
+			position: absolute;
+			top: 20px;
+			right: 40px;
+			display: none;
+			background:purple;
+		}
+		
+		.stopvoicerecord{
+			position: absolute;
+			top: 0%;
+			left: 0%;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.5);
+			z-index: 1001;
+			display: none;
+		}
+		.stopvoicerecord .voiceRecordCont{
+			width: 60%; 
+			background: #fff;
+			border-radius: 8px;
+			position: absolute;
+			top: calc((100% - 216px) / 2);  /*30 + 110 +30 + 10 +36 == 216*/
+			left: 20%;
+			padding: 20px 0px 10px;
+		}
+		.stopvoicerecord .voiceRecordCont img{
+			display: block;
+			margin: 0 auto;
+			width: 110px;
+		}
+		.stopvoicerecord .voiceRecordCont .voiceRecordState{
+			margin: 0px;
+			text-align: center;
+			font-size: 14px;
+			color: #777777;
+			line-height: 30px;
+		}
+		.stopvoicerecord .voiceRecordCont #stopVoiceRecordBtn{
+			margin: 10px auto 0px;
+			width: 90%; 
+			text-align: center;
+			line-height: 36px;
+			background: #3eb94e;
+			font-size: 14px;
+			color: #fff;
+			font-weight: bold;
+			border-radius: 18px;
 		}
 	</style>
 </head>
@@ -71,12 +127,12 @@
 					<div class="inputTypeCont">
 						<div class="inputTitle">单号</div>
 						<input type="text" id="expressId" class="commonInputFunc" name="expressId" placeholder="请输入快递单号...">
-						<div class="commonFuncBtnScan"></div>
+						<div class="commonFuncBtnScan" id="scanQRCodeBtn"></div>
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">手机</div>
 						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
-						<div class="commonFuncBtnScan"></div>
+						<div class="commonFuncBtnScan" id="voiceRecordBtn"></div>
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">取货码</div>
@@ -95,6 +151,14 @@
 				</div>
 			</form>
 			<div class="submitBtn">录入信息</div>
+		</div>
+	</div>
+	<!-- cover voice record -->
+	<div class="stopvoicerecord">
+		<div class="voiceRecordCont">
+			<img src="${ctxStatic}/wx/wximages/voicerecordicon.png" alt="正在录音中...">
+			<p class="voiceRecordState">正在录音中...</p>
+			<div id="stopVoiceRecordBtn">完成录音并识别</div>
 		</div>
 	</div>
 </div>
@@ -148,6 +212,8 @@
 		
 		var initFun = function(){
 			var windowW = $(window).width();
+			var windowH = $(window).height();
+			$(".content").css({"height": windowH + "px"});
 			
 		};
 
@@ -168,30 +234,95 @@
             timestamp : timestamp, // 必填，生成签名的时间戳
             nonceStr : nonceStr, // 必填，生成签名的随机串
             signature : signature,// 必填，签名，见附录1
-            jsApiList : [ 'scanQRCode' ]
+            jsApiList : [
+            	'checkJsApi',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+                'onMenuShareQQ',
+                'onMenuShareWeibo',
+                'hideMenuItems',
+                'showMenuItems',
+                'hideAllNonBaseMenuItem',
+                'showAllNonBaseMenuItem',
+                'translateVoice',
+                'startRecord',
+                'stopRecord',
+                'onRecordEnd',
+                'playVoice',
+                'pauseVoice',
+                'stopVoice',
+                'uploadVoice',
+                'downloadVoice',
+                'chooseImage',
+                'previewImage',
+                'uploadImage',
+                'downloadImage',
+                'getNetworkType',
+                'openLocation',
+                'getLocation',
+                'hideOptionMenu',
+                'showOptionMenu',
+                'closeWindow',
+                'scanQRCode',
+                'chooseWXPay',
+                'openProductSpecificView',
+                'addCard',
+                'chooseCard',
+                'openCard'
+            ]
         // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
         });
 
-        $(".commonFuncBtnScan").click(function(){
-        	wx.scanQRCode({
-                // 默认为0，扫描结果由微信处理，1则直接返回扫描结果
-                needResult : 1,
-                desc : 'scanQRCode desc',
-                success : function(res) {
-                    //扫码后获取结果参数赋值给Input
-                    var url = res.resultStr;
-                    alert(url);
-                    //商品条形码，取","后面的
-                    // if(url.indexOf(",")>=0){
-                    //     var tempArray = url.split(',');
-                    //     var tempNum = tempArray[1];
-                    //     $("#id_securityCode_input").val(tempNum);
-                    // }else{
-                    //     $("#id_securityCode_input").val(url);
-                    // }
-                }
-            });
-		});
+        wx.ready(function() {  
+	        wx.checkJsApi({  
+	            jsApiList : ['scanQRCode'],  
+	            success : function(res) {  
+
+	            }  
+	        });  
+
+	        //扫描二维码  
+	        document.querySelector('#scanQRCodeBtn').onclick = function() {  
+	            wx.scanQRCode({  
+	                needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，  
+	                scanType : [ "qrCode", "barCode" ], // 可以指定扫二维码还是一维码，默认二者都有  
+	                success : function(res) {  
+	                    //扫码后获取结果参数赋值给Input
+	                    var url = res.resultStr;
+	                    var qrCodenum = url.split(",");
+	                    $("#expressId").val(qrCodenum[1]);
+	                }  
+	            });  
+	        };//end_document_scanQRCode  
+
+	     // 语音识别
+	        document.querySelector('#voiceRecordBtn').onclick = function(){
+	        	$(".stopvoicerecord").show();
+	        	wx.startRecord();
+	        };
+
+	        $("#stopVoiceRecordBtn").click(function(){
+	        	$(".stopvoicerecord").hide();
+
+	        	wx.stopRecord({
+					success: function (res) {
+						var localId = res.localId;
+						wx.translateVoice({
+							localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+							isShowProgressTips: 1, // 默认为1，显示进度提示
+							success: function (res) {
+								$("#phone").val(res.translateResult.replace("。",""));
+							}
+						});
+					},
+					cancel: function() {
+						alert("拒绝了就不能录音了哦！");
+					}
+				});
+	        });
+	        
+	          
+	    });//end_ready 
 	})
 </script>
 </body>

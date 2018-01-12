@@ -71,7 +71,7 @@ public class WxAccessTokenManager {
          }else {
 	       	 System.out.println("start jsapi_ticket");
 	       	 System.out.println("jsapi_ticket 超时 ， 或者不存在 ， 重新获取");
-	       	 String url = String.format(WxGlobal.JS_API_TICKET_REQ_URL,accessToken);
+	       	 String url = String.format(WxGlobal.getJsApiTicketUrl(),accessToken);
 	       	 System.out.println("格式化Url:" + url); 
 	       	 JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.GET_METHOD,null); 
 	       	 if(null != jsonObject) {
@@ -101,13 +101,13 @@ public class WxAccessTokenManager {
 		 String time = map.get("time");
          String accessToken = map.get("access_token");
          Long nowDate = new Date().getTime();
-         if (accessToken != null && time != null && nowDate - Long.parseLong(time) < 7000 * 1000) {   
+         if (accessToken != null && time != null && nowDate - Long.parseLong(time) < 7000) {   
               System.out.println("accessToken 存在，且没有超时 ， 返回单例" + accessToken);  
               retAccessToken = accessToken;
          }else {
         	  System.out.println("start access_token");
         	  System.out.println("accessToken 超时 ， 或者不存在 ， 重新获取");
-        	  String url = String.format(WxGlobal.MENUREQUESTURL,WxGlobal.APPID,WxGlobal.APPSECREST);
+        	  String url = String.format(WxGlobal.getInterfaceTokenUrl(),WxGlobal.getAppId(),WxGlobal.getAppSecret());
         	  System.out.println("格式化Url:" + url); 
         	  JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.GET_METHOD,null); 
         	  if(null != jsonObject) {

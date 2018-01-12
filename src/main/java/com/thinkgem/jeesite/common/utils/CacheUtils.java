@@ -77,7 +77,7 @@ public class CacheUtils {
 				long timeOut = wxCodeCache.getTimeOut();
 				if(System.currentTimeMillis() > timeOut) {
 					//已经超时了
-					wxCodeOpenRelations.remove(cacheValue);
+					its.remove();
 					remove(cacheKey);//移除缓存
 				}
 			}

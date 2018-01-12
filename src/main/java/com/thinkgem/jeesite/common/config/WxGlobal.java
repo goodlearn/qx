@@ -3,6 +3,8 @@ package com.thinkgem.jeesite.common.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+
 /**
 * @author wzy
 * @version 创建时间：2018年1月2日 下午4:29:52
@@ -11,53 +13,80 @@ import org.slf4j.LoggerFactory;
 */
 public class WxGlobal {
 
+	public static String getCertificationToken() {
+		return DictUtils.getDictValue("CERTIFICATION_TOKEN", "systemControl", "");
+	}
 	
-	public static String WX_TOKEN = "V189006VVxvvO8S6VHVQo9KfVAs1eS0Z";
+	public static String getAppId() {
+		return DictUtils.getDictValue("APP_ID", "systemControl", "");
+	}
 	
-	public static final String APPID = "wxd186964df0fdbfd5";
+	public static String getAppSecret() {
+		return DictUtils.getDictValue("APP_SECRET", "systemControl", "");
+	}
 	
-	public static final String APPSECREST = "30b3282df5334af8a8d62706a2669a8e";
-	
-	//发送模板小希URL
-	public static String TMPLATE_MSG_URL = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
+	//模板消息Url
+	public static String getTemplateMsgUrl() {
+		return DictUtils.getDictValue("TMPLATE_MSG_URL", "systemControl", "");
+	}
 	
 	//JSAPITICKET
-	public static String JS_API_TICKET_REQ_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
-
+	public static String getJsApiTicketUrl() {
+		return DictUtils.getDictValue("JS_API_TICKET_URL", "systemControl", "");
+	}
 	
-	//菜单请求
-	public static String MENUREQUESTURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
-
+	//获取接口Token
+	public static String getInterfaceTokenUrl() {
+		return DictUtils.getDictValue("INTERFACE_TOKEN_URL", "systemControl", "");
+	}
+	
 	//授权回调
-	public static String OAUTHREDIRECTURL = "http://x.xlhtszgh.cn/kd/wx/getPersonIndex";
+	public static String getOauthRedirectUrlIndex() {
+		return DictUtils.getDictValue("OAUTH_REDIRECT_URL_INDEX", "systemControl", "");
+	}
 	
-	//授权请求
-	public static String OAUTHREQUESTURL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=state=wzy_state#wechat_redirect";
-	public static String OAUTHREQUESTURL_USERINFO = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=state=wzy_state#wechat_redirect";
+	//请求用户信息code
+	public static String getReqOpenIdUrlCode() {
+		return DictUtils.getDictValue("REQ_OPENID_URL_CODE", "systemControl", "");
+	}
+	
+	//请求用户信息code
+	public static String getReqUserInfoUrlCode() {
+		return DictUtils.getDictValue("REQ_USER_INFO_URL", "systemControl", "");
+	}
+	
 
-	//请求Token
-	public static String USERINFO_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
+	//请求用户信息token
+	public static String getUserInfoTokenUrl() {
+		return DictUtils.getDictValue("REQ_USERINFO_TOKEN_URL", "systemControl", "");
+	}
 
 	//微信模板
-	public static String TEMPLATE_Msg_1 = "DQjKDzP4EQqrA6r_abDDYJjyNZ9071tuDls2DeNrJZA";
-	public static String TEMPLATE_Msg_2 = "43WT2ikE7JLLBMcBRPqZyW_HgLiDjpoX6X7h05_Mscw";
+	public static String getTemplateMsg_1() {
+		return DictUtils.getDictValue("TEMPLATE_MSG_1", "systemControl", "");
+	}
+	
+	public static String getTemplateMsg_2() {
+		return DictUtils.getDictValue("TEMPLATE_MSG_2", "systemControl", "");
+	}
 	//微信模板颜色
-	public static String TEMPLATE_Msg_COLOR_1 = "#173177";
+	public static String getTemplateMsgColor_1() {
+		return DictUtils.getDictValue("TEMPLATE_MSG_COLOR_1", "systemControl", "");
+	}
 	
-	public static String TOP_Msg_COLOR_1 = "#000000";
+	public static String getTemplateMsgColor_2() {
+		return DictUtils.getDictValue("TEMPLATE_MSG_COLOR_2", "systemControl", "");
+	}
 	
-	//测试OPEN_ID
-	public static String TEST_OPEN_ID = "ouboC0mSlX4erWMYpj67sSLLdksU";
-	//ouboC0t-H5ie5jHxb9ECPsvnY7Ow
-	//ouboC0n6QJOO1OcgwoeNh4XNCfjk
-	//ouboC0mSlX4erWMYpj67sSLLdksU
+	public static String getTestOpenId() {
+		return DictUtils.getDictValue("TEST_OPEN_ID", "systemControl", "");
+	}
 
-	
 	public static String getUserClick(String redirectUrl,boolean isBase) {
 		if(isBase) {
-			return String.format(WxGlobal.OAUTHREQUESTURL,WxGlobal.APPID,redirectUrl);
+			return String.format(WxGlobal.getReqOpenIdUrlCode(),WxGlobal.getAppId(),redirectUrl);
 		}else {
-			return String.format(WxGlobal.OAUTHREQUESTURL_USERINFO,WxGlobal.APPID,redirectUrl);
+			return String.format(WxGlobal.getReqUserInfoUrlCode(),WxGlobal.getAppId(),redirectUrl);
 		}
 	}
 }

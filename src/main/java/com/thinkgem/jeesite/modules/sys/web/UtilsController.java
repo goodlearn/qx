@@ -145,7 +145,8 @@ public class UtilsController extends BaseController {
 			}
 			//获取微信号
 			String openId = getOpenId(request, response);//获取微信号
-			//String openId = WxGlobal.TEST_OPEN_ID;
+			 
+			//String openId = WxGlobal.getTestOpenId();
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -245,10 +246,11 @@ public class UtilsController extends BaseController {
 		    		  if(System.currentTimeMillis() > timeOut) {
 		    			   //移除缓存 过时了
 		    			  CacheUtils.remove(code);
+		    		  }else {
+			    		  openId = wxCodeCache.getOpenId();//缓存的openId
+			    		  logger.info("Cahce OpenId Is " + openId);
+			    		  logger.info("没过时");
 		    		  }
-		    		  logger.info("Code Cache Clear All TimeOut");
-		    		  openId = wxCodeCache.getOpenId();//缓存的openId
-		    		  logger.info("Cahce OpenId Is " + openId);
 		    	  }
 		    	  logger.info("code is " + code);
 		      }
@@ -387,7 +389,7 @@ public class UtilsController extends BaseController {
 		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
 		String retCode = map.get("code");
 		if("0".equals(retCode)) {
-			model.addAttribute("appId",WxGlobal.APPID);
+			model.addAttribute("appId",WxGlobal.getAppId());
 			model.addAttribute("timestamp",map.get("timestamp"));
 			model.addAttribute("nonceStr",map.get("nonceStr"));
 			model.addAttribute("signature",map.get("signature"));

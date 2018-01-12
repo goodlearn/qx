@@ -43,14 +43,14 @@ public class WxJsSkdUtils {
 		    String url = BasePathUtils.getFullPath(request);
 		    
 		    //根据服务器配置更改url中的协议是http还是https 因为nignx可能进行了转换
-		    String isChangePro = DictUtils.getDictValue("protocol", "severControl", "http");
+		    String isChangePro = DictUtils.getDictValue("httpProtocol", "systemControl", "http");
 		    //String isChangePro = DictUtils.getDictValue("协议", "protocol", "http");
 		    if("https".equals(isChangePro)) {
 		    	url = url.replace("http", "https");
 		    }
 		    System.out.println("url is " + url);
 		    map = WxJsSkdUtils.sign(jsApiTicket, url);
-		    map.put("appId", WxGlobal.APPID);//成功
+		    map.put("appId", WxGlobal.getAppId());//成功
 		    map.put("code", "0");//成功
 		}catch(Exception ex) {
 			map.put("code", "1");//失败
