@@ -69,17 +69,18 @@ public class SystemService extends BaseService implements InitializingBean {
 	}
 
 	//短信是否超出限额
-		public boolean isAliyunMsgLimit() {
+	public boolean isAliyunMsgLimit() {
 			String sendMaxNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");//最大次数
 			String currentNum = DictUtils.getDictValue("ALIYUN_MSG_SEND_MSG", "systemControl", sendMaxNum);//目前次数
 			if(Integer.valueOf(currentNum) < Integer.valueOf(sendMaxNum)) {
 				return false;//没有超出 可以发送
 			}
 			return false;
-		}
+	}
 		
-		//阿里云短信发送次数增加一次，防止短信次数超出套餐限额
-		public void aliyunMsgNumAdd() {
+	//阿里云短信发送次数增加一次，防止短信次数超出套餐限额
+	@Transactional(readOnly = false)
+	public void aliyunMsgNumAdd(User user) {
 			//已经发送次数
 			List<Dict> dicts = DictUtils.getDictList("systemControl");
 			if(null == dicts) {
@@ -115,8 +116,10 @@ public class SystemService extends BaseService implements InitializingBean {
 			
 			intValue++;//一个
 			sendDict.setValue(intValue.toString());
+			sendDict.setUpdateBy(user);
+			sendDict.setUpdateDate(new Date());
 			dictDao.update(sendDict);//保存次数
-		}
+	}
 
 	//-- User Service --//
 	

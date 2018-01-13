@@ -183,7 +183,7 @@ public class SysExpressController extends BaseController {
 			if(null!=returnMsg) {
 				addMessage(redirectAttributes, returnMsg + " 快递已入库");
 			}else {
-				addMessage(redirectAttributes, "消息发送失败,快递已入库");
+				addMessage(redirectAttributes, "消息发送成功,快递已入库");
 			}
 		}else {
 			addMessage(redirectAttributes, "快递已入库");

@@ -155,6 +155,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	}
 	
 	//发送短信消息
+	@Transactional(readOnly = false)
 	public String sendAliyunMsgTemplate(SysExpress sysExpress,User user) {
 		//发送验证码
 		if(systemService.isAliyunMsgLimit()) {
@@ -169,7 +170,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			return "消息接口调用发送失败";
 		}
 		//发送成功 记录下发送的次数
-		systemService.aliyunMsgNumAdd();
+		systemService.aliyunMsgNumAdd(user);
 		return null;//成功
 	}
 		

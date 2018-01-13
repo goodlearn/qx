@@ -44,6 +44,7 @@ import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
 import com.alibaba.fastjson.JSONObject;
 
@@ -238,7 +239,8 @@ public class WxController extends BaseController {
 				return backJsonWithCode(errorCode,ERR_SEND_MSG);
 			}
 			//发送成功 记录下发送的次数
-			systemService.aliyunMsgNumAdd();
+			
+			systemService.aliyunMsgNumAdd(UserUtils.get("1"));
 			
 			//添加缓存
 			phoneMsgCache.setValue(code);
@@ -267,7 +269,7 @@ public class WxController extends BaseController {
 				return backJsonWithCode(errorCode,ERR_SEND_MSG);
 			}
 			//发送成功 记录下发送的次数
-			systemService.aliyunMsgNumAdd();
+			systemService.aliyunMsgNumAdd(UserUtils.get("1"));
 			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
 		}
 	}
