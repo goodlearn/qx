@@ -137,8 +137,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	
 	//入库后发送模板消息
 	@Transactional(readOnly = false)
-	public void save(SysExpress sysExpress,User user) {
-		
+	public SysExpress save(SysExpress sysExpress,User user) {
 		//默认保存数据
 		sysExpress.setId(IdGen.uuid());
 		sysExpress.setMsgState(wxService.queryMsgState(sysExpress));
@@ -146,8 +145,12 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		sysExpress.setCreateDate(new Date());
 		sysExpress.setUpdateBy(user);
 		sysExpress.setUpdateDate(new Date());
-		this.dao.insert(sysExpress);
-		
+		dao.insert(sysExpress);
+		return sysExpress;
+	}
+	
+	//发送模板消息
+	public String sendMsgTemplate(SysExpress sysExpress,User user) {
 		/**
 		 * 发送模板消息
 		 */
@@ -158,12 +161,7 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 			String userName = user.getName();
 			wxService.sendMessageExpress(openId,userName,"0");	
 		}
-	}
-	
-	//保存快递信息
-	@Transactional(readOnly = false)
-	public void saveExpress(SysExpress sysExpress,User user) {
-		save(sysExpress,user);
+		return openId;
 	}
 	
 	@Transactional(readOnly = false)

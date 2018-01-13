@@ -65,31 +65,32 @@ public class WxAccessTokenManager {
 		 String time = map.get("time");
          String jsapi_ticket = map.get("jsapi_ticket");
          Long nowDate = new Date().getTime();
-         if (jsapi_ticket != null && time != null && nowDate - Long.parseLong(time) < 7000 * 1000) { 
-        	 System.out.println("jsapi_ticket 存在，且没有超时 ， 返回单例" + jsapi_ticket);
+         if (jsapi_ticket != null && time != null && (nowDate - Long.parseLong(time)) < 7000 * 1000) { 
+        	 logger.info("当前时间是：" + nowDate);
+        	 logger.info("缓存时间是：" + time);
+        	 logger.info("jsapi_ticket 存在，且没有超时 ， 返回单例：" + jsapi_ticket);
         	 retJsapiTicket = jsapi_ticket;
          }else {
-	       	 System.out.println("start jsapi_ticket");
-	       	 System.out.println("jsapi_ticket 超时 ， 或者不存在 ， 重新获取");
+        	 logger.info("start jsapi_ticket");
+        	 logger.info("jsapi_ticket 超时 ， 或者不存在 ， 重新获取");
 	       	 String url = String.format(WxGlobal.getJsApiTicketUrl(),accessToken);
-	       	 System.out.println("格式化Url:" + url); 
+	       	 logger.info("格式化Url:" + url); 
 	       	 JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.GET_METHOD,null); 
 	       	 if(null != jsonObject) {
 	       		 String errcode = jsonObject.getString("errcode");
 	       		 if("0".equals(errcode)) {
 		       		 retJsapiTicket = jsonObject.getString("ticket");
-		           	 map.put("time", nowDate + "");
+		           	 map.put("time", nowDate.toString());
 		           	 map.put("jsapi_ticket", retJsapiTicket);
-		             System.out.println("jsapi_ticket is " + retJsapiTicket);  
+		           	logger.info("jsapi_ticket is " + retJsapiTicket);  
 	       		 }else {
-	       			System.out.println("errorCode jsApiTicket" + errcode);  
+	       			logger.info("errorCode jsApiTicket" + errcode);  
 	       		 }
 	           	 
 	       	 }else {
-	       		 System.out.println("jsonObject is null");  
+	       		logger.info("jsonObject is null");  
 	       	 }
-	       	 System.out.println("end access_token");  
-       	
+	       	logger.info("end access_token");  
         }
 		 return retJsapiTicket;
 	 }
@@ -101,25 +102,26 @@ public class WxAccessTokenManager {
 		 String time = map.get("time");
          String accessToken = map.get("access_token");
          Long nowDate = new Date().getTime();
-         if (accessToken != null && time != null && nowDate - Long.parseLong(time) < 7000) {   
-              System.out.println("accessToken 存在，且没有超时 ， 返回单例" + accessToken);  
+         if (accessToken != null && time != null && (nowDate - Long.parseLong(time)) < 7000 * 1000) {  
+        	 logger.info("当前时间是：" + nowDate);
+        	 logger.info("缓存时间是：" + time);
+        	 logger.info("accessToken 存在，且没有超时 ， 返回单例：" + accessToken);  
               retAccessToken = accessToken;
          }else {
-        	  System.out.println("start access_token");
-        	  System.out.println("accessToken 超时 ， 或者不存在 ， 重新获取");
+        	 logger.info("start access_token");
+        	 logger.info("accessToken 超时 ， 或者不存在 ， 重新获取");
         	  String url = String.format(WxGlobal.getInterfaceTokenUrl(),WxGlobal.getAppId(),WxGlobal.getAppSecret());
-        	  System.out.println("格式化Url:" + url); 
+        	  logger.info("格式化Url:" + url); 
         	  JSONObject jsonObject = WxUrlUtils.httpRequest(url,Global.GET_METHOD,null); 
         	  if(null != jsonObject) {
         		  retAccessToken = jsonObject.getString("access_token");
-            	  map.put("time", nowDate + "");
+            	  map.put("time", nowDate.toString());
             	  map.put("access_token", retAccessToken);
-            	  System.out.println("access_token" + retAccessToken);  
+            	  logger.info("access_token" + retAccessToken);  
         	  }else {
-        		  System.out.println("jsonObject is null");  
+        		  logger.info("jsonObject is null");  
         	  }
-        	  System.out.println("end access_token");  
-        	
+        	  logger.info("end access_token");  
          }
 		 return retAccessToken;
 	 }

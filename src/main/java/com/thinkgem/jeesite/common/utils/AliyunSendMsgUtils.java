@@ -3,9 +3,6 @@ package com.thinkgem.jeesite.common.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
@@ -20,7 +17,8 @@ public class AliyunSendMsgUtils {
 	
 
 	
-	public static void sendMsg(String phoneNumber,String code) {
+	public static boolean sendMsg(String phoneNumber,String code) {
+		boolean isSend = false;
 		try {
 			//设置超时时间-可自行调整
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -56,6 +54,7 @@ public class AliyunSendMsgUtils {
 			if(sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				//请求成功
 				System.out.println("短信发送成功");
+				isSend = true;
 			}else {
 				System.out.println("短信发送失败" + sendSmsResponse.getMessage());
 			}
@@ -63,6 +62,7 @@ public class AliyunSendMsgUtils {
 			System.out.println("短信发送失败");
 			e.printStackTrace();
 		}
+		return isSend;
 		
 	}
 	

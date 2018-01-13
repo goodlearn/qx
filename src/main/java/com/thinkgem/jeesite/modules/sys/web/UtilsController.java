@@ -189,6 +189,7 @@ public class UtilsController extends BaseController {
 		      
 		      
 		      if(null == code) {
+		    	  logger.info("微信服务器返回Code:"+code);
 		    	  code = request.getParameter("code");//微信服务器返回了code
 		      }
 		      
@@ -209,8 +210,6 @@ public class UtilsController extends BaseController {
 		    	   * 旧code 获取缓存
 		    	   * 新code 添加缓存 
 		    	   */
-		    	  
-		    	  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
 		    	  
 		    	  //是否是旧缓存
 		    	  WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
@@ -245,13 +244,18 @@ public class UtilsController extends BaseController {
 		    		  long timeOut = wxCodeCache.getTimeOut();
 		    		  if(System.currentTimeMillis() > timeOut) {
 		    			   //移除缓存 过时了
+		    			  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
 		    			  CacheUtils.remove(code);
+		    			  logger.info("缓存过时，前往微信服务器获取Code");
+				        response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
 		    		  }else {
 			    		  openId = wxCodeCache.getOpenId();//缓存的openId
 			    		  logger.info("Cahce OpenId Is " + openId);
 			    		  logger.info("没过时");
 		    		  }
+		    		 
 		    	  }
+		    	  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
 		    	  logger.info("code is " + code);
 		      }
 		 }catch(Exception e) {
@@ -288,8 +292,8 @@ public class UtilsController extends BaseController {
 		String state = sysWxUserCheck.getState();
 		if("0".equals(state)) {
 			model.addAttribute("message",ERR_NO_ACTIVE);
-			model.addAttribute("errUrl",WX_WAIT_VALIDATE);
-			return WX_WAIT_VALIDATE;//用户已注册，但未激活，返回审核等待状态
+			model.addAttribute("errUrl",WX_ERROR);
+			return WX_ERROR;//用户已注册，但未激活，返回审核等待状态
 		}
 		return null;//用户已注册，也已经激活，返回空值
 	}

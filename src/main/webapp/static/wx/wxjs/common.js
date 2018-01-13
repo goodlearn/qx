@@ -58,7 +58,7 @@ $(function() {
 		];
 
 		for (var i = 0; i < headNav.length; i++) {
-			headNav[i].href = rooturlarray[0]+"//"+rooturlarray[2]+navArray[i];
+			headNav[i].href = rooturlarray[0]+"//"+rooturlarray[2]+rooturlarray[3]+navArray[i];
 			if(i == 2 || i == 3 || i == 4){
 				headNav[i].style.display = "none";
 			}

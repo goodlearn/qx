@@ -173,8 +173,15 @@ public class SysExpressController extends BaseController {
 		//默认保存快递状态为已入库
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
-		sysExpressService.save(sysExpress,UserUtils.getUser());
-		addMessage(redirectAttributes, "快递已入库");
+		//保存成功
+		sysExpress = sysExpressService.save(sysExpress,UserUtils.getUser());
+		//发送消息
+		if(null == sysExpressService.sendMsgTemplate(sysExpress, UserUtils.getUser()) ) {
+			//发送失败
+			addMessage(redirectAttributes, "未找到消息关联人员,快递已入库");
+		}else {
+			addMessage(redirectAttributes, "快递已入库");
+		}
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}
 	

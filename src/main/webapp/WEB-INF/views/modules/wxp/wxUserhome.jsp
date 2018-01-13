@@ -130,21 +130,12 @@
 				<div class="editUserInfo">
 					完善个人信息
 				</div>
-				<div class="expUserInfo">
-					我的懒人排行
-				</div>
 			</div>
 		</div>
 
 		<div class="userNewsCont">
 			<div class="userNews  userNewsRead">
-				<p>[通知]双十一来临，尽快完善个人信息</p>
-			</div>
-			<div class="userNews  userNewsRead">
-				<p>[通知]双十一来临，尽快完善个人信息</p>
-			</div>
-			<div class="userNews  userNewsUnread userNewsLast">
-				<p>[通知]双十一来临，尽快完善个人信息</p>
+				<p>[通知]请尽快完善个人信息，以便领取快递</p>
 			</div>
 		</div>
 	</div>

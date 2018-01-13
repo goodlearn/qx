@@ -297,15 +297,14 @@
 
 	     // 语音识别
 	        document.querySelector('#voiceRecordBtn').onclick = function(){
-	        	$(".stopvoicerecord").show();
 	        	wx.startRecord();
+	        	$(".stopvoicerecord").show();
 	        };
 
 	        $("#stopVoiceRecordBtn").click(function(){
-	        	$(".stopvoicerecord").hide();
-
 	        	wx.stopRecord({
 					success: function (res) {
+						$(".stopvoicerecord").hide();
 						var localId = res.localId;
 						wx.translateVoice({
 							localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得

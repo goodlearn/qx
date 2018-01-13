@@ -64,6 +64,12 @@ public class WxController extends BaseController {
 	private final String ERR_SAME_PHONE = "该号码已经注册，请绑定其它号码";
 	private final String ERR_PROMPT_USER_CONFIRE = "您好，短信已发送，如果您没有收到，可能是网络有延迟，请耐心等待片刻";
 	private final String ERR_TOO_MONEY = "今日次数已达上限";
+	private final String ERR_SEND_MSG = "短信发送失败";
+	private final String ERR_SEND_MSG_ALIYUN_LIMIT = "短信套餐量已经使用超量";
+	private final String ERR_ID_CARD_PATTERN = "身份证号码格式不正确";
+	private final String ERR_NAME_NULL = "姓名不能为空";
+	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+
 	//个人注册页面
 	private final String WX_ID_CARD_USERINFO_ADD = "modules/wxp/wxIdCardUserInfoAdd";
 	//修改个人信息
@@ -96,9 +102,27 @@ public class WxController extends BaseController {
 	@ResponseBody
 	public String sendWxPhoneMsgCode(HttpServletRequest request, HttpServletResponse response,Model model) {
 		String phoneNumber = request.getParameter("phone").trim();
+		String name = request.getParameter("name").trim();
+		String idCard = request.getParameter("idCard").trim();
 		String successCode = "0";
 		String errorCode = "1";
 		String promotCode = "2";//提示用户耐心等待
+		
+		//姓名不能为空
+		if(StringUtils.isEmpty(name)) {
+			return backJsonWithCode(errorCode,ERR_NAME_NULL);
+		}
+		
+		//身份证不能为空
+		if(StringUtils.isEmpty(idCard)) {
+			return backJsonWithCode(errorCode,ERR_ID_CARD_NULL);
+		}
+		
+		//身份证号格式
+		if(!IdcardUtils.validateCard(idCard)) {
+			return backJsonWithCode(errorCode,ERR_ID_CARD_PATTERN);
+		}
+		
 		//手机号不能为空
 		if(StringUtils.isEmpty(phoneNumber)) {
 			return backJsonWithCode(errorCode,ERR_PHONE_NULL);
@@ -153,7 +177,19 @@ public class WxController extends BaseController {
 			
 			String code = CasUtils.getRandomDigitalString(4);//验证码
 			logger.info("验证码是:"+code);
-			AliyunSendMsgUtils.sendMsg(phoneNumber, code);//测试环境先注释
+			//发送验证码
+			if(wxService.isAliyunMsgLimit()) {
+				//超出限制
+				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
+			}
+			if(!AliyunSendMsgUtils.sendMsg(phoneNumber, code)) {
+				//发送失败
+				return backJsonWithCode(errorCode,ERR_SEND_MSG);
+			}
+			//发送成功 记录下发送的次数
+			wxService.aliyunMsgNumAdd();
+			
+			//添加缓存
 			phoneMsgCache.setValue(code);
 			phoneMsgCache.setSendTimes(++sendTimes);
 			//注册时间
@@ -169,7 +205,16 @@ public class WxController extends BaseController {
 			CacheUtils.put(cacheKey, phoneMsgCache);//缓存
 			CacheUtils.putPhoneMsgCacheKey(cacheKey);//添加缓存key 方便之后移除
 			//发送验证码
-			AliyunSendMsgUtils.sendMsg(phoneNumber, code);//测试环境先注释
+			if(wxService.isAliyunMsgLimit()) {
+				//超出限制
+				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
+			}
+			if(!AliyunSendMsgUtils.sendMsg(phoneNumber, code)) {
+				//发送失败
+				return backJsonWithCode(errorCode,ERR_SEND_MSG);
+			}
+			//发送成功 记录下发送的次数
+			wxService.aliyunMsgNumAdd();
 			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
 		}
 	}

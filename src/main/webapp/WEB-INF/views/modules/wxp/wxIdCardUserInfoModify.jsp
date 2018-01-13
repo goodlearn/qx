@@ -97,7 +97,7 @@
 			text-align: center;
 			line-height: 46px;
 			border-radius: 23px;
-			background: #1f72ff;
+			background: #888888;
 			color: #fff;
 			font-weight: bolder;
 		}
@@ -307,9 +307,7 @@
 		var pageContextVal = $("#PageContext").val();
 		var wxCodeVal = $("#wxCode").val();
 
-		//提交数据
-		$(".submitBtn").click(function(){
-			
+		 var SubmitUserInfo = function(){
 			// 手机号码
 			var usernum = $.trim($("#usernum").val());
 			if (!CheckPhoneNum(usernum)) {
@@ -337,7 +335,7 @@
 			    	var message = data.message;
 			    	if(code == "0"){
 			    		rzAlert(prompt,message);
-			    		window.location.href= pageContextVal+"/wx/userHome";
+			    		window.location.href= pageContextVal+"/ul/userHome";
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
 						$("#oldPhone").show();
@@ -349,7 +347,7 @@
 				      
 			    }
 			});
-		});
+		 };
 		
 		//发送验证码
 		$(".verifiBtn").click(function(){
@@ -413,7 +411,9 @@
 		$(".userModifyPhone").click(function(){
 			$(".userOldPhone").val("");
 			$(".userOldPhone").attr("disabled",false);
-			$(".userNewPhoneDiv").fadeIn();
+			$(".userNewPhoneDiv").fadeIn(); 
+			$(".submitBtn").css({"background":"#1f72ff"});
+			$(".submitBtn").bind("click",SubmitUserInfo);
 		});
 
 		var selectNum  = ['1','01'];

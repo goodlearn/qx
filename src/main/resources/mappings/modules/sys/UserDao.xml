@@ -264,9 +264,8 @@
 	
 	<!-- 逻辑删除用户 -->
 	<update id="delete">
-		UPDATE sys_user SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		delete from sys_user 
+			WHERE id = #{id}
 	</update>
 	
 </mapper>

@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +24,19 @@ import org.springframework.util.StringUtils;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.TimeUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
+import com.thinkgem.jeesite.modules.sys.dao.DictDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysExpressDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserCheckDao;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao;
 import com.thinkgem.jeesite.modules.sys.dao.UserDao;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
@@ -73,11 +77,63 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	@Autowired
 	private SysWxUserCheckDao sysWxUserCheckDao;
-	
 
+	@Autowired
+	private DictDao dictDao;
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
+	}
+	
+	//短信是否超出限额
+	public boolean isAliyunMsgLimit() {
+		String sendMaxNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");//最大次数
+		String currentNum = DictUtils.getDictValue("ALIYUN_MSG_SEND_MSG", "systemControl", sendMaxNum);//目前次数
+		if(Integer.valueOf(currentNum) < Integer.valueOf(sendMaxNum)) {
+			return false;//没有超出 可以发送
+		}
+		return false;
+	}
+	
+	//阿里云短信发送次数增加一次，防止短信次数超出套餐限额
+	public void aliyunMsgNumAdd() {
+		//已经发送次数
+		List<Dict> dicts = DictUtils.getDictList("systemControl");
+		if(null == dicts) {
+			logger.info("systemControl字典不存在");
+			return;
+		}
+		Dict sendDict = null;
+		//找到该参数
+		Iterator<Dict> its = dicts.iterator();
+		while(its.hasNext()) {
+			Dict it = its.next();
+			String label = it.getLabel();
+			if("ALIYUN_MSG_SEND_MSG".equals(label)) {
+				sendDict = it;
+				break;
+			}
+		}
+		if(null == sendDict) {
+			return;//没有找到
+		}
+		
+		//先转换下数值
+		String value = sendDict.getValue();
+		Integer intValue = Integer.valueOf(value);
+		
+		//要求发送的次数
+		String sendNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");
+		Integer sendNumValue = Integer.valueOf(sendNum);
+		if(intValue >= sendNumValue) {
+			//超出次数 不能增加
+			return;
+		}
+		
+		intValue++;//一个
+		sendDict.setValue(intValue.toString());
+		dictDao.update(sendDict);//保存次数
 	}
 	
 	/**
@@ -117,11 +173,17 @@ public class WxService extends BaseService implements InitializingBean {
 	/**
 	 * 依据微信号查询审核信息
 	 */
-	public SysWxInfo findUserManagerByOpenId(String openId) {
+	public User findUserManagerByOpenId(String openId) {
 		if(StringUtils.isEmpty(openId)) {
 			return null;
 		}
-		return sysWxInfoDao.findOperatorByOpenId(openId);
+		
+		SysWxInfo sysWxInfo =  sysWxInfoDao.findOperatorByOpenId(openId);
+		if(null == sysWxInfo) {
+			return null;
+		}
+		String idCard = sysWxInfo.getIdCard();
+		return userDao.findByIdCard(idCard, BaseEntity.DEL_FLAG_NORMAL);
 	}
 	
 	
