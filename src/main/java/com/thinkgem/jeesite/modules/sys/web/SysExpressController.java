@@ -177,8 +177,14 @@ public class SysExpressController extends BaseController {
 		sysExpress = sysExpressService.save(sysExpress,UserUtils.getUser());
 		//发送消息
 		if(null == sysExpressService.sendMsgTemplate(sysExpress, UserUtils.getUser()) ) {
-			//发送失败
-			addMessage(redirectAttributes, "未找到消息关联人员,快递已入库");
+			//微信发送失败
+			//改用短信发送
+			String returnMsg = sysExpressService.sendAliyunMsgTemplate(sysExpress, UserUtils.getUser());
+			if(null!=returnMsg) {
+				addMessage(redirectAttributes, returnMsg + " 快递已入库");
+			}else {
+				addMessage(redirectAttributes, "消息发送失败,快递已入库");
+			}
 		}else {
 			addMessage(redirectAttributes, "快递已入库");
 		}

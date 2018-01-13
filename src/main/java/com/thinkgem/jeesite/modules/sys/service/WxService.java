@@ -78,63 +78,12 @@ public class WxService extends BaseService implements InitializingBean {
 	@Autowired
 	private SysWxUserCheckDao sysWxUserCheckDao;
 
-	@Autowired
-	private DictDao dictDao;
-	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		
 	}
 	
-	//短信是否超出限额
-	public boolean isAliyunMsgLimit() {
-		String sendMaxNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");//最大次数
-		String currentNum = DictUtils.getDictValue("ALIYUN_MSG_SEND_MSG", "systemControl", sendMaxNum);//目前次数
-		if(Integer.valueOf(currentNum) < Integer.valueOf(sendMaxNum)) {
-			return false;//没有超出 可以发送
-		}
-		return false;
-	}
 	
-	//阿里云短信发送次数增加一次，防止短信次数超出套餐限额
-	public void aliyunMsgNumAdd() {
-		//已经发送次数
-		List<Dict> dicts = DictUtils.getDictList("systemControl");
-		if(null == dicts) {
-			logger.info("systemControl字典不存在");
-			return;
-		}
-		Dict sendDict = null;
-		//找到该参数
-		Iterator<Dict> its = dicts.iterator();
-		while(its.hasNext()) {
-			Dict it = its.next();
-			String label = it.getLabel();
-			if("ALIYUN_MSG_SEND_MSG".equals(label)) {
-				sendDict = it;
-				break;
-			}
-		}
-		if(null == sendDict) {
-			return;//没有找到
-		}
-		
-		//先转换下数值
-		String value = sendDict.getValue();
-		Integer intValue = Integer.valueOf(value);
-		
-		//要求发送的次数
-		String sendNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");
-		Integer sendNumValue = Integer.valueOf(sendNum);
-		if(intValue >= sendNumValue) {
-			//超出次数 不能增加
-			return;
-		}
-		
-		intValue++;//一个
-		sendDict.setValue(intValue.toString());
-		dictDao.update(sendDict);//保存次数
-	}
 	
 	/**
 	 * 依据电话和身份证查询(未激活的)

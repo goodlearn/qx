@@ -351,11 +351,22 @@
 		
 		//发送验证码
 		$(".verifiBtn").click(function(){
-			var newPhone = $("#usernewPhone").val();
+			var usernum = $.trim($("#usernum").val());
+			if (!CheckPhoneNum(usernum)) {
+				rzAlert("操作提示","原手机号码格式不对！");
+				return false;
+			}
+
+			var newPhone = $.trim($("#usernewPhone").val());
+			if (!CheckPhoneNum(usernewPhone)) {
+				rzAlert("操作提示","新手机号码格式不对！");
+				return false;
+			}
+			var name = $("#name").val();
 			$.ajax({
 			    type:'POST',
-			    url:pageContextVal+'/wx/sendWxPhoneMsgCode',
-			    data:{'phone':newPhone},
+			    url:pageContextVal+'/wx/sendWxPhoneMsgCodeModify',
+			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone},
 			    dataType: "json",
 			    success:function(data){
 			    	//var result = JSON.parse(data);

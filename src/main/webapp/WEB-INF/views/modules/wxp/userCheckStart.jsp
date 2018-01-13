@@ -255,10 +255,12 @@
 
 		$(".verifiBtn").click(function(){
 			var phone = $("#phone").val();
+			var name = $("#name").val();
+			var idCard = $("#idCard").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/sendWxPhoneMsgCode',
-			    data:{'phone':phone},
+			    data:{'name':name,'idCard':idCard,'phone':phone,'phone':phone},
 			    dataType: "json",
 			    success:function(data){
 			    	//var result = JSON.parse(data);

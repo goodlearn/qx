@@ -41,6 +41,7 @@ import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
@@ -57,10 +58,15 @@ public class WxController extends BaseController {
 	@Autowired
 	private WxService wxService;
 	
+	@Autowired
+	private SystemService systemService;
+	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
 	private final String ERR_PHONE_NULL = "电话不能为空";
+	private final String ERR_SAME_OLD_NEW_PHONE = "新旧手机号码一致";
 	private final String ERR_PHONE_PATTERN = "手机号码格式不正确";
 	private final String ERR_SAME_PHONE_NO_ACTIVE = "该号码已经注册，未审核激活，请携带身份证前往快递中心激活";
+	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
 	private final String ERR_SAME_PHONE = "该号码已经注册，请绑定其它号码";
 	private final String ERR_PROMPT_USER_CONFIRE = "您好，短信已发送，如果您没有收到，可能是网络有延迟，请耐心等待片刻";
 	private final String ERR_TOO_MONEY = "今日次数已达上限";
@@ -89,6 +95,41 @@ public class WxController extends BaseController {
 		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
 		System.out.println("jspApiTicket sign:"+jsonResult);
 		return jsonResult;
+	}
+	
+	@RequestMapping(value="/sendWxPhoneMsgCodeModify",method=RequestMethod.POST)
+	@ResponseBody
+	public String sendWxPhoneMsgCodeModify(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String name = request.getParameter("name").trim();
+		String userNewPhone = request.getParameter("usernewPhone").trim();
+		String usernum = request.getParameter("usernum").trim();//老手机号
+		String successCode = "0";
+		String errCode_1 = "1";
+		
+		if(StringUtils.isEmpty(name)) {
+			return backJsonWithCode(errCode_1,ERR_NAME_NULL);
+		}
+		
+		//电话号不能为空
+		if(StringUtils.isEmpty(usernum)||StringUtils.isEmpty(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_PHONE_NULL);
+		}
+		
+		//手机号码格式不正确
+		if(!PhoneUtils.validatePhone(usernum)||!PhoneUtils.validatePhone(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_NEW_PHONE_PATTERN);
+		}
+		
+		if(usernum.equals(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_SAME_OLD_NEW_PHONE);
+		}
+		
+		//用户已经注册（未激活）
+		if(null!=wxService.findUserCheckByPhone(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_SAME_PHONE_NO_ACTIVE);
+		}
+		
+		return sendMsgCode(userNewPhone);
 	}
 	
 	/**
@@ -143,6 +184,14 @@ public class WxController extends BaseController {
 			return backJsonWithCode(errorCode,ERR_SAME_PHONE);
 		}
 		
+		return sendMsgCode(phoneNumber);
+	}
+	
+	//发送验证码
+	private String sendMsgCode(String phoneNumber) {
+		String successCode = "0";
+		String errorCode = "1";
+		String promotCode = "2";//提示用户耐心等待
 		//手机号码前缀 moblie_123456789
 		String cacheKey = Global.PREFIX_MOBLIE_CODE + phoneNumber;
 		
@@ -178,16 +227,18 @@ public class WxController extends BaseController {
 			String code = CasUtils.getRandomDigitalString(4);//验证码
 			logger.info("验证码是:"+code);
 			//发送验证码
-			if(wxService.isAliyunMsgLimit()) {
+			if(systemService.isAliyunMsgLimit()) {
 				//超出限制
 				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
 			}
-			if(!AliyunSendMsgUtils.sendMsg(phoneNumber, code)) {
+			Map<String,String> map = new HashMap<String,String>();
+			map.put("code", code);
+			if(!AliyunSendMsgUtils.sendMsg(phoneNumber,map,0)) {
 				//发送失败
 				return backJsonWithCode(errorCode,ERR_SEND_MSG);
 			}
 			//发送成功 记录下发送的次数
-			wxService.aliyunMsgNumAdd();
+			systemService.aliyunMsgNumAdd();
 			
 			//添加缓存
 			phoneMsgCache.setValue(code);
@@ -205,16 +256,18 @@ public class WxController extends BaseController {
 			CacheUtils.put(cacheKey, phoneMsgCache);//缓存
 			CacheUtils.putPhoneMsgCacheKey(cacheKey);//添加缓存key 方便之后移除
 			//发送验证码
-			if(wxService.isAliyunMsgLimit()) {
+			if(systemService.isAliyunMsgLimit()) {
 				//超出限制
 				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
 			}
-			if(!AliyunSendMsgUtils.sendMsg(phoneNumber, code)) {
+			Map<String,String> map = new HashMap<String,String>();
+			map.put("code", code);
+			if(!AliyunSendMsgUtils.sendMsg(phoneNumber,map,0)) {
 				//发送失败
 				return backJsonWithCode(errorCode,ERR_SEND_MSG);
 			}
 			//发送成功 记录下发送的次数
-			wxService.aliyunMsgNumAdd();
+			systemService.aliyunMsgNumAdd();
 			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
 		}
 	}
