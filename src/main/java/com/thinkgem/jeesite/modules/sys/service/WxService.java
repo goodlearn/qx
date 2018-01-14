@@ -129,20 +129,24 @@ public class WxService extends BaseService implements InitializingBean {
 	public List<SysWxInfo> findSysWxInfoByYear(){
 		Date startTime =  CasUtils.getCurrentYearStartTime();
 		Date endTime =  CasUtils.getCurrentYearEndTime();
+		logger.info("年起始时间:" + startTime);
+		logger.info("年结束时间:" + endTime);
 		if(null == startTime || null == endTime) {
 			return null;
 		}
-		return sysWxInfoDao.findByTime(startTime.toString(),endTime.toString());
+		return sysWxInfoDao.findByTime(CasUtils.convertDate2HMSString(startTime),CasUtils.convertDate2HMSString(endTime));
 	} 
 	
 	//查询月数量
 	public List<SysWxInfo> findSysWxInfoByMonth(){
 		Date startTime =  CasUtils.getCurrentMonthStartTime();
 		Date endTime =  CasUtils.getCurrentMonthEndTime();
+		logger.info("月起始时间:" + startTime);
+		logger.info("月结束时间:" + endTime);
 		if(null == startTime || null == endTime) {
 			return null;
 		}
-		return sysWxInfoDao.findByTime(startTime.toString(),endTime.toString());
+		return sysWxInfoDao.findByTime(CasUtils.convertDate2HMSString(startTime),CasUtils.convertDate2HMSString(endTime));
 	} 
 	
 	/**
@@ -447,9 +451,6 @@ public class WxService extends BaseService implements InitializingBean {
   		  	logger.info(" access_token is " + accessToken + " openId is "+openId);
   		  	ret.put("access_toke", accessToken);
   		    ret.put("openId", openId);
-  		    
-  		    //用户数据保存一次
-  		    saveWxInfo(ret);
 		}else {
 			logger.info("get accessToken by code is error");
 		}
@@ -458,7 +459,7 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	//保存用户信息(头像等)
 	@Transactional(readOnly = false)
-	private void saveWxInfo(Map<String,String> map) {
+	public void saveWxInfo(Map<String,String> map) {
 		if(null == map) {
 			logger.info("用户信息为空，无法更新");
 			return;

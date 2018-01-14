@@ -60,8 +60,6 @@ public class UtilsController extends BaseController {
 	private final String WX_PERSON_INDEX = "modules/wxp/wxPersonIndex";
 	//认证页面
 	private final String WX_USER_CHECK_START = "modules/wxp/userCheckStart";
-	//个人注册页面
-	private final String WX_ID_CARD_USERINFO_ADD = "modules/wxp/wxIdCardUserInfoAdd";
 	//修改个人信息
 	private final String WX_ID_CARD_USERINFO_MODIFY = "modules/wxp/wxIdCardUserInfoModify";
 	//个人中心页面
@@ -139,7 +137,7 @@ public class UtilsController extends BaseController {
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
 			
-			/*if(!DeviceUtils.isWeChat(request)) {
+			if(!DeviceUtils.isWeChat(request)) {
 				logger.info("不是微信浏览器访问");
 				model.addAttribute("message",ERR_CLIENT_MECHINE);
 				model.addAttribute("errUrl",WX_ERROR);
@@ -147,8 +145,8 @@ public class UtilsController extends BaseController {
 			}
 			//获取微信号
 			String openId = getOpenId(request, response);//获取微信号
-*/			 
-			String openId = WxGlobal.getTestOpenId();
+			 
+			//String openId = WxGlobal.getTestOpenId();
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -222,6 +220,7 @@ public class UtilsController extends BaseController {
 		    		  Map<String,String> map = wxService.getOpenIdInfo(code);
 				      if(null != map) {
 				        	openId = map.get("openId");
+				        	wxService.saveWxInfo(map);  //用户数据保存一次
 				      }
 				      if(null !=openId) {
 				    	  logger.info("Add New Code Cache:"+openId);
@@ -586,7 +585,7 @@ public class UtilsController extends BaseController {
 		if(null == sysWxUser) {
 			//没有个人信息
 			model.addAttribute("openId",openId);
-			return WX_ID_CARD_USERINFO_ADD;
+			return WX_USER_CHECK_START;
 		}else {
 			//已注册个人信息
 			model.addAttribute("openId",openId);
