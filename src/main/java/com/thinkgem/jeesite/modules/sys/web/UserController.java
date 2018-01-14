@@ -127,6 +127,11 @@ public class UserController extends BaseController {
 			addMessage(model, "请勾选用户角色");
 			return form(user, model);
 		}
+		//身份证已存在
+		if(null!=UserUtils.findByIdCard(idCard)) {
+			addMessage(model, "身份证已存在");
+			return form(user, model);
+		}
 		
 		// 角色数据有效性验证，过滤不在授权内的角色
 		List<Role> roleList = Lists.newArrayList();

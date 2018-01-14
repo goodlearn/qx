@@ -132,7 +132,7 @@ public class WxService extends BaseService implements InitializingBean {
 			return null;
 		}
 		String idCard = sysWxInfo.getIdCard();
-		return userDao.findByIdCard(idCard, BaseEntity.DEL_FLAG_NORMAL);
+		return userDao.findByIdCard(idCard);
 	}
 	
 	

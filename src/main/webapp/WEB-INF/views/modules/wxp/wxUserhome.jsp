@@ -173,14 +173,6 @@
 		$(".expUserInfo").click(function(){
 			window.location.href="userLazyboard.html"; 
 		});
-
-		// user notice url
-		$(".userNewsCont .userNews p").click(function(){
-			var clickNum = $(this).index();
-			switch(clickNum){
-				case(0): window.location.href="./notice/usernotice.html"; break;
-			}
-		});
 	});
 </script>
 </body>

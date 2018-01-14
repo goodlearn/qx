@@ -50,7 +50,7 @@ public class UserUtils {
 	 * 依据身份证查询
 	 */
 	public static User findByIdCard(String idCard) {
-		return userDao.findByIdCard(idCard,User.DEL_FLAG_NORMAL);
+		return userDao.findByIdCard(idCard);
 	}
 	
 	/**

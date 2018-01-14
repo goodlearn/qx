@@ -339,6 +339,9 @@ public class UtilsController extends BaseController {
 		}
 		SysWxUser sysWxUser = wxService.findSysUserByOpenId(openId);
 		if(null != sysWxUser) {
+			String phone = sysWxUser.getPhone();
+			phone = phone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
+			sysWxUser.setPhone(phone);
 			model.addAttribute("sysWxUser",sysWxUser);
 		}
 		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
@@ -424,6 +427,13 @@ public class UtilsController extends BaseController {
 		if(null!=isRegAndActive) {
 			//未注册或者未激活 跳转到指定页面
 			return isRegAndActive;
+		}
+		
+		//查询操作人员
+		User user = wxService.findOperator(openId);
+		if(null == user) {
+			model.addAttribute("message",ERR_NO_USER);
+			return WX_ERROR;//用户已注册，但未激活，返回审核等待状态
 		}
 		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_EXPRESS_PICK;
@@ -602,7 +612,7 @@ public class UtilsController extends BaseController {
 
 		//验证码不能为空
 		if(StringUtils.isEmpty(msg)) {
-			return backJsonWithCode(errCode_1,MSG_PHONE_CODE_MSG);
+			return backJsonWithCode(errCode_1,ERR_CODE_NULL);
 		}
 		
 		//验证码长度为固定值

@@ -1,5 +1,9 @@
 // 自定义alert弹出框
 function rzAlert(msgTitle,msgTxt){
+	var url = window.location.href;
+	//https://x.xlhtszgh.cn/kd/static/wx/wximages/userInfoIcon.png
+	var urlarr = url.split("/");
+	var rootUrl = urlarr[0]+"//"+urlarr[2]+"/kd/static/wx/wximages/";
 	var $msgCover = $("<div></div>");
 	$msgCover.css({
 		"position":"absolute",
@@ -24,7 +28,7 @@ function rzAlert(msgTitle,msgTxt){
 	});
 	$msgCover.append($coverMsgCont);
 
-	var $closeimg = $("<img src='../wximages/close.gif' alt=''>");
+	var $closeimg = $("<img src='"+rootUrl+"close.gif' alt=''>");
 	$closeimg.css({
 		"display":"block",
 		"float":"right",
@@ -41,7 +45,7 @@ function rzAlert(msgTitle,msgTxt){
 	});
 	$coverMsgCont.append($closeimg);
 
-	var $noticeimg = $("<img src='../wximages/noticeIcon.png' alt=''>");
+	var $noticeimg = $("<img src='"+rootUrl+"noticeIcon.png' alt=''>");
 	$noticeimg.css({
 		"display":"block",
 		"width":"90px",

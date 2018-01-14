@@ -96,7 +96,7 @@
 			<include refid="userColumns"/>
 		FROM sys_user a
 		<include refid="userJoins"/>
-		WHERE a.id_card = #{0} AND a.del_flag = #{1}
+		WHERE a.id_card = #{0}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->

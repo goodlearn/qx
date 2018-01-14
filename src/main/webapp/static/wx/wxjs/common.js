@@ -62,6 +62,9 @@ $(function() {
 			if(i == 2 || i == 3 || i == 4){
 				headNav[i].style.display = "none";
 			}
+			if(i == 5) {
+				headNav[i].style.display = "none";
+			}
 		}
 	}
 	setHeaderNav();

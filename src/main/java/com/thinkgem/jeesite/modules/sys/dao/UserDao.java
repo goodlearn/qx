@@ -29,7 +29,7 @@ public interface UserDao extends CrudDao<User> {
 	 * @param loginName
 	 * @return
 	 */
-	public User findByIdCard(String idCard,String DEL_FLAG_NORMAL);
+	public User findByIdCard(String idCard);
 
 	
 	/**

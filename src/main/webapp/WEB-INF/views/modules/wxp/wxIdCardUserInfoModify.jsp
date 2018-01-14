@@ -358,7 +358,7 @@
 			}
 
 			var newPhone = $.trim($("#usernewPhone").val());
-			if (!CheckPhoneNum(usernewPhone)) {
+			if (!CheckPhoneNum(newPhone)) {
 				rzAlert("操作提示","新手机号码格式不对！");
 				return false;
 			}
@@ -366,7 +366,7 @@
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/sendWxPhoneMsgCodeModify',
-			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone},
+			    data:{'name':name,'usernum':usernum,'usernewPhone':newPhone},
 			    dataType: "json",
 			    success:function(data){
 			    	//var result = JSON.parse(data);
@@ -423,8 +423,11 @@
 			$(".userOldPhone").val("");
 			$(".userOldPhone").attr("disabled",false);
 			$(".userNewPhoneDiv").fadeIn(); 
+			
 			$(".submitBtn").css({"background":"#1f72ff"});
 			$(".submitBtn").bind("click",SubmitUserInfo);
+			
+			$(".userModifyPhone").unbind("click");
 		});
 
 		var selectNum  = ['1','01'];
