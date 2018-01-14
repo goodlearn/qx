@@ -70,6 +70,7 @@ public class SysWxUserCheckService extends CrudService<SysWxUserCheckDao, SysWxU
 			sysWxInfo.setId(IdGen.uuid());
 			sysWxInfo.setIdCard(sysWxUserCheck.getIdCard());
 			sysWxInfo.setOpenId(sysWxUserCheck.getOpenId());
+			sysWxInfo.setExpressNum("0");
 			sysWxInfo.setUpdateBy(user);
 			sysWxInfo.setUpdateDate(new Date());
 			sysWxInfo.setCreateBy(user);

@@ -56,20 +56,20 @@
 		}
 		.userQRcodeCont .userInfoCont .userName{
 			float: left;
-			background: url(images/uname.png) no-repeat center left;
+			background: url(../static/wx/wximages/uname.png) no-repeat center left;
 			background-size: 18px;
 			padding-left: 23px;
 		}
 		.userQRcodeCont .userInfoCont .userPhone{
 			float: right;
-			background: url(images/uphone.png) no-repeat center left;
+			background: url(../static/wx/wximages/uphone.png) no-repeat center left;
 			background-size: 18px;
 			padding-left: 23px;
 		}
 
 		.refreshBtn{
 			width: 90%;
-			margin: 10px auto 10px;
+			margin: 20px auto 10px;
 			text-align: center;
 			line-height: 46px;
 			border-radius: 23px;

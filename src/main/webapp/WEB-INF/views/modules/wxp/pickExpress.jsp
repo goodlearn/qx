@@ -12,6 +12,7 @@
 	<script src="${ctxStatic}/wx/wxjs/common.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/notice.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/regexp.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/jweixin-1.2.0.js" type="text/javascript"></script>
 	<style type="text/css">
 		.expPickCont{
 			padding-bottom: 20px;
@@ -160,7 +161,7 @@
 					<div class="inputTypeCont">
 						<div class="inputTitle">证件</div>
 						<input type="text" id="expPickUserId" class="commonInputFunc" name="username" placeholder="请输入身份证号码...">
-						<div class="commonFuncBtnScan"></div>
+						<div class="commonFuncBtnScan" id="scanQRCodeBtn"></div>
 					</div>
 				</div>
 			</form>
@@ -231,9 +232,8 @@
 
 			$(".expUserInfoCont").append($expUserInfoDiv);
 		}
-
-		$(".searchInfoBtn").click(function() {
-			
+		
+		var searchBtnClick = function(){
 			// 身份证格式校验
 			var expPickUserId = $.trim($("#expPickUserId").val());
 			if (!CheckUserId(expPickUserId)) {
@@ -271,6 +271,9 @@
 			      
 			     }
 			 });
+		};
+		$(".searchInfoBtn").click(function() {
+			searchBtnClick();
 		});
 		
 		// JSSDK
@@ -333,7 +336,7 @@
 
 	        //扫描二维码  
 	        document.querySelector('#scanQRCodeBtn').onclick = function() {  
-	            wx.scanQRCode({  
+	            wx.scanQRCode({
 	                needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，  
 	                scanType : [ "qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有  
 	                success : function(res) {  
@@ -344,26 +347,16 @@
 	                    $.ajax({
 						    type:'POST',
 						    url:pageContextVal+'/ul/queryQRecordData',
-						    data:{'userId':qrcodeNum},
+						    data:{'qRecordData':qrcodeNum},
 						    dataType: "json",
 						    success:function(data){
 						    	var jsontmp = data;
-						    	$(".expUserInfoCont").empty();
 								switch(jsontmp.code) {
 									case "1" : rzAlert("操作提示",jsontmp.message); break;
 									case "2" : rzAlert("操作提示",jsontmp.message); break;
 									case "0" : 
-										$(".expUserInfoNull").hide();
-										if (jsontmp.num == 0) {
-											$(".expUserInfoNull").show();
-											return;
-										}
-										$(".expUserInfoCont").empty();
-										for(var i=0; i < jsontmp.num; i++){
-											//alert(expInfo);
-											var expInfo = jsontmp.expressList[i];
-											rzGetExpInfo(expInfo.name,expInfo.phone,expInfo.company,expInfo.address,expInfo.expressId);
-										}
+										$("#expPickUserId").val(jsontmp.QRecordIdCard);
+										searchBtnClick();
 										break;
 								}
 						    },

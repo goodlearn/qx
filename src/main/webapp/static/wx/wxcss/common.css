@@ -273,6 +273,16 @@ transform: translateY(-4px) rotate(0deg);
   background:url(../wximages/scanIcon.png) no-repeat center right;
   background-size: 50%;
 }
+.userInputCont .inputTypeCont .commonFuncBtnVoice{
+  float: right;
+  font-size: 12px;
+  width: 50px;
+  height: 46px;
+  line-height: 46px;
+  margin: 0px 18px 0px 0px;
+  background:url(../wximages/voiceicon.png) no-repeat center right;
+  background-size: 50%;
+}
 .userInputCont .inputTypeCont .commonFuncBtnModify{
   float: right;
   font-size: 12px;

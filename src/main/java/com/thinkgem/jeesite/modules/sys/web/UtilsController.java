@@ -137,7 +137,7 @@ public class UtilsController extends BaseController {
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
 			
-			/*if(!DeviceUtils.isWeChat(request)) {
+			if(!DeviceUtils.isWeChat(request)) {
 				logger.info("不是微信浏览器访问");
 				model.addAttribute("message",ERR_CLIENT_MECHINE);
 				model.addAttribute("errUrl",WX_ERROR);
@@ -145,8 +145,8 @@ public class UtilsController extends BaseController {
 			}
 			//获取微信号
 			String openId = getOpenId(request, response);//获取微信号
-*/			 
-			String openId = WxGlobal.getTestOpenId();
+			 
+			//String openId = WxGlobal.getTestOpenId();
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -533,6 +533,19 @@ public class UtilsController extends BaseController {
 			model.addAttribute("message",ERR_NO_USER);
 			return WX_ERROR;//用户已注册，但未激活，返回审核等待状态
 		}
+		
+		//获取jsApiTicket
+		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
+		String retCode = map.get("code");
+		if("0".equals(retCode)) {
+			model.addAttribute("appId",WxGlobal.getAppId());
+			model.addAttribute("timestamp",map.get("timestamp"));
+			model.addAttribute("nonceStr",map.get("nonceStr"));
+			model.addAttribute("signature",map.get("signature"));
+		}else {
+			logger.info("jsApiTicket is null");
+		}
+		
 		model.addAttribute("wxCode",CacheUtils.getCodeByOpenId(openId));
 		return WX_EXPRESS_PICK;
 	}

@@ -73,7 +73,7 @@
 		 	left: calc(50% - 15px);
 		 	width: 30px;
 		 	height: 30px;
-		 	background: url(images/ranknum2.png) no-repeat center center;
+		 	background: url(../static/wx/wximages/ranknum2.png) no-repeat center center;
 		 	background-size: 100%;
 		 }
 		 .lazyboardHead .lazyboardRank .ranknumDiv .rankNum1Icon{
@@ -82,7 +82,7 @@
 		 	left: calc(50% - 17px);
 		 	width: 34px;
 		 	height: 34px;
-		 	background: url(images/ranknum1.png) no-repeat center center;
+		 	background: url(../static/wx/wximages/ranknum1.png) no-repeat center center;
 		 	background-size: 100%;
 		 }
 		 .lazyboardHead .lazyboardRank .ranknumDiv .rankNum3Icon{
@@ -91,7 +91,7 @@
 		 	left: calc(50% - 15px);
 		 	width: 30px;
 		 	height: 30px;
-		 	background: url(images/ranknum3.png) no-repeat center center;
+		 	background: url(../static/wx/wximages/ranknum3.png) no-repeat center center;
 		 	background-size: 100%;
 		 }
 		 .lazyboardHead .lazyboardRank .ranknumDiv .rankNumName{
@@ -213,35 +213,33 @@
 			<div class="lazyboardHeadTitle">锡职懒人榜</div>
 			<div class="lazyboardRank">
 				<c:if test="${not empty totalData}">
-					<c:forEach var="td" items="${totalData}" begin="0" end="2" step="1" varStatus="i"> 
-				        <c:if test="${i.index == 0}">
-						    <div class="ranknumDiv">
+					<c:forEach var="td" items="${totalData}" begin="1" end="1" step="1" varStatus="i"> 
+				        	 <div class="ranknumDiv">
 								<div class="ranknum2">
 									<img src="${td.headimgurl}" width="100%">
 								</div>
 								<div class="rankNum2Icon"></div>
 								<div class="rankNumName">${td.nickname}</div>
 							</div>
-				        </c:if>
-				        <c:if test="${i.index == 1}">
-					        <div class="ranknumDiv">
-									<div class="ranknum1">
-										<img src="${td.headimgurl}" width="100%">
-									</div>
-									<div class="rankNum2Icon"></div>
-									<div class="rankNumName">${td.nickname}</div>
+				    </c:forEach>
+				      <c:forEach var="td" items="${totalData}" begin="0" end="0" step="1" varStatus="i"> 
+				        	 <div class="ranknumDiv">
+								<div class="ranknum1">
+									<img src="${td.headimgurl}" width="100%">
+								</div>
+								<div class="rankNum1Icon"></div>
+								<div class="rankNumName">${td.nickname}</div>
 							</div>
-				        </c:if>
-				        <c:if test="${i.index == 2}">
-				        	<div class="ranknumDiv">
+				    </c:forEach>
+				    <c:forEach var="td" items="${totalData}" begin="2" end="2" step="1" varStatus="i"> 
+				        	 <div class="ranknumDiv">
 								<div class="ranknum3">
 									<img src="${td.headimgurl}" width="100%">
 								</div>
-								<div class="rankNum2Icon"></div>
+								<div class="rankNum3Icon"></div>
 								<div class="rankNumName">${td.nickname}</div>
 							</div>
-				        </c:if>
-					</c:forEach>
+				    </c:forEach>
 				</c:if>
 				<c:if test="${empty totalData}">
 						暂无数据

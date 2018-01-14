@@ -132,7 +132,7 @@
 					<div class="inputTypeCont">
 						<div class="inputTitle">手机</div>
 						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
-						<div class="commonFuncBtnScan" id="voiceRecordBtn"></div>
+						<div class="commonFuncBtnVoice" id="voiceRecordBtn"></div>
 					</div>
 					<div class="inputTypeCont">
 						<div class="inputTitle">取货码</div>

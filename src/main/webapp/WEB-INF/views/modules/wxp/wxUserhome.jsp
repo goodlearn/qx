@@ -77,7 +77,7 @@
 			line-height: 60px;
 			font-size: 14px;
 			color:#333333;
-			background: url(./images/rightArrow.png) no-repeat center right;
+			background: url(../static/wx/wximages/rightArrow.png) no-repeat center right;
 			background-size: 20px;
 		}
 

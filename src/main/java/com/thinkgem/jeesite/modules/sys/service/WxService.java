@@ -533,6 +533,7 @@ public class WxService extends BaseService implements InitializingBean {
 			sysWxInfo.setId(IdGen.uuid());
 			sysWxInfo.setIdCard(null);
 			sysWxInfo.setOpenId(openId);
+			sysWxInfo.setExpressNum("0");
 			sysWxInfo.setUpdateBy(user);
 			sysWxInfo.setUpdateDate(new Date());
 			sysWxInfo.setCreateBy(user);
