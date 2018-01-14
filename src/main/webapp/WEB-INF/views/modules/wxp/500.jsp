@@ -58,7 +58,7 @@
 		<div class="notfoundImg">
 			<img src="${ctxStatic}/wx/wximages/notfound.png" alt="图片加载中..." width="100%">
 		</div>
-		<div class="notfoundTxt">出问题啦，${message}，重新登录试试</div>
+		<div class="notfoundTxt">${message}</div>
 	</div>
 </div>
 <script type="text/javascript">

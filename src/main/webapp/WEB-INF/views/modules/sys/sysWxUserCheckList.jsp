@@ -19,7 +19,6 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/sys/sysWxUserCheck/">信息检查表列表</a></li>
-		<shiro:hasPermission name="sys:sysWxUserCheck:edit"><li><a href="${ctx}/sys/sysWxUserCheck/form">信息检查表添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="sysWxUserCheck" action="${ctx}/sys/sysWxUserCheck/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>

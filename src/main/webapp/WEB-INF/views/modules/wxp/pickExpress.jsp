@@ -130,6 +130,10 @@
 </head>
 <body>
 <div class="content">
+	<input id="timestamp" type="hidden" value="${timestamp}" />
+	<input id="noncestr" type="hidden" value="${nonceStr}" />
+	<input id="signature" type="hidden" value="${signature}" />
+	<input id="appId" type="hidden" value="${appId}" />
 	<div class="headerNav">
 		<div class="headerNavTop"><div class="headerNavIcon headerNavIconOut"><span></span><span></span></div></div>
 		<div class="headerNavCont">
@@ -268,6 +272,110 @@
 			     }
 			 });
 		});
+		
+		// JSSDK
+		var appId = $("#appId").val();
+		var timestamp = $("#timestamp").val();//时间戳
+        var nonceStr = $("#noncestr").val();//随机串
+        var signature = $("#signature").val();//签名
+        wx.config({
+            debug : true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId : appId, // 必填，公众号的唯一标识
+            timestamp : timestamp, // 必填，生成签名的时间戳
+            nonceStr : nonceStr, // 必填，生成签名的随机串
+            signature : signature,// 必填，签名，见附录1
+            jsApiList : [ 
+            	'checkJsApi',
+		        'onMenuShareTimeline',
+		        'onMenuShareAppMessage',
+		        'onMenuShareQQ',
+		        'onMenuShareWeibo',
+		        'hideMenuItems',
+		        'showMenuItems',
+		        'hideAllNonBaseMenuItem',
+		        'showAllNonBaseMenuItem',
+		        'translateVoice',
+		        'startRecord',
+		        'stopRecord',
+		        'onRecordEnd',
+		        'playVoice',
+		        'pauseVoice',
+		        'stopVoice',
+		        'uploadVoice',
+		        'downloadVoice',
+		        'chooseImage',
+		        'previewImage',
+		        'uploadImage',
+		        'downloadImage',
+		        'getNetworkType',
+		        'openLocation',
+		        'getLocation',
+		        'hideOptionMenu',
+		        'showOptionMenu',
+		        'closeWindow',
+		        'scanQRCode',
+		        'chooseWXPay',
+		        'openProductSpecificView',
+		        'addCard',
+		        'chooseCard',
+		        'openCard'
+            ]
+        // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+
+        wx.ready(function() {  
+	        wx.checkJsApi({  
+	            jsApiList : ['scanQRCode','startRecord','stopVoice','translateVoice'],  
+	            success : function(res) {  
+
+	            }  
+	        });  
+
+	        //扫描二维码  
+	        document.querySelector('#scanQRCodeBtn').onclick = function() {  
+	            wx.scanQRCode({  
+	                needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，  
+	                scanType : [ "qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有  
+	                success : function(res) {  
+	                    //扫码后获取结果参数赋值给Input
+	                    var qrcodeNum = res.resultStr;
+
+	                    // ajax
+	                    $.ajax({
+						    type:'POST',
+						    url:pageContextVal+'/ul/queryQRecordData',
+						    data:{'userId':qrcodeNum},
+						    dataType: "json",
+						    success:function(data){
+						    	var jsontmp = data;
+						    	$(".expUserInfoCont").empty();
+								switch(jsontmp.code) {
+									case "1" : rzAlert("操作提示",jsontmp.message); break;
+									case "2" : rzAlert("操作提示",jsontmp.message); break;
+									case "0" : 
+										$(".expUserInfoNull").hide();
+										if (jsontmp.num == 0) {
+											$(".expUserInfoNull").show();
+											return;
+										}
+										$(".expUserInfoCont").empty();
+										for(var i=0; i < jsontmp.num; i++){
+											//alert(expInfo);
+											var expInfo = jsontmp.expressList[i];
+											rzGetExpInfo(expInfo.name,expInfo.phone,expInfo.company,expInfo.address,expInfo.expressId);
+										}
+										break;
+								}
+						    },
+						    error:function(){
+						      
+						    }
+						});
+	                }  
+	            });  
+	        };//end_document_scanQRCode  
+	          
+	    });//end_ready 
 
 	});
 </script>

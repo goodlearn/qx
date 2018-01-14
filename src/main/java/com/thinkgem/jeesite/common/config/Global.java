@@ -73,6 +73,10 @@ public class Global {
 		return System.currentTimeMillis()+1000*60*5;
 	} 
 	
+	public static long WX_QREORD_TOME_OUT() {
+		return System.currentTimeMillis()+1000*60*30;
+	} 
+	
 	public static long WX_CODE_TOME_OUT() {
 		return System.currentTimeMillis()+1000*60*30;
 	} 

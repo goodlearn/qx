@@ -73,6 +73,14 @@
 			background-size: 20px;
 		}
 
+		.headerProm .userQRcode{
+			line-height: 60px;
+			font-size: 14px;
+			color:#333333;
+			background: url(./images/rightArrow.png) no-repeat center right;
+			background-size: 20px;
+		}
+
 		.userNewsCont{
 			width: 90%;
 			padding: 0px 5%;
@@ -130,6 +138,9 @@
 				<div class="editUserInfo">
 					完善个人信息
 				</div>
+				<div class="userQRcode">
+					我的取货二维码
+				</div>
 			</div>
 		</div>
 
@@ -172,6 +183,9 @@
 		});
 		$(".expUserInfo").click(function(){
 			window.location.href="userLazyboard.html"; 
+		});
+		$(".userQRcode").click(function(){
+			window.location.href = pageContextVal+"/ul/reqPersonQRcode";
 		});
 	});
 </script>

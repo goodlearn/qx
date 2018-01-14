@@ -31,10 +31,10 @@ ALTER TABLE sys_express ADD CONSTRAINT express_expressid UNIQUE(express_id)
 ALTER TABLE sys_express ADD COLUMN pick_up_code varchar(100) default '0' COMMENT '取货码'
 ALTER TABLE sys_dict MODIFY  value VARCHAR(300) NOT NULL; 
 
-ALTER TABLE sys_wx_info ADD COLUMN nickname VARCHAR(100) DEFAULT '锡职' COMMENT '昵称',
-ALTER TABLE sys_wx_info ADD COLUMN sex VARCHAR(100) DEFAULT '0' COMMENT '性别',
-ALTER TABLE sys_wx_info ADD COLUMN headimgurl VARCHAR(200) COMMENT '头像',
-ALTER TABLE sys_wx_info ADD COLUMN express_num VARCHAR(100) DEFAULT '0'  COMMENT '数量',
+ALTER TABLE sys_wx_info ADD COLUMN nickname VARCHAR(100) DEFAULT '锡职' COMMENT '昵称';
+ALTER TABLE sys_wx_info ADD COLUMN sex VARCHAR(100) DEFAULT '0' COMMENT '性别';
+ALTER TABLE sys_wx_info ADD COLUMN headimgurl VARCHAR(200) COMMENT '头像';
+ALTER TABLE sys_wx_info ADD COLUMN express_num VARCHAR(100) DEFAULT '0'  COMMENT '数量';
 
 DELETE FROM sys_express;
 DELETE FROM sys_wx_info;

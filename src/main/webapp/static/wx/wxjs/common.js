@@ -7,7 +7,7 @@ $(function() {
 
 		// input text
 		var inputContW = $(".userInputCont .inputTypeCont").width();
-		var inputW = inputContW - 5 -50 -25; //inputTitle border-radius
+		var inputW = inputContW - 5 -50 -35; //inputTitle border-radius
 		$(".userInputCont .inputTypeCont input.commonInput").css({"width":inputW+"px"});
 
 		// input select
@@ -15,7 +15,7 @@ $(function() {
 		$(".userInputCont .inputTypeCont select").css({"width":inputW+"px"});
 
 		// inputFunc
-		var comInputFuncW = inputW - 50 - 10 - 5;
+		var comInputFuncW = inputW - 50 - 10 - 15;
 			$(".inputTypeCont .commonInputFunc").css({"width":comInputFuncW+"px"});
 	};
 

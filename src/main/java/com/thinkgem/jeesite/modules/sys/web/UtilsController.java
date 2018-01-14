@@ -1,6 +1,5 @@
 package com.thinkgem.jeesite.modules.sys.web;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
+import com.thinkgem.jeesite.common.entity.Qrecord;
 import com.thinkgem.jeesite.common.entity.WxCodeCache;
-import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DeviceUtils;
@@ -37,10 +36,6 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUser;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
-import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
-import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
-import com.thinkgem.jeesite.modules.sys.service.SysWxUserService;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
@@ -74,6 +69,8 @@ public class UtilsController extends BaseController {
 	private final String WX_EXPRESS_PICK = "modules/wxp/pickExpress";
 	//审核页面
 	private final String WX_WAIT_VALIDATE = "modules/wxp/waitValidate";
+	//二维码页面
+	private final String WX_Q_RECORD = "modules/wxp/personQRcode";
 	//错误页面
 	private final String WX_ERROR = "modules/wxp/500";
 
@@ -82,6 +79,7 @@ public class UtilsController extends BaseController {
 	 */
 	private final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
+	private final String ERR_Q_RECORD_NULL = "无身份信息";
 	private final String ERR_ID_EXPRESS_NULL = "快递号不能为空";
 	private final String ERR_USER_ID_NULL = "用户不存在";
 	private final String ERR_USER_NOT_REG = "用户未注册";
@@ -114,6 +112,8 @@ public class UtilsController extends BaseController {
 	private final String ERR_EXPREE_NOT_ENTER = "快递状态非入库状态";
 	private final String ERR_REDIRECT_URL = "重定向地址未获取";
 	private final String ERR_CLIENT_MECHINE = "请在微信客户端打开";
+	private final String ERR_NO_QREORD = "二维码已失效";
+	private final String ERR_NO_QREORD_INFO = "无二维码信息";
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
 	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功,请前往快递中心审核身份信息";
@@ -137,7 +137,7 @@ public class UtilsController extends BaseController {
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
 			
-			if(!DeviceUtils.isWeChat(request)) {
+			/*if(!DeviceUtils.isWeChat(request)) {
 				logger.info("不是微信浏览器访问");
 				model.addAttribute("message",ERR_CLIENT_MECHINE);
 				model.addAttribute("errUrl",WX_ERROR);
@@ -145,8 +145,8 @@ public class UtilsController extends BaseController {
 			}
 			//获取微信号
 			String openId = getOpenId(request, response);//获取微信号
-			 
-			//String openId = WxGlobal.getTestOpenId();
+*/			 
+			String openId = WxGlobal.getTestOpenId();
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -180,6 +180,7 @@ public class UtilsController extends BaseController {
 		      				 WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
 		      				  if(null == wxCodeCache) {
 		    		    		  //服务器已经移除
+		      					  logger.info("服务器移除了Code:"+code);
 		    		    		  code = null;//置空
 		    		    		  cookie.setMaxAge(0);//移除cookie
 		    		    	  }
@@ -189,8 +190,8 @@ public class UtilsController extends BaseController {
 		      
 		      
 		      if(null == code) {
-		    	  logger.info("微信服务器返回Code:"+code);
 		    	  code = request.getParameter("code");//微信服务器返回了code
+		    	  logger.info("微信服务器返回Code:"+code);
 		      }
 		      
 		      StringBuffer sb = request.getRequestURL();
@@ -199,10 +200,15 @@ public class UtilsController extends BaseController {
 		    	  logger.info("初始化跳转页面异常");
 		    	  return null;//异常错误
 		      }
-		        
+		      logger.info("Code是:"+code);
+		      //这一句纯属为了打印日志
 		      if(StringUtils.isEmpty(code)) {
 		    	  	logger.info("前往微信服务器获取Code");
-		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
+		    	  	String redirectAddress = WxGlobal.getUserClick(redirectUrl,false);
+		    	  	logger.info("前往微信服务器获取Code地址："+redirectAddress);
+		      }
+		      if(StringUtils.isEmpty(code)) {
+		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,false));
 		        	return null;
 		      }else {
 		    	  /**
@@ -352,6 +358,62 @@ public class UtilsController extends BaseController {
 		return WX_LAZY_BOARD;
 	}
 
+	
+	/**
+	 * 页面跳转-获取二维码页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqPersonQRcode",method=RequestMethod.GET)
+	public String reqPersonQRcode(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String ret = null;
+		try {
+			String errUrl = (String)model.asMap().get("errUrl");
+			if(null != errUrl) {
+				return errUrl;
+			}
+			//是否已经注册并且激活
+		    String openId = (String)model.asMap().get("openId");
+			String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+			if(null!=isRegAndActive) {
+				//未注册或者未激活 跳转到指定页面
+				return isRegAndActive;
+			}
+			
+			//获取身份证号
+			SysWxUser sysWxUser = wxService.findSysUserByOpenId(openId);
+			if(null == sysWxUser) {
+				model.addAttribute("message",ERR_USER_NOT_REG);
+				return WX_ERROR;
+			}
+			String idCard = sysWxUser.getIdCard();
+			if(null == idCard) {
+				model.addAttribute("message",ERR_USER_ID_NULL);
+				return WX_ERROR;
+			}
+			
+			//清除重复用户缓存和超时缓存
+			CacheUtils.clearQRecordRepeatCacheKeies(idCard);
+			
+			
+			//添加缓存
+			Qrecord qrecord = new Qrecord(idCard);
+			String now = Long.valueOf(System.currentTimeMillis()).toString();
+			String md5 = CasUtils.md5Validate(qrecord+now);
+			String cacheKey = "qr_" + md5;
+			CacheUtils.put(cacheKey, qrecord);//缓存
+			CacheUtils.putQRecordCacheKey(cacheKey);//添加缓存key 方便之后移除
+			model.addAttribute("rTextData",md5);
+			model.addAttribute("name",sysWxUser.getName());
+			model.addAttribute("phone",sysWxUser.getPhone());
+			ret = WX_Q_RECORD;
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return ret;
+	}
 	
 	/**
 	 * 页面跳转-完善个人信息页面
@@ -609,13 +671,14 @@ public class UtilsController extends BaseController {
 	@RequestMapping(value="/savePersonUserInfo",method=RequestMethod.POST)
 	public String savePersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
 		
-		String errUrl = (String)model.asMap().get("errUrl");
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
 		if(null != errUrl) {
-			return errUrl;
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
 		}
-		final String errCode_1 = "1";//验证码不能为空
 		//是否已经注册并且激活
-		String openId = (String)model.asMap().get("openId");
+		String openId = (String)filterData.get("openId");
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
@@ -776,13 +839,14 @@ public class UtilsController extends BaseController {
 	@RequestMapping(value="/modifyPersonUserInfo",method=RequestMethod.POST)
 	public String modifyPersonUserInfo(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
 		
-		String errUrl = (String)model.asMap().get("errUrl");
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
 		if(null != errUrl) {
-			return errUrl;
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
 		}
-		final String errCode_1 = "1";//验证码不能为空
 		//是否已经注册并且激活
-		String openId = (String)model.asMap().get("openId");
+		String openId = (String)filterData.get("openId");
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
@@ -909,11 +973,12 @@ public class UtilsController extends BaseController {
 	@RequestMapping(value="/saveExpress",method=RequestMethod.POST)
 	public String saveExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
 		
-		String errUrl = (String)model.asMap().get("errUrl");
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
 		if(null != errUrl) {
-			return errUrl;
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
 		}
-		final String errCode_1 = "1";//验证码不能为空
 		//是否已经注册并且激活
 		String openId = (String)model.asMap().get("openId");
 		//微信号为空
@@ -979,18 +1044,65 @@ public class UtilsController extends BaseController {
 		return backJsonWithCode(successCode,MSG_EXPRESS_SAVE_SUCCESS);
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/queryQRecordData",method=RequestMethod.POST)
+	public String queryQRecordData(HttpServletRequest request, HttpServletResponse response,Model model) {
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
+		if(null != errUrl) {
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
+		}
+		
+		//是否已经注册并且激活
+		String openId = (String)filterData.get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
+		String qRecordData=request.getParameter("qRecordData");//获取idCard
+		//身份证号
+		if(StringUtils.isEmpty(qRecordData)) {
+			return backJsonWithCode(errCode_1,ERR_Q_RECORD_NULL);
+		}
+		
+		//无二维码信息
+		String cacheKey = "qr_"+qRecordData;
+		Qrecord qrecord = (Qrecord)CacheUtils.get(cacheKey);
+		if(null == qrecord) {
+			return backJsonWithCode(errCode_1,ERR_NO_QREORD_INFO);
+		}
+		//是否已经超时
+		long timeOut = qrecord.getTimeOut();
+		if(System.currentTimeMillis() > timeOut) {
+			//移除缓存验证码 已经完成验证了
+			CacheUtils.remove(cacheKey);
+			return backJsonWithCode(errCode_1,ERR_NO_QREORD);
+		}
+		
+		CacheUtils.clearQRecordCacheKeies();//清除超时缓存
+		
+		final String successCode = "0";//成功码
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", successCode);
+		map.put("QRecordIdCard", qrecord.getIdCard());
+		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+		logger.info("二维码信息是："+jsonResult);
+		return jsonResult;
+	}
 	//查询快递
 	@ResponseBody
 	@RequestMapping(value="/queryExpress",method=RequestMethod.POST)
 	public String queryExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		
-		String errUrl = (String)model.asMap().get("errUrl");
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
 		if(null != errUrl) {
-			return errUrl;
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
 		}
-		final String errCode_1 = "1";//验证码不能为空
 		//是否已经注册并且激活
-		String openId = (String)model.asMap().get("openId");
+		String openId = (String)filterData.get("openId");
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
@@ -1001,10 +1113,6 @@ public class UtilsController extends BaseController {
 		final String successCode = "0";//成功码
 		final String errCode_2 = "2";//身份证号格式错误
 		
-		//微信号为空
-		if(StringUtils.isEmpty(openId)) {
-			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
-		}
 
 		//身份证号
 		if(StringUtils.isEmpty(idCard)) {
@@ -1055,14 +1163,14 @@ public class UtilsController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="/endExpress",method=RequestMethod.POST)
 	public String endExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
-		
-		String errUrl = (String)model.asMap().get("errUrl");
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
 		if(null != errUrl) {
-			return errUrl;
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
 		}
-		final String errCode_1 = "1";//验证码不能为空
 		//是否已经注册并且激活
-		String openId = (String)model.asMap().get("openId");
+		String openId = (String)filterData.get("openId");
 		//微信号为空
 		if(StringUtils.isEmpty(openId)) {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);

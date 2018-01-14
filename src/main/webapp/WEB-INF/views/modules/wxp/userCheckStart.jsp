@@ -144,7 +144,7 @@
 					</div>
 					<div class="inputTypeCont" id="oldPhone">
 						<div class="inputTitle">原手机</div>
-						<input type="text" id="originPhone" class="commonInput" name="oldPhone" placeholder="请输入你绑定的原手机号码...">
+						<input type="text" id="oldPhone" class="commonInput" name="oldPhone" placeholder="请输入你绑定的原手机号码...">
 					</div>
 				</div>
 			</form>
@@ -174,60 +174,38 @@
 			$(".solidCont").animate({"margin-left":0+"px"},"fast");
 		});
 
+		
 		$(".userRegSubmitBtn").click(function(){
 			// 信息验证
 
 			// 名字
-			var username = $.trim($("#inputUserName").val());
-			if (username.length > 20) {
+			var name = $.trim($("#name").val());
+			if (name.length > 20) {
 				rzAlert("操作提示","名字长度超过20");
 				return false;
 			}
-			if (!CheckUserName(username)) {
+			if (!CheckUserName(name)) {
 				rzAlert("操作提示","姓名不能为空！");
 				return false;
 			}
 
 			// 身份证
-			var userid = $.trim($("#inputUserId").val());
-			if (!CheckUserId(userid)) {
+			var idCard = $.trim($("#idCard").val());
+			if (!CheckUserId(idCard)) {
 				rzAlert("操作提示","身份证格式不对！");
 				return false;
 			}
 
 			// 手机号码
-			var userphone = $.trim($("#inputUserPhone").val());
-			if (!CheckPhoneNum(userphone)) {
+			var phone = $.trim($("#phone").val());
+			if (!CheckPhoneNum(phone)) {
 				rzAlert("操作提示","手机号码格式不对！");
 				return false;
 			}
 
-			var useroldphone = $.trim($("#inputUserOldPhone").val());
-			if (!CheckPhoneNum(useroldphone)) {
-				rzAlert("操作提示","手机号码格式不对！");
-				return false;
-			}
-
-			var state = 2;  //1:新用户注册  2：新微信绑定 
-			switch(state){
-				case 1: 
-					rzAlert("操作提示","正在审核中，请耐心等待");
-					break;
-				case 2:
-					rzAlert("操作提示","用户已绑定，请输入原手机号码");
-					$("#oldPhone").show();
-					break;
-			}
-		});
-		
-		$(".userRegSubmitBtn").click(function(){
-			//$(".msgcover").fadeIn();
-			//$(".coverMsgCont").fadeIn();
-			var name = $("#name").val();
-			var idCard = $("#idCard").val();
-			var phone = $("#phone").val();
+			
 			var msg = $("#msg").val();
-			var oldPhone = $("#originPhone").val();
+			var oldPhone = $("#oldPhone").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/ul/savePersonUserInfo',
@@ -254,9 +232,33 @@
 		});
 
 		$(".verifiBtn").click(function(){
-			var phone = $("#phone").val();
-			var name = $("#name").val();
-			var idCard = $("#idCard").val();
+			// 信息验证
+
+			// 名字
+			var name = $.trim($("#name").val());
+			if (name.length > 20) {
+				rzAlert("操作提示","名字长度超过20");
+				return false;
+			}
+			if (!CheckUserName(name)) {
+				rzAlert("操作提示","姓名不能为空！");
+				return false;
+			}
+
+			// 身份证
+			var idCard = $.trim($("#idCard").val());
+			if (!CheckUserId(idCard)) {
+				rzAlert("操作提示","身份证格式不对！");
+				return false;
+			}
+
+			// 手机号码
+			var phone = $.trim($("#phone").val());
+			if (!CheckPhoneNum(phone)) {
+				rzAlert("操作提示","手机号码格式不对！");
+				return false;
+			}
+
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/sendWxPhoneMsgCode',

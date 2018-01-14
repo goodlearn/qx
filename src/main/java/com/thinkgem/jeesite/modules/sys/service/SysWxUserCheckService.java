@@ -63,19 +63,29 @@ public class SysWxUserCheckService extends CrudService<SysWxUserCheckDao, SysWxU
 		sysWxUser.setCreateBy(user);
 		sysWxUser.setCreateDate(new Date());
 		
-		sysWxInfo.setId(IdGen.uuid());
-		sysWxInfo.setIdCard(sysWxUserCheck.getIdCard());
-		sysWxInfo.setOpenId(sysWxUserCheck.getOpenId());
-		sysWxInfo.setUpdateBy(user);
-		sysWxInfo.setUpdateDate(new Date());
-		sysWxInfo.setCreateBy(user);
-		sysWxInfo.setCreateDate(new Date());
+		//可能之前授权过了 此处要检查更新
+		String openId = sysWxUserCheck.getOpenId();
+		SysWxInfo entityWxInfo = wxService.findSysWxInfoByOpenId(openId);
+		if(null == entityWxInfo) {
+			sysWxInfo.setId(IdGen.uuid());
+			sysWxInfo.setIdCard(sysWxUserCheck.getIdCard());
+			sysWxInfo.setOpenId(sysWxUserCheck.getOpenId());
+			sysWxInfo.setUpdateBy(user);
+			sysWxInfo.setUpdateDate(new Date());
+			sysWxInfo.setCreateBy(user);
+			sysWxInfo.setCreateDate(new Date());
+			wxService.saveSysWxInfoInfo(sysWxInfo);
+		}else {
+			entityWxInfo.setIdCard(sysWxUserCheck.getIdCard());
+			entityWxInfo.setUpdateBy(user);
+			entityWxInfo.setUpdateDate(new Date());
+			wxService.updateSysWxInfoInfo(entityWxInfo);
+		}
 		
 		//保存信息
-		wxService.saveInfo(sysWxUser, sysWxInfo);
+		wxService.saveSysWxUserInfo(sysWxUser);
 		
 		//发送消息
-		String openId = sysWxUserCheck.getOpenId();
 		String name = sysWxUserCheck.getName();
 		if(null!=openId) {
 			wxService.sendMessageActive(openId, name);

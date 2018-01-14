@@ -214,7 +214,7 @@
 			<div class="lazyboardRank">
 				<c:if test="${not empty totalData}">
 					<c:forEach var="td" items="${totalData}" begin="0" end="2" step="1" varStatus="i"> 
-				        <c:if test="${i.index == 1}">
+				        <c:if test="${i.index == 0}">
 						    <div class="ranknumDiv">
 								<div class="ranknum2">
 									<img src="${td.headimgurl}" width="100%">
@@ -223,7 +223,7 @@
 								<div class="rankNumName">${td.nickname}</div>
 							</div>
 				        </c:if>
-				        <c:if test="${i.index == 0}">
+				        <c:if test="${i.index == 1}">
 					        <div class="ranknumDiv">
 									<div class="ranknum1">
 										<img src="${td.headimgurl}" width="100%">
@@ -262,7 +262,7 @@
 				<c:if test="${not empty totalData}">
 					<c:forEach  var="td" items="${totalData}" varStatus="i">
 					     <div class="lazyboardRankDiv">
-							<div class="lazyboardRankNumTxt">${i.index}</div>
+							<div class="lazyboardRankNumTxt">${i.count}</div>
 							<div class="lazyboardRankIcon">
 								<img src="${td.headimgurl}" width="100%">
 							</div>
@@ -280,7 +280,7 @@
 					<c:if test="${not empty yearData}">
 						<c:forEach  var="td" items="${yearData}" varStatus="i">
 						     <div class="lazyboardRankDiv">
-								<div class="lazyboardRankNumTxt">${i.index}</div>
+								<div class="lazyboardRankNumTxt">${i.count}</div>
 								<div class="lazyboardRankIcon">
 									<img src="${td.headimgurl}" width="100%">
 								</div>
@@ -298,7 +298,7 @@
 				<c:if test="${not empty monthData}">
 						<c:forEach  var="td" items="${monthData}" varStatus="i">
 						     <div class="lazyboardRankDiv">
-							<div class="lazyboardRankNumTxt">${i.index}</div>
+							<div class="lazyboardRankNumTxt">${i.count}</div>
 							<div class="lazyboardRankIcon">
 								<img src="${td.headimgurl}" width="100%">
 							</div>

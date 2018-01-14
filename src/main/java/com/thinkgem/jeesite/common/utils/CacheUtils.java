@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thinkgem.jeesite.common.entity.PhoneMsgCache;
+import com.thinkgem.jeesite.common.entity.Qrecord;
 import com.thinkgem.jeesite.common.entity.WxCodeCache;
 
 /**
@@ -35,10 +36,16 @@ public class CacheUtils {
 	private static List<String> phoneMsgCacheKeies = new ArrayList<String>();
 	//code和openId的对应 如果是新code获取的openId后，将之前的code移除掉的关联
 	private static Map<String,String> wxCodeOpenRelations = new HashMap<String,String>();
-	
+	//二维码Key
+	private static List<String> rRecordCacheKeies = new ArrayList<String>();
 	//移除微信code缓存
 	public static void removeWxCodeKey(String key) {
 		remove(key);
+	}
+	
+	//添加二维码缓存Key
+	public static void putQRecordCacheKey(String key) {
+		rRecordCacheKeies.add(key);
 	}
 	
 	//添加微信code缓存Key
@@ -59,6 +66,62 @@ public class CacheUtils {
 	//openId的缓存清除掉
 	public static String removeCodeByOpenId(String openId) {
 		return wxCodeOpenRelations.remove(openId);
+	}
+	
+	//清除重复二维码码
+	public static void clearQRecordRepeatCacheKeies(String idCard) {
+		Iterator<String> its = rRecordCacheKeies.iterator();
+		List<String> emptyKeies = new ArrayList<String>();
+		while(its.hasNext()) {
+			String key = its.next();
+			Qrecord qrecord = (Qrecord)get(key);
+			if(null == qrecord) {
+				//已经空了 准备移除掉
+				emptyKeies.add(key);
+			}else {
+				long timeOut = qrecord.getTimeOut();
+				if(System.currentTimeMillis() > timeOut) {
+					//已经超时了
+					emptyKeies.add(key);
+					remove(key);//移除缓存
+				}
+				//用户已经存在
+				String recordIdCard = qrecord.getIdCard();
+				if(recordIdCard.equals(idCard)) {
+					emptyKeies.add(key);
+					remove(key);//移除缓存
+				}
+			}
+		}
+		//有移除的对象
+		if(emptyKeies.size()>0) {
+			rRecordCacheKeies.removeAll(emptyKeies);
+		}
+	}
+	
+	//清除过期二维码
+	public static void clearQRecordCacheKeies() {
+		Iterator<String> its = rRecordCacheKeies.iterator();
+		List<String> emptyKeies = new ArrayList<String>();
+		while(its.hasNext()) {
+			String key = its.next();
+			Qrecord qrecord = (Qrecord)get(key);
+			if(null == qrecord) {
+				//已经空了 准备移除掉
+				emptyKeies.add(key);
+			}else {
+				long timeOut = qrecord.getTimeOut();
+				if(System.currentTimeMillis() > timeOut) {
+					//已经超时了
+					emptyKeies.add(key);
+					remove(key);//移除缓存
+				}
+			}
+		}
+		//有移除的对象
+		if(emptyKeies.size()>0) {
+			rRecordCacheKeies.removeAll(emptyKeies);
+		}
 	}
 	
 	//清除过期微信code

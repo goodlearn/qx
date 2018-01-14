@@ -445,6 +445,7 @@ public class WxService extends BaseService implements InitializingBean {
 		String url = String.format(WxGlobal.getUserInfoTokenUrl(),WxGlobal.getAppId(),WxGlobal.getAppSecret(),code);
 		logger.info("request accessToken from url: {}", url);
 		JSONObject jsonObject = WxUrlUtils.httpRequest(url, Global.GET_METHOD, null);
+		logger.info("返回的JSON是："+jsonObject);
 		if(null != jsonObject) {
   		  	String accessToken = jsonObject.getString("access_token");
   		  	String openId = jsonObject.getString("openid");
@@ -457,22 +458,85 @@ public class WxService extends BaseService implements InitializingBean {
 		return ret;
 	}
 	
+	public Map<String,String> getWxUserInfo(String access_toke,String openId) {
+		Map<String,String> ret = new HashMap<String,String>();
+		String url = String.format(WxGlobal.getUserInfoUrl(),access_toke,openId);
+		logger.info("request WxUserInfo from url: {}", url);
+		JSONObject jsonObject = WxUrlUtils.httpRequest(url, Global.GET_METHOD, null);
+		logger.info("返回的JSON是："+jsonObject);
+		if(null != jsonObject) {
+  		  	String nickname = jsonObject.getString("nickname");
+  		  	String headimgurl = jsonObject.getString("headimgurl");
+  		  	String sex = jsonObject.getString("sex");
+  		  	logger.info(" nickname is " + nickname + " headimgurl is "+headimgurl+" sex is " + sex);
+  		  	ret.put("nickname", nickname);
+  		    ret.put("headimgurl", headimgurl);
+  		    ret.put("sex", sex);
+		}else {
+			logger.info("get accessToken by code is error");
+		}
+		return ret;
+	}
+	
 	//保存用户信息(头像等)
 	@Transactional(readOnly = false)
-	public void saveWxInfo(Map<String,String> map) {
-		if(null == map) {
+	public void saveWxInfo(Map<String,String> param) {
+		if(null == param) {
 			logger.info("用户信息为空，无法更新");
 			return;
 		}
-		String openId = map.get("openId");
+		String openId = param.get("openId");
 		if(null == openId) {
 			logger.info("openId为空，无法更新");
+			return;
 		}
+		String accessToken = param.get("access_toke");
+		if(null == accessToken) {
+			logger.info("accessToken为空，无法更新");
+			return;
+		}
+		Map<String,String> map = getWxUserInfo(accessToken,openId);
 		String nickname = map.get("nickname");
 		String sex = map.get("sex");
 		String headimgurl = map.get("headimgurl");
 		SysWxInfo sysWxInfo = sysWxInfoDao.findByOpenId(openId);
 		if(null != sysWxInfo) {
+			logger.info("nickname是:"+nickname);
+			logger.info("headimgurl是:"+headimgurl);
+			logger.info("sex是"+sex);
+			boolean isUpdate = false;
+			if(!StringUtils.isEmpty(nickname)) {
+				isUpdate = true;
+				sysWxInfo.setNickname(nickname);
+			}
+			if(!StringUtils.isEmpty(sex)) {
+				isUpdate = true;
+				sysWxInfo.setSex(sex);
+			}
+			if(!StringUtils.isEmpty(headimgurl)) {
+				isUpdate = true;
+				sysWxInfo.setHeadimgurl(headimgurl);
+			}
+			if(isUpdate) {
+				User user = UserUtils.get("1");
+				sysWxInfo.setUpdateBy(user);
+				sysWxInfo.setUpdateDate(new Date());
+				sysWxInfoDao.update(sysWxInfo);
+			}
+		}else {
+			sysWxInfo = new SysWxInfo();
+			logger.info("nickname是:");
+			logger.info("headimgurl是:");
+			logger.info("sex是");
+			User user = UserUtils.get("1");
+			//第一次操作
+			sysWxInfo.setId(IdGen.uuid());
+			sysWxInfo.setIdCard(null);
+			sysWxInfo.setOpenId(openId);
+			sysWxInfo.setUpdateBy(user);
+			sysWxInfo.setUpdateDate(new Date());
+			sysWxInfo.setCreateBy(user);
+			sysWxInfo.setCreateDate(new Date());
 			if(!StringUtils.isEmpty(nickname)) {
 				sysWxInfo.setNickname(nickname);
 			}
@@ -482,13 +546,14 @@ public class WxService extends BaseService implements InitializingBean {
 			if(!StringUtils.isEmpty(headimgurl)) {
 				sysWxInfo.setHeadimgurl(headimgurl);
 			}
-			User user = UserUtils.get("1");
-			sysWxInfo.setUpdateBy(user);
-			sysWxInfo.setUpdateDate(new Date());
-			sysWxInfoDao.update(sysWxInfo);
+			sysWxInfoDao.insert(sysWxInfo);
 		}
 	}
 	
+	//查找微信信息
+	public SysWxInfo findSysWxInfoByOpenId(String openId) {
+		return sysWxInfoDao.findByOpenId(openId);
+	}
 	
 	
 	 /**
@@ -559,9 +624,18 @@ public class WxService extends BaseService implements InitializingBean {
 	}
 	 
 	@Transactional(readOnly = false)
-	public void saveInfo(SysWxUser sysWxUser,SysWxInfo sysWxInfo) {
+	public void saveSysWxUserInfo(SysWxUser sysWxUser) {
 		sysWxUserDao.insert(sysWxUser);
+	}
+	
+	@Transactional(readOnly = false)
+	public void saveSysWxInfoInfo(SysWxInfo sysWxInfo) {
 		sysWxInfoDao.insert(sysWxInfo);
+	}
+	
+	@Transactional(readOnly = false)
+	public void updateSysWxInfoInfo(SysWxInfo sysWxInfo) {
+		sysWxInfoDao.update(sysWxInfo);
 	}
 	
 	//查询快递
@@ -958,7 +1032,7 @@ public class WxService extends BaseService implements InitializingBean {
         //文本消息
         if (msgType.equals(Global.WX_REQ_MESSAGE_TYPE_TEXT)) {
         	WechatTextMsg wechatMsg = new WechatTextMsg();
-        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.getOauthRedirectUrlIndex(),true)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
+        	wechatMsg.setContent("欢迎关注锡职快递系统，请<a href=\""+WxGlobal.getUserClick(WxGlobal.getOauthRedirectUrlIndex(),false)+"\">绑定个人信息</a>，正确绑定之后，快递到达，您将第一时间收到通知");
         	wechatMsg.setToUserName(fromUserName);
         	wechatMsg.setFromUserName(toUserName);
         	wechatMsg.setCreateTime(new Date().getTime() + "");

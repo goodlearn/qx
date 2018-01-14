@@ -133,7 +133,7 @@
 		<where>
 			a.del_flag = 0 AND a.update_date between #{0} and #{1}
 		</where>		
-		ORDER BY a.update_date DESC LIMIT 100
+		ORDER BY a.express_num DESC LIMIT 100
 	</select>
 	
 	<insert id="insert">

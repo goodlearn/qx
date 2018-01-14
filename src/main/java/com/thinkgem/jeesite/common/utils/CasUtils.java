@@ -601,7 +601,7 @@ public class CasUtils {
      * @return
      * @throws Exception
      */
-    public String md5Validate(String data)throws Exception{
+    public static String md5Validate(String data)throws Exception{
         StringBuilder sb =new StringBuilder();
         MessageDigest md= MessageDigest.getInstance("md5");//sha
         byte[] bs=data.getBytes();

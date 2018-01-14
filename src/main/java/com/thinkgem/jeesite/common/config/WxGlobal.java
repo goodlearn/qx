@@ -55,12 +55,18 @@ public class WxGlobal {
 		return DictUtils.getDictValue("REQ_USER_INFO_URL", "systemControl", "");
 	}
 	
+	
 
 	//请求用户信息token
 	public static String getUserInfoTokenUrl() {
 		return DictUtils.getDictValue("REQ_USERINFO_TOKEN_URL", "systemControl", "");
 	}
 
+	//请求用户信息userinfo
+	public static String getUserInfoUrl() {
+		return DictUtils.getDictValue("REQ_USERINFO_URL", "systemControl", "");
+	}
+	
 	//微信模板
 	public static String getTemplateMsg_1() {
 		return DictUtils.getDictValue("TEMPLATE_MSG_1", "systemControl", "");
