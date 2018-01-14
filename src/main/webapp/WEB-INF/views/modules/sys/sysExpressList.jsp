@@ -98,6 +98,8 @@
 				</td>
 				<shiro:hasPermission name="sys:sysExpress:edit"><td>
     				<a href="${ctx}/sys/sysExpress/editForm?id=${sysExpress.id}">修改</a>
+				</td></shiro:hasPermission>
+				<shiro:hasPermission name="sys:sysExpress:delete"><td>
 					<a href="${ctx}/sys/sysExpress/delete?id=${sysExpress.id}" onclick="return confirmx('确认要删除该快递表吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

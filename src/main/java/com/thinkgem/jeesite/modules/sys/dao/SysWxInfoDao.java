@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
@@ -14,6 +16,16 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
  */
 @MyBatisDao
 public interface SysWxInfoDao extends CrudDao<SysWxInfo> {
+	
+	/**
+	 * 前100名
+	 */
+	public List<SysWxInfo> findByTotal();
+	
+	/**
+	 * 时间-前100名
+	 */
+	public List<SysWxInfo> findByTime(String start,String end);
 	
 	/**
 	 * 根据openId查询

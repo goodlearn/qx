@@ -74,7 +74,9 @@
 				</td>
 				<shiro:hasPermission name="sys:sysWxUserCheck:edit"><td>
     				<a href="${ctx}/sys/sysWxUserCheck/active?id=${sysWxUserCheck.id}">激活</a>
-					<a href="${ctx}/sys/sysWxUserCheck/delete?id=${sysWxUserCheck.id}" onclick="return confirmx('确认要删除该信信息检查表吗？', this.href)">删除</a>
+				</td></shiro:hasPermission>
+				<shiro:hasPermission name="sys:sysWxUserCheck:delete"><td>
+    				<a href="${ctx}/sys/sysWxUserCheck/delete?id=${sysWxUserCheck.id}" onclick="return confirmx('确认要删除该信信息检查表吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

@@ -111,7 +111,7 @@ public class SysWxUserCheckController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/sysWxUserCheck/?repage";
 	}
 	
-	@RequiresPermissions("sys:sysWxUserCheck:edit")
+	@RequiresPermissions("sys:sysWxUserCheck:delete")
 	@RequestMapping(value = "delete")
 	public String delete(SysWxUserCheck sysWxUserCheck, RedirectAttributes redirectAttributes) {
 		sysWxUserCheckService.delete(sysWxUserCheck);

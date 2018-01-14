@@ -41,7 +41,9 @@
 			<tr>
 				<th>微信关联号</th>
 				<th>身份证号</th>
-				<th>更新时间</th>
+				<th>微信昵称</th>
+				<th>头像Url</th>
+				<th>快递数量</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="sys:sysWxInfo:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -54,6 +56,15 @@
 				</a></td>
 				<td>
 					${sysWxInfo.idCard}
+				</td>
+				<td>
+					${sysWxInfo.nickname}
+				</td>
+				<td>
+					${sysWxInfo.headimgurl}
+				</td>
+				<td>
+					${sysWxInfo.expressNum}
 				</td>
 				<td>
 					<fmt:formatDate value="${sysWxInfo.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

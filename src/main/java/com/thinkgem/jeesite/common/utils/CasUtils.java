@@ -926,4 +926,77 @@ public class CasUtils {
 		}
 		return false;
 	}
+	
+	
+	/** 
+	 * 获得本月的开始时间 
+	 * 
+	 * @return 
+	 */  
+	public static Date getCurrentMonthStartTime() {  
+		Calendar c = Calendar.getInstance();  
+		Date now = null;  
+		try {  
+			c.set(Calendar.DATE, 1);  
+			now = sdfWithYMD.parse(sdfWithYMD.format(c.getTime()));  
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+		return now;  
+	}  
+
+	/** 
+	 * 本月的结束时间 
+	 * 
+	 * @return 
+	 */  
+	public static Date getCurrentMonthEndTime() {  
+		Calendar c = Calendar.getInstance();  
+		Date now = null;  
+		try {  
+			c.set(Calendar.DATE, 1);  
+			c.add(Calendar.MONTH, 1);  
+			c.add(Calendar.DATE, -1);  
+			now = sdfWithHMS.parse(sdfWithYMD.format(c.getTime()) + " 23:59:59");  
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+		return now;  
+	}  
+
+	/** 
+	 * 当前年的开始时间 
+	 * 
+	 * @return 
+	 */  
+	public static Date getCurrentYearStartTime() {  
+		Calendar c = Calendar.getInstance();  
+		Date now = null;  
+		try {  
+			c.set(Calendar.MONTH, 0);  
+			c.set(Calendar.DATE, 1);  
+			now = sdfWithYMD.parse(sdfWithYMD.format(c.getTime()));  
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+		return now;  
+	}  
+
+	/** 
+	 * 当前年的结束时间 
+	 * 
+	 * @return 
+	 */  
+	public static Date getCurrentYearEndTime() {  
+		Calendar c = Calendar.getInstance();  
+		Date now = null;  
+		try {  
+			c.set(Calendar.MONTH, 11);  
+			c.set(Calendar.DATE, 31);  
+			now = sdfWithHMS.parse(sdfWithYMD.format(c.getTime()) + " 23:59:59");  
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
+		return now;  
+	} 
 }

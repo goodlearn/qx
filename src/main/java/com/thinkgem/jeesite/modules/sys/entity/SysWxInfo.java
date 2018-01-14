@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
@@ -17,7 +14,11 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 	
 	private static final long serialVersionUID = 1L;
 	private String openId;		// 微信关联号
+	private String nickname;		// 用户昵称
+	private String sex;		// 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+	private String headimgurl;		// 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
 	private String idCard;		// 身份证号
+	private String expressNum;		// 快递数量
 	private User user;//关联的管理员
 	
 	public SysWxInfo() {
@@ -55,5 +56,38 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 	public void setIdCard(String idCard) {
 		this.idCard = idCard;
 	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getHeadimgurl() {
+		return headimgurl;
+	}
+
+	public void setHeadimgurl(String headimgurl) {
+		this.headimgurl = headimgurl;
+	}
+
+	public String getExpressNum() {
+		return expressNum;
+	}
+
+	public void setExpressNum(String expressNum) {
+		this.expressNum = expressNum;
+	}
+	
 	
 }

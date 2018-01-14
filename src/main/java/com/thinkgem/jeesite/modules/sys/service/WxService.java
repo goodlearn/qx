@@ -26,6 +26,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.TimeUtils;
@@ -118,6 +119,31 @@ public class WxService extends BaseService implements InitializingBean {
 	public SysWxUserCheck findByOpenId(String openId) {
 		return sysWxUserCheckDao.findByOpenId(openId);
 	}
+	
+	//查询总数量
+	public List<SysWxInfo> findSysWxInfoTotal(){
+		return sysWxInfoDao.findByTotal();
+	} 
+	
+	//查询年数量
+	public List<SysWxInfo> findSysWxInfoByYear(){
+		Date startTime =  CasUtils.getCurrentYearStartTime();
+		Date endTime =  CasUtils.getCurrentYearEndTime();
+		if(null == startTime || null == endTime) {
+			return null;
+		}
+		return sysWxInfoDao.findByTime(startTime.toString(),endTime.toString());
+	} 
+	
+	//查询月数量
+	public List<SysWxInfo> findSysWxInfoByMonth(){
+		Date startTime =  CasUtils.getCurrentMonthStartTime();
+		Date endTime =  CasUtils.getCurrentMonthEndTime();
+		if(null == startTime || null == endTime) {
+			return null;
+		}
+		return sysWxInfoDao.findByTime(startTime.toString(),endTime.toString());
+	} 
 	
 	/**
 	 * 依据微信号查询审核信息
@@ -217,6 +243,19 @@ public class WxService extends BaseService implements InitializingBean {
 		return sysWxUser;
 	}
 	
+	
+	/**
+	 * 依据身份证查询微信用户
+	 * @param phone
+	 * @return
+	 */
+	public SysWxInfo findWxInfoByIdCard(String idCard) {
+		if(null!=idCard) {
+			return sysWxInfoDao.findByIdCard(idCard);
+		}
+		return null;
+	}
+	
 	/**
 	 * 依据电话查询用户信息
 	 * @param phone
@@ -274,6 +313,45 @@ public class WxService extends BaseService implements InitializingBean {
 			String userName = user.getName();
 			sendMessageExpress(openId,userName,"0");	
 		}
+		
+		//记录快递数量
+		recordExpressNum(sysExpress,user);
+	}
+	
+	//记录快递数量
+	@Transactional(readOnly = false)
+	public void recordExpressNum(SysExpress sysExpress,User user) {
+		String phone = sysExpress.getPhone();
+		if(null == phone) {
+			logger.info("快递手机号不存在");
+			return;
+		}
+		
+		SysWxUser sysWxUser = findByPhone(phone);
+		if(null == sysWxUser) {
+			logger.info("快递无关联用户");
+			return;
+		}
+		
+		String idCard = sysWxUser.getIdCard();
+		if(null == idCard) {
+			logger.info("快递无关联用户身份证号");
+			return;
+		}
+		
+		SysWxInfo sysWxInfo = findWxInfoByIdCard(idCard);
+		if(null == sysWxInfo) {
+			logger.info("快递无关联微信用户");
+			return;
+		}
+		
+		//快递数量加一
+		Integer expressNum = Integer.valueOf(sysWxInfo.getExpressNum());
+		expressNum++;
+		sysWxInfo.setExpressNum(expressNum.toString());
+		sysWxInfo.setUpdateBy(user);
+		sysWxInfo.setUpdateDate(new Date());
+		sysWxInfoDao.update(sysWxInfo);
 	}
 	
 	//快递信息状态查询
@@ -369,11 +447,48 @@ public class WxService extends BaseService implements InitializingBean {
   		  	logger.info(" access_token is " + accessToken + " openId is "+openId);
   		  	ret.put("access_toke", accessToken);
   		    ret.put("openId", openId);
+  		    
+  		    //用户数据保存一次
+  		    saveWxInfo(ret);
 		}else {
 			logger.info("get accessToken by code is error");
 		}
 		return ret;
 	}
+	
+	//保存用户信息(头像等)
+	@Transactional(readOnly = false)
+	private void saveWxInfo(Map<String,String> map) {
+		if(null == map) {
+			logger.info("用户信息为空，无法更新");
+			return;
+		}
+		String openId = map.get("openId");
+		if(null == openId) {
+			logger.info("openId为空，无法更新");
+		}
+		String nickname = map.get("nickname");
+		String sex = map.get("sex");
+		String headimgurl = map.get("headimgurl");
+		SysWxInfo sysWxInfo = sysWxInfoDao.findByOpenId(openId);
+		if(null != sysWxInfo) {
+			if(!StringUtils.isEmpty(nickname)) {
+				sysWxInfo.setNickname(nickname);
+			}
+			if(!StringUtils.isEmpty(sex)) {
+				sysWxInfo.setSex(sex);
+			}
+			if(!StringUtils.isEmpty(headimgurl)) {
+				sysWxInfo.setHeadimgurl(headimgurl);
+			}
+			User user = UserUtils.get("1");
+			sysWxInfo.setUpdateBy(user);
+			sysWxInfo.setUpdateDate(new Date());
+			sysWxInfoDao.update(sysWxInfo);
+		}
+	}
+	
+	
 	
 	 /**
 	  * 保存微信号

@@ -221,7 +221,7 @@ public class SysExpressController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/sysExpress/?repage";
 	}
 	
-	@RequiresPermissions("sys:sysExpress:edit")
+	@RequiresPermissions("sys:sysExpress:delete")
 	@RequestMapping(value = "delete")
 	public String delete(SysExpress sysExpress, RedirectAttributes redirectAttributes) {
 		sysExpressService.delete(sysExpress);

@@ -151,8 +151,11 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		sysExpress.setUpdateBy(user);
 		sysExpress.setUpdateDate(new Date());
 		dao.insert(sysExpress);
+		//记录快递数量
+		wxService.recordExpressNum(sysExpress,user);
 		return sysExpress;
 	}
+	
 	
 	//发送短信消息
 	@Transactional(readOnly = false)

@@ -68,6 +68,8 @@ public class UtilsController extends BaseController {
 	private final String WX_USER_HOME = "modules/wxp/wxUserhome";
 	//快递助手页面
 	private final String WX_EXPRESS_ASSIST = "modules/wxp/expressAssist";
+	//懒人排行页面
+	private final String WX_LAZY_BOARD = "modules/wxp/lazyboard";
 	//录入快递页面
 	private final String WX_EXPRESS_ADD = "modules/wxp/addExpress";
 	//取快递页面
@@ -137,7 +139,7 @@ public class UtilsController extends BaseController {
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
 		try {
 			
-			if(!DeviceUtils.isWeChat(request)) {
+			/*if(!DeviceUtils.isWeChat(request)) {
 				logger.info("不是微信浏览器访问");
 				model.addAttribute("message",ERR_CLIENT_MECHINE);
 				model.addAttribute("errUrl",WX_ERROR);
@@ -145,8 +147,8 @@ public class UtilsController extends BaseController {
 			}
 			//获取微信号
 			String openId = getOpenId(request, response);//获取微信号
-			 
-			//String openId = WxGlobal.getTestOpenId();
+*/			 
+			String openId = WxGlobal.getTestOpenId();
 			//微信号为空
 			if(StringUtils.isEmpty(openId)) {
 				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
@@ -247,7 +249,7 @@ public class UtilsController extends BaseController {
 		    			  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
 		    			  CacheUtils.remove(code);
 		    			  logger.info("缓存过时，前往微信服务器获取Code");
-				        response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
+				          response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
 		    		  }else {
 			    		  openId = wxCodeCache.getOpenId();//缓存的openId
 			    		  logger.info("Cahce OpenId Is " + openId);
@@ -282,6 +284,13 @@ public class UtilsController extends BaseController {
 			model.addAttribute("errUrl",WX_ERROR);
 			return WX_ERROR;//微信号为空
 		}
+		
+		SysWxUser sysWxUser = wxService.getSysWxUser(openId);
+		//判断
+		if(null != sysWxUser) {
+			return null;//用户已注册，也已经激活，返回空值
+		}
+		
 		SysWxUserCheck sysWxUserCheck = wxService.findByOpenId(openId);
 		if(null == sysWxUserCheck) {
 			model.addAttribute("message",ERR_USER_ID_NULL);
@@ -315,6 +324,34 @@ public class UtilsController extends BaseController {
 		return null;//微信号 标识微信号已获取
 	}
 	
+	/**
+	 * 页面跳转-获取懒人排行页面
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/reqLazyboard",method=RequestMethod.GET)
+	public String reqLazyboard(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String errUrl = (String)model.asMap().get("errUrl");
+		if(null != errUrl) {
+			return errUrl;
+		}
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String isRegAndActive = validateRegAndActiveByOpenId(openId,model);
+		if(null!=isRegAndActive) {
+			//未注册或者未激活 跳转到指定页面
+			return isRegAndActive;
+		}
+		List<SysWxInfo> totalData = wxService.findSysWxInfoTotal();
+		List<SysWxInfo> yearData = wxService.findSysWxInfoByYear();
+		List<SysWxInfo> monthData = wxService.findSysWxInfoByMonth();
+		model.addAttribute("totalData",totalData);
+		model.addAttribute("yearData",yearData);
+		model.addAttribute("monthData",monthData);
+		return WX_LAZY_BOARD;
+	}
 
 	
 	/**
