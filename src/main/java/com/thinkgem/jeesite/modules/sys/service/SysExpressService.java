@@ -158,27 +158,6 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 	}
 	
 	
-	//发送短信消息
-	@Transactional(readOnly = false)
-	public String sendAliyunMsgTemplate(SysExpress sysExpress,User user) {
-		//发送验证码
-		if(systemService.isAliyunMsgLimit()) {
-			//超出限制
-			return "消息套餐已用完";
-		}
-		Map<String,String> map = new HashMap<String,String>();
-		map.put("company", DictUtils.getDictLabel(sysExpress.getCompany(),"expressCompany", "0"));
-		map.put("num", sysExpress.getPickUpCode());
-		if(!AliyunSendMsgUtils.sendMsg(sysExpress.getPhone(), map,1)) {
-			//发送失败
-			return "消息接口调用发送失败";
-		}
-		//发送成功 记录下发送的次数
-		systemService.aliyunMsgNumAdd(user);
-		return null;//成功
-	}
-		
-	
 	//发送模板消息
 	public String sendMsgTemplate(SysExpress sysExpress,User user) {
 		/**

@@ -22,6 +22,7 @@ import com.thinkgem.jeesite.common.utils.PhoneUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysExpress;
 import com.thinkgem.jeesite.modules.sys.service.SysExpressService;
+import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -36,6 +37,9 @@ public class SysExpressController extends BaseController {
 
 	@Autowired
 	private SysExpressService sysExpressService;
+	
+	@Autowired
+	private WxService wxService;
 	
 	@ModelAttribute
 	public SysExpress get(@RequestParam(required=false) String id) {
@@ -179,7 +183,7 @@ public class SysExpressController extends BaseController {
 		if(null == sysExpressService.sendMsgTemplate(sysExpress, UserUtils.getUser()) ) {
 			//微信发送失败
 			//改用短信发送
-			String returnMsg = sysExpressService.sendAliyunMsgTemplate(sysExpress, UserUtils.getUser());
+			String returnMsg = wxService.sendAliyunMsgTemplate(sysExpress, UserUtils.getUser());
 			if(null!=returnMsg) {
 				addMessage(redirectAttributes, returnMsg + " 快递已入库");
 			}else {

@@ -38,6 +38,7 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxUserCheck;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.JsonSysExpress;
 import com.alibaba.fastjson.JSONObject;
 
@@ -82,6 +83,7 @@ public class UtilsController extends BaseController {
 	private final String ERR_Q_RECORD_NULL = "无身份信息";
 	private final String ERR_ID_EXPRESS_NULL = "快递号不能为空";
 	private final String ERR_EXPRESS_NOT_ARRIVE = "快递还未到达，请您耐心等候";
+	private final String ERR_EXPRESS_EXIST = "快递已存在";
 	private final String ERR_USER_ID_NULL = "用户不存在";
 	private final String ERR_USER_NOT_REG = "用户未注册";
 	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
@@ -1035,11 +1037,17 @@ public class UtilsController extends BaseController {
 			return backJsonWithCode(errCode_3,ERR_NEW_PHONE_PATTERN);
 		}
 		
+		//快递单号查询
+		if(null!=wxService.findExpressByExpressId(expressId)) {
+			return backJsonWithCode(errCode_1,ERR_EXPRESS_EXIST);
+		}
+		
 		//查询操作人员
 		User user = wxService.findOperator(openId);
 		if(null == user) {
 			return backJsonWithCode(errCode_4,ERR_NO_USER);
 		}
+		
 		
 		
 		SysExpress sysExpress = new SysExpress();
@@ -1059,6 +1067,23 @@ public class UtilsController extends BaseController {
 			sysExpress.setCompany("0");
 		}
 		wxService.saveExpress(sysExpress,user);
+		/**
+		 * 发送模板消息
+		 */
+		String sendOpenId = wxService.getOpenIdForMsg(sysExpress);
+		if(null == sendOpenId) {
+			//微信发送失败
+			//改用短信发送
+			String returnMsg = wxService.sendAliyunMsgTemplate(sysExpress, UserUtils.getUser());
+			if(null!=returnMsg) {
+				return backJsonWithCode(successCode,returnMsg + " 快递已入库");
+			}else {
+				return backJsonWithCode(successCode,"消息发送成功,快递已入库");
+			}
+		}else {
+			String userName = user.getName();
+			wxService.sendMessageExpress(sendOpenId,userName,"0");	
+		}
 		model.addAttribute("openId",openId);
 		return backJsonWithCode(successCode,MSG_EXPRESS_SAVE_SUCCESS);
 	}

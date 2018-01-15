@@ -26,6 +26,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.utils.AliyunSendMsgUtils;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -78,6 +79,9 @@ public class WxService extends BaseService implements InitializingBean {
 	
 	@Autowired
 	private SysWxUserCheckDao sysWxUserCheckDao;
+	
+	@Autowired
+	private DictDao dictDao;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -306,17 +310,6 @@ public class WxService extends BaseService implements InitializingBean {
 		sysExpress.setUpdateBy(user);
 		sysExpress.setUpdateDate(new Date());
 		sysExpressDao.insert(sysExpress);
-		
-		/**
-		 * 发送模板消息
-		 */
-		String openId = getOpenIdForMsg(sysExpress);
-		if(null == openId) {
-			logger.info("save sendMsg is null ");
-		}else {
-			String userName = user.getName();
-			sendMessageExpress(openId,userName,"0");	
-		}
 		
 	}
 	
@@ -552,6 +545,79 @@ public class WxService extends BaseService implements InitializingBean {
 	//查找微信信息
 	public SysWxInfo findSysWxInfoByOpenId(String openId) {
 		return sysWxInfoDao.findByOpenId(openId);
+	}
+	
+	//短信是否超出限额
+	public boolean isAliyunMsgLimit() {
+			String sendMaxNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");//最大次数
+			String currentNum = DictUtils.getDictValue("ALIYUN_MSG_SEND_MSG", "systemControl", sendMaxNum);//目前次数
+			if(Integer.valueOf(currentNum) < Integer.valueOf(sendMaxNum)) {
+				return false;//没有超出 可以发送
+			}
+			return false;
+	}
+		
+	//阿里云短信发送次数增加一次，防止短信次数超出套餐限额
+	@Transactional(readOnly = false)
+	public void aliyunMsgNumAdd(User user) {
+			//已经发送次数
+			List<Dict> dicts = DictUtils.getDictList("systemControl");
+			if(null == dicts) {
+				logger.info("systemControl字典不存在");
+				return;
+			}
+			Dict sendDict = null;
+			//找到该参数
+			Iterator<Dict> its = dicts.iterator();
+			while(its.hasNext()) {
+				Dict it = its.next();
+				String label = it.getLabel();
+				if("ALIYUN_MSG_SEND_MSG".equals(label)) {
+					sendDict = it;
+					break;
+				}
+			}
+			if(null == sendDict) {
+				return;//没有找到
+			}
+			
+			//先转换下数值
+			String value = sendDict.getValue();
+			Integer intValue = Integer.valueOf(value);
+			
+			//要求发送的次数
+			String sendNum = DictUtils.getDictValue("ALIYUN_MSG_MAX", "systemControl", "5000");
+			Integer sendNumValue = Integer.valueOf(sendNum);
+			if(intValue >= sendNumValue) {
+				//超出次数 不能增加
+				return;
+			}
+			
+			intValue++;//一个
+			sendDict.setValue(intValue.toString());
+			sendDict.setUpdateBy(user);
+			sendDict.setUpdateDate(new Date());
+			dictDao.update(sendDict);//保存次数
+	}
+	
+	//发送短信消息
+	@Transactional(readOnly = false)
+	public String sendAliyunMsgTemplate(SysExpress sysExpress,User user) {
+		//发送验证码
+		if(isAliyunMsgLimit()) {
+			//超出限制
+			return "消息套餐已用完";
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("company", DictUtils.getDictLabel(sysExpress.getCompany(),"expressCompany", "0"));
+		map.put("num", sysExpress.getPickUpCode());
+		if(!AliyunSendMsgUtils.sendMsg(sysExpress.getPhone(), map,1)) {
+			//发送失败
+			return "消息接口调用发送失败";
+		}
+		//发送成功 记录下发送的次数
+		aliyunMsgNumAdd(user);
+		return null;//成功
 	}
 	
 	
