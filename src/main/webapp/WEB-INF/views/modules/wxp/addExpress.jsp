@@ -165,12 +165,13 @@
 <script type="text/javascript">
 	$(function() {
 		
-		$(".submitBtn").click(function(){
-			
+		var submitFunc = function(){
+			$(".submitBtn").unbind("click");
 			//检测快递单号
 			var expressId = $.trim($("#expressId").val());
 			if (!CheckExpNum(expressId)) {
 				rzAlert("操作提示","快递单号格式不正确！");
+				$(".submitBtn").bind("click",submitFunc);
 				return false;
 			}
 
@@ -178,6 +179,7 @@
 			var phone = $.trim($("#phone").val());
 			if (!CheckPhoneNum(phone)) {
 				rzAlert("操作提示","手机号码格式不对！");
+				$(".submitBtn").bind("click",submitFunc);
 				return false;
 			}
 			
@@ -203,12 +205,15 @@
 			    	}else{
 			    		rzAlert(prompt,message);
 			    	}
+			    	$(".submitBtn").bind("click",submitFunc);
 		    	},
 			    error:function(){
-				      
+			    	$(".submitBtn").bind("click",submitFunc);  
 			    }
 			});
-		});
+		};
+		
+		$(".submitBtn").bind("click",submitFunc);
 		
 		var initFun = function(){
 			var windowW = $(window).width();
