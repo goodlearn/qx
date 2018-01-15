@@ -103,6 +103,7 @@ public class UtilsController extends BaseController {
 	private final String ERR_NO_ACTIVE = "用户未审核激活，请前往快递中心审核激活";
 	private final String ERR_INPUT_OLD_PHONE = "用户已绑定，请输入原手机号码";
 	private final String ERR_NOT_SAME_OLD_PHONE = "绑定原手机号码输入错误";
+	private final String ERR_NOT_SAME_OLD_NAME = "与原姓名关联不匹配";
 	private final String ERR_NO_USER = "未检测到操作用户";
 	private final String ERR_OLD_PHONE_PATTERN = "旧手机号码格式不正确";
 	private final String ERR_NEW_PHONE_PATTERN = "新手机号码格式不正确";
@@ -803,19 +804,22 @@ public class UtilsController extends BaseController {
 				if(!originPhone.equals(oldPhone)) {
 					//旧手机号码验证错误
 					return backJsonWithCode(errCode_11,ERR_NOT_SAME_OLD_PHONE);
+				}
+				String originName = sysWxUser.getName();//原先名字
+				if(!originName.equals(name)) {
+					//旧手机号码验证错误
+					return backJsonWithCode(errCode_11,ERR_NOT_SAME_OLD_NAME);
+				}
+				//号码输入正确，更改信息
+				sysWxUser.setPhone(phone);
+				if(null!=wxService.saveWxUserInfo(sysWxUser,openId)) {
+					//移除缓存验证码 已经完成验证了
+					CacheUtils.remove(cacheKey);
+					CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
+					return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
 				}else {
-					//号码输入正确，更改信息
-					sysWxUser.setName(name);
-					sysWxUser.setPhone(phone);
-					if(null!=wxService.saveWxUserInfo(sysWxUser,openId)) {
-						//移除缓存验证码 已经完成验证了
-						CacheUtils.remove(cacheKey);
-						CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
-						return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
-					}else {
-						//操作异常
-						return backJsonWithCode(errCode_12,ERR_NO_USER);
-					}
+					//操作异常
+					return backJsonWithCode(errCode_12,ERR_NO_USER);
 				}
 			}
 		}
@@ -865,7 +869,6 @@ public class UtilsController extends BaseController {
 			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
 		}
 		
-		String name = request.getParameter("name").trim();
 		String userId = request.getParameter("userId").trim();
 		String userNewPhone = request.getParameter("usernewPhone").trim();
 		String msg = request.getParameter("username").trim();
@@ -892,17 +895,12 @@ public class UtilsController extends BaseController {
 
 		//验证码不能为空
 		if(StringUtils.isEmpty(msg)) {
-			return backJsonWithCode(errCode_1,MSG_PHONE_CODE_MSG);
+			return backJsonWithCode(errCode_1,ERR_CODE_NULL);
 		}
 		
 		//验证码长度为固定值
 		if(msg.length()!=Global.MOBILE_CODE_SIZE) {
 			return backJsonWithCode(errCode_2,ERR_CODE_SIZE);
-		}
-		
-		//姓名不能为空
-		if(StringUtils.isEmpty(name)) {
-			return backJsonWithCode(errCode_3,ERR_NAME_NULL);
 		}
 		
 		//ID不能为空
@@ -959,24 +957,27 @@ public class UtilsController extends BaseController {
 			return backJsonWithCode(errCode_9,ERR_NO_ACTIVE);
 		}
 		
+		if(null !=wxService.findByPhone(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_SAME_PHONE);
+		}
+		
 		//手机号校验
 		String originPhone = modifyWxUser.getPhone();
 		if(!originPhone.equals(usernum)) {
 			//旧手机号码验证错误
 			return backJsonWithCode(errCode_11,ERR_NOT_SAME_OLD_PHONE);
+		}
+		
+		//号码输入正确，更改信息
+		modifyWxUser.setPhone(userNewPhone);
+		if(null!=wxService.modifyWxUser(modifyWxUser,openId)) {
+			//移除缓存验证码 已经完成验证了
+			CacheUtils.remove(cacheKey);
+			CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
+			return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
 		}else {
-			//号码输入正确，更改信息
-			modifyWxUser.setName(name);
-			modifyWxUser.setPhone(userNewPhone);
-			if(null!=wxService.modifyWxUser(modifyWxUser,openId)) {
-				//移除缓存验证码 已经完成验证了
-				CacheUtils.remove(cacheKey);
-				CacheUtils.clearPhoneMsgCacheKeies();//清除其余缓存
-				return backJsonWithCode(successCode,MSG_USER_SAVE_SUCCESS);
-			}else {
-				//操作异常
-				return backJsonWithCode(errCode_12,ERR_NO_USER);
-			}
+			//操作异常
+			return backJsonWithCode(errCode_12,ERR_NO_USER);
 		}
 	}
 

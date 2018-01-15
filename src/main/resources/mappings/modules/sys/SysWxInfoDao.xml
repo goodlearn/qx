@@ -122,7 +122,7 @@
 		<where>
 			a.del_flag = 0
 		</where>		
-		ORDER BY a.express_num DESC LIMIT 100
+		ORDER BY a.express_num DESC LIMIT 50
 	</select>
 	
 	<select id="findByTime" resultType="SysWxInfo">
@@ -133,7 +133,7 @@
 		<where>
 			a.del_flag = 0 AND a.update_date between #{0} and #{1}
 		</where>		
-		ORDER BY a.express_num DESC LIMIT 100
+		ORDER BY a.express_num DESC LIMIT 50
 	</select>
 	
 	<insert id="insert">
@@ -180,6 +180,11 @@
 			update_date = #{updateDate},
 			remarks = #{remarks}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByOpenId">
+		delete from sys_wx_info 
+		WHERE open_id = #{openId}
 	</update>
 	
 	<update id="delete">

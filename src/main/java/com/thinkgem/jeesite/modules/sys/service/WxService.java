@@ -318,8 +318,6 @@ public class WxService extends BaseService implements InitializingBean {
 			sendMessageExpress(openId,userName,"0");	
 		}
 		
-		//记录快递数量
-		recordExpressNum(sysExpress,user);
 	}
 	
 	//记录快递数量
@@ -657,16 +655,50 @@ public class WxService extends BaseService implements InitializingBean {
 		//默认保存数据
 		sysExpress.setMsgState(queryMsgState(sysExpress));
 		sysExpressDao.update(sysExpress);
+		//记录快递数量
+		recordExpressNum(sysExpress,user);
+		
+		
+		//查询快递接收人
+		String toUserPhone = sysExpress.getPhone();
+		//查询快递电话
+		if(null == toUserPhone) {
+			logger.info("save send phone is null ");
+			return;
+		}
+		
+		//查询关联人
+		SysWxUser sysWxUser = findByPhone(toUserPhone);
+		if(null == sysWxUser) {
+			logger.info("save send sysWxUser is null ");
+			return;
+		}
+		
+		//查询身份证号
+		String idCard = sysWxUser.getIdCard();
+		if(null == idCard) {
+			logger.info("save send idCard is null ");
+			return;
+		}
+		
+		//查询微信
+		SysWxInfo sysWxInfo = this.findWxInfoByIdCard(idCard);
+		if(null == sysWxInfo) {
+			logger.info("save send sysWxInfo is null ");
+			return;
+		}
+		//查询关联人微信
+		String toUserOpenId = sysWxInfo.getOpenId();
+		if(null == toUserOpenId) {
+			logger.info("save send toUserOpenId is null ");
+			return;
+		}
 		
 		/**
 		 * 发送模板消息
 		 */
-		if(null == openId) {
-			logger.info("save sendMsg is null ");
-		}else {
-			String userName = user.getName();
-			sendMessageEndExpress(openId,userName,"0");	
-		}
+		String userName = user.getName();
+		sendMessageEndExpress(toUserOpenId,userName,"0");	
 	}
 	
 	//更新个人信息
@@ -713,7 +745,7 @@ public class WxService extends BaseService implements InitializingBean {
 				//更新关联
 				addOrUpdateWxInfo(idCard,openId,user);
 			}else {
-				updateWxInfo(idCard,openId,user);//更新微信表
+				updateNewWxInfo(idCard,openId,user);//更新微信表(保存数据的时候出现了已经存在的用户，说明是用户在关联新微信)
 				sysWxUserDao.update(sysWxUser);//更新用户表
 			}
 			return sysWxUser;
@@ -721,10 +753,40 @@ public class WxService extends BaseService implements InitializingBean {
 		return null;
 	}
 	
+	//保存的时候关联新微信 删除旧微信
+	private void updateNewWxInfo(String idCard,String openId,User user) {
+		if(null != idCard) {
+			SysWxInfo querySysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+			String expressNum = null;
+			String oldOpenId = querySysWxInfo.getOpenId();//老微信号
+			if(null != querySysWxInfo) {
+				logger.info("SysWxInfo is delete");
+				expressNum = querySysWxInfo.getExpressNum();
+				sysWxInfoDao.deleteByOpenId(oldOpenId);
+				logger.info("SysWxInfo is delete");
+				SysWxUserCheck sysWxUserCheck = sysWxUserCheckDao.findByOpenId(oldOpenId);
+				if(null == sysWxUserCheck) {
+					sysWxUserCheckDao.delete(sysWxUserCheck);
+				}
+			}
+			//添加信息
+			SysWxInfo newSysWxInfo = sysWxInfoDao.findByOpenId(openId);
+			newSysWxInfo.setIdCard(idCard);
+			newSysWxInfo.setUpdateBy(user);
+			newSysWxInfo.setUpdateDate(new Date());
+			if(!StringUtils.isEmpty(expressNum)) {
+				newSysWxInfo.setExpressNum(expressNum);
+			}
+			sysWxInfoDao.update(newSysWxInfo);
+		}
+	}
+	
 	//更新微信信息
 	private void updateWxInfo(String idCard,String openId,User user) {
 		if(null != idCard) {
 			SysWxInfo querySysWxInfo = sysWxInfoDao.findByIdCard(idCard);
+			
+			
 			if(null != querySysWxInfo) {
 				logger.info("SysWxInfo is update");
 				//不等于空才更新，空的话是插入操作
@@ -798,6 +860,8 @@ public class WxService extends BaseService implements InitializingBean {
 			}else {
 				logger.info("SysWxInfo is update");
 				querySysWxInfo.setIdCard(idCard);
+				querySysWxInfo.setUpdateBy(user);
+				querySysWxInfo.setUpdateDate(new Date());
 				sysWxInfoDao.update(querySysWxInfo);
 			}
 		}

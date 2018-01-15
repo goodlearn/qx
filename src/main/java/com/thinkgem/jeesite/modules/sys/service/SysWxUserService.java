@@ -30,6 +30,10 @@ public class SysWxUserService extends CrudService<SysWxUserDao, SysWxUser> {
 		return dao.findByIdCard(idCard);
 	}
 	
+	public SysWxUser getByPhone(String phone) {
+		return dao.findByPhone(phone);
+	}
+	
 	public List<SysWxUser> findList(SysWxUser sysWxUser) {
 		return super.findList(sysWxUser);
 	}

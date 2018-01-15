@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,25 @@ public class UserController extends BaseController {
 	public String index(User user, Model model) {
 		return "modules/sys/userIndex";
 	}
-
+	@RequiresPermissions("sys:user:view")
+	@RequestMapping(value = "form")
+	public String form(User user, Model model) {
+		model.addAttribute("user", user);
+		if(user.isAdmin()) {
+			model.addAttribute("allRoles", systemService.findAllRole());
+		}else {
+			List<Role> roles = systemService.findAllRole();
+			List<Role> allRoles  = new ArrayList<Role>();
+			for(Role role:roles) {
+				String id = role.getId();
+				if(!id.equals("1")) {
+					allRoles.add(role);
+				}
+			}
+			model.addAttribute("allRoles", allRoles);
+		}
+		return "modules/sys/userForm";
+	}
 	@RequiresPermissions("sys:user:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(User user, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -82,12 +101,72 @@ public class UserController extends BaseController {
 	}
 
 	@RequiresPermissions("sys:user:view")
-	@RequestMapping(value = "form")
-	public String form(User user, Model model) {
+	@RequestMapping(value = "modifyForm")
+	public String modifyForm(User user, Model model) {
 		model.addAttribute("user", user);
 		model.addAttribute("allRoles", systemService.findAllRole());
-		return "modules/sys/userForm";
+		return "modules/sys/userModifyForm";
 	}
+	
+	@RequiresPermissions("sys:user:edit")
+	@RequestMapping(value = "modify")
+	public String modify(User user, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+		if(Global.isDemoMode()){
+			addMessage(redirectAttributes, "演示模式，不允许操作！");
+			return "redirect:" + adminPath + "/sys/user/list?repage";
+		}
+		// 如果新密码为空，则不更换密码
+		if (StringUtils.isNotBlank(user.getNewPassword())) {
+			user.setPassword(SystemService.entryptPassword(user.getNewPassword()));
+		}
+		if (!beanValidator(model, user)){
+			return form(user, model);
+		}
+		if (!"true".equals(checkLoginName(user.getOldLoginName(), user.getLoginName()))){
+			addMessage(model, "保存用户'" + user.getLoginName() + "'失败，登录名已存在");
+			return form(user, model);
+		}
+		
+		String name = user.getName();
+		String idCard = user.getIdCard();
+		List<String> roleIdListParam = user.getRoleIdList();
+		if(null == name) {
+			addMessage(model, "用户名为空");
+			return form(user, model);
+		}
+		if(null == idCard) {
+			addMessage(model, "身份证为空");
+			return form(user, model);
+		}
+		if(!IdcardUtils.validateCard(idCard)) {
+			addMessage(model, "身份证格式不正确");
+			return form(user, model);
+		}
+		if(null == roleIdListParam) {
+			addMessage(model, "请勾选用户角色");
+			return form(user, model);
+		}
+		
+		// 角色数据有效性验证，过滤不在授权内的角色
+		List<Role> roleList = Lists.newArrayList();
+		List<String> roleIdList = user.getRoleIdList();
+		for (Role r : systemService.findAllRole()){
+			if (roleIdList.contains(r.getId())){
+				roleList.add(r);
+			}
+		}
+		user.setRoleList(roleList);
+		// 保存用户信息
+		systemService.saveUser(user);
+		// 清除当前用户缓存
+		if (user.getLoginName().equals(UserUtils.getUser().getLoginName())){
+			UserUtils.clearCache();
+			//UserUtils.getCacheMap().clear();
+		}
+		addMessage(redirectAttributes, "保存用户'" + user.getLoginName() + "'成功");
+		return "redirect:" + adminPath + "/sys/user/list?repage";
+	}
+	
 
 	@RequiresPermissions("sys:user:edit")
 	@RequestMapping(value = "save")

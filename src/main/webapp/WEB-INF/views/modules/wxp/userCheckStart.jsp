@@ -91,7 +91,7 @@
 			font-weight: bolder;
 		}
 
-		#oldPhone{
+		#oldPhoneDiv{
 			display: none;
 		}
 
@@ -142,7 +142,7 @@
 						<input type="text" id="msg" class="verifiInput" name="msg" placeholder="请输入验证码...">
 						<input type="button" class="verifiBtn" value="发送验证码">
 					</div>
-					<div class="inputTypeCont" id="oldPhone">
+					<div class="inputTypeCont" id="oldPhoneDiv">
 						<div class="inputTitle">原手机</div>
 						<input type="text" id="oldPhone" class="commonInput" name="oldPhone" placeholder="请输入你绑定的原手机号码...">
 					</div>
@@ -220,7 +220,7 @@
 			    		window.location.href= pageContextVal+"/ul/reqPersonIndex";
 			    	}else if(code == "10"){
 						rzAlert(prompt,message);
-						$("#oldPhone").show();
+						$("#oldPhoneDiv").show();
 			    	}else{
 			    		rzAlert(prompt,message);
 			    	}
@@ -234,24 +234,6 @@
 		$(".verifiBtn").click(function(){
 			// 信息验证
 
-			// 名字
-			var name = $.trim($("#name").val());
-			if (name.length > 20) {
-				rzAlert("操作提示","名字长度超过20");
-				return false;
-			}
-			if (!CheckUserName(name)) {
-				rzAlert("操作提示","姓名不能为空！");
-				return false;
-			}
-
-			// 身份证
-			var idCard = $.trim($("#idCard").val());
-			if (!CheckUserId(idCard)) {
-				rzAlert("操作提示","身份证格式不对！");
-				return false;
-			}
-
 			// 手机号码
 			var phone = $.trim($("#phone").val());
 			if (!CheckPhoneNum(phone)) {
@@ -262,7 +244,7 @@
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/sendWxPhoneMsgCode',
-			    data:{'name':name,'idCard':idCard,'phone':phone,'phone':phone},
+			    data:{'phone':phone},
 			    dataType: "json",
 			    success:function(data){
 			    	//var result = JSON.parse(data);

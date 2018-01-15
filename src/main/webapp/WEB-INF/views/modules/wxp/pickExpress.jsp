@@ -64,17 +64,17 @@
 		}
 		.expUserInfoCont .expUserInfoDiv .expUserInfo .userName{
 			font-weight: bolder;
-			background: url(../images/username.png) no-repeat center left;
+			background: url(../static/wx/wximages/username.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
 		.expUserInfoCont .expUserInfoDiv .expUserInfo .userPhone{
-			background: url(../images/userphone.png) no-repeat center left;
+			background: url(../static/wx/wximages/userphone.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
 		.expUserInfoCont .expUserInfoDiv .expUserInfo .userAdress{
-			background: url(../images/useradress.png) no-repeat center left;
+			background: url(../static/wx/wximages/useradress.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 			color: #888888;
@@ -103,7 +103,7 @@
 			float: left;
 			font-size: 12px;
 			color: #888888;
-			background: url(../images/userdate.png) no-repeat center left;
+			background: url(../static/wx/wximages/userdate.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 			line-height: 40px;
@@ -282,7 +282,7 @@
         var nonceStr = $("#noncestr").val();//随机串
         var signature = $("#signature").val();//签名
         wx.config({
-            debug : true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId : appId, // 必填，公众号的唯一标识
             timestamp : timestamp, // 必填，生成签名的时间戳
             nonceStr : nonceStr, // 必填，生成签名的随机串

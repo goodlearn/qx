@@ -145,13 +145,13 @@
 			window.location.href= pageContextVal+"/ul/reqAddExpress";
 		});
 		$(".controw2Left1").click(function(){
-			window.location.href="expassitant/expsend.html";
-		});
-		$(".controw2right").click(function(){
 			rzAlert("温馨提示","新功能正在开发中，敬请期待！");
 		});
+		$(".controw2right").click(function(){
+			window.location.href=pageContextVal+"/ul/reqPickExpress";
+		});
 		$(".controw2Left2").click(function(){
-			rzAlert("温馨提示","新功能正在开发中，敬请期待！")
+			rzAlert("温馨提示","新功能正在开发中，敬请期待！");
 		});
 	});
 </script>

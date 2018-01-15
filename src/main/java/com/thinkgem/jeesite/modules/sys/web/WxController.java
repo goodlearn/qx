@@ -101,15 +101,11 @@ public class WxController extends BaseController {
 	@RequestMapping(value="/sendWxPhoneMsgCodeModify",method=RequestMethod.POST)
 	@ResponseBody
 	public String sendWxPhoneMsgCodeModify(HttpServletRequest request, HttpServletResponse response,Model model) {
-		String name = request.getParameter("name").trim();
 		String userNewPhone = request.getParameter("usernewPhone").trim();
 		String usernum = request.getParameter("usernum").trim();//老手机号
 		String successCode = "0";
 		String errCode_1 = "1";
 		
-		if(StringUtils.isEmpty(name)) {
-			return backJsonWithCode(errCode_1,ERR_NAME_NULL);
-		}
 		
 		//电话号不能为空
 		if(StringUtils.isEmpty(usernum)||StringUtils.isEmpty(userNewPhone)) {
@@ -130,6 +126,10 @@ public class WxController extends BaseController {
 			return backJsonWithCode(errCode_1,ERR_SAME_PHONE_NO_ACTIVE);
 		}
 		
+		if(null !=wxService.findByPhone(userNewPhone)) {
+			return backJsonWithCode(errCode_1,ERR_SAME_PHONE);
+		}
+		
 		return sendMsgCode(userNewPhone);
 	}
 	
@@ -144,26 +144,7 @@ public class WxController extends BaseController {
 	@ResponseBody
 	public String sendWxPhoneMsgCode(HttpServletRequest request, HttpServletResponse response,Model model) {
 		String phoneNumber = request.getParameter("phone").trim();
-		String name = request.getParameter("name").trim();
-		String idCard = request.getParameter("idCard").trim();
-		String successCode = "0";
 		String errorCode = "1";
-		String promotCode = "2";//提示用户耐心等待
-		
-		//姓名不能为空
-		if(StringUtils.isEmpty(name)) {
-			return backJsonWithCode(errorCode,ERR_NAME_NULL);
-		}
-		
-		//身份证不能为空
-		if(StringUtils.isEmpty(idCard)) {
-			return backJsonWithCode(errorCode,ERR_ID_CARD_NULL);
-		}
-		
-		//身份证号格式
-		if(!IdcardUtils.validateCard(idCard)) {
-			return backJsonWithCode(errorCode,ERR_ID_CARD_PATTERN);
-		}
 		
 		//手机号不能为空
 		if(StringUtils.isEmpty(phoneNumber)) {
@@ -178,11 +159,6 @@ public class WxController extends BaseController {
 		//用户已经注册（未激活）
 		if(null!=wxService.findUserCheckByPhone(phoneNumber)) {
 			return backJsonWithCode(errorCode,ERR_SAME_PHONE_NO_ACTIVE);
-		}
-		
-		//用户已经注册
-		if(null!=wxService.findByPhone(phoneNumber)) {
-			return backJsonWithCode(errorCode,ERR_SAME_PHONE);
 		}
 		
 		return sendMsgCode(phoneNumber);

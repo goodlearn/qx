@@ -101,6 +101,9 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		sysExpress.setMsgState(wxService.queryMsgState(sysExpress));
 		super.save(sysExpress);
 		
+		//记录快递数量
+		wxService.recordExpressNum(sysExpress,user);
+		
 		/**
 		 * 发送模板消息
 		 */
@@ -151,8 +154,6 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		sysExpress.setUpdateBy(user);
 		sysExpress.setUpdateDate(new Date());
 		dao.insert(sysExpress);
-		//记录快递数量
-		wxService.recordExpressNum(sysExpress,user);
 		return sysExpress;
 	}
 	

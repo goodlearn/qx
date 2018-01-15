@@ -92,6 +92,11 @@ public class SysWxUserController extends BaseController {
 			return form(sysWxUser, model);
 		}
 		
+		if(null!=sysWxUserService.getByPhone(phone)) {
+			addMessage(model, "手机号已存在");
+			return form(sysWxUser, model);
+		}
+		
 		sysWxUserService.save(sysWxUser);
 		addMessage(redirectAttributes, "保存微信用户表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/sysWxUser/?repage";

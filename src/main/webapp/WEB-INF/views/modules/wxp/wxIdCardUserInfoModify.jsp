@@ -321,13 +321,12 @@
 				return false;
 			}
 			
-			var name = $("#name").val();
 			var username = $("#username").val();
 			var userId = $("#userId").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/ul/modifyPersonUserInfo',
-			    data:{'name':name,'usernum':usernum,'usernewPhone':usernewPhone,'username':username,'userId':userId,'code':wxCodeVal},
+			    data:{'usernum':usernum,'usernewPhone':usernewPhone,'username':username,'userId':userId,'code':wxCodeVal},
 			    dataType: "json",
 			    success:function(data){
 			    	var prompt = "操作提示";
@@ -362,11 +361,10 @@
 				rzAlert("操作提示","新手机号码格式不对！");
 				return false;
 			}
-			var name = $("#name").val();
 			$.ajax({
 			    type:'POST',
 			    url:pageContextVal+'/wx/sendWxPhoneMsgCodeModify',
-			    data:{'name':name,'usernum':usernum,'usernewPhone':newPhone},
+			    data:{'usernum':usernum,'usernewPhone':newPhone},
 			    dataType: "json",
 			    success:function(data){
 			    	//var result = JSON.parse(data);

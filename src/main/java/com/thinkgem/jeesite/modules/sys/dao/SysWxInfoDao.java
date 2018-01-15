@@ -28,6 +28,11 @@ public interface SysWxInfoDao extends CrudDao<SysWxInfo> {
 	public List<SysWxInfo> findByTime(String start,String end);
 	
 	/**
+	 * 删除
+	 */
+	public void deleteByOpenId(String openId);
+	
+	/**
 	 * 根据openId查询
 	 */
 	public SysWxInfo findByOpenId(String openId);

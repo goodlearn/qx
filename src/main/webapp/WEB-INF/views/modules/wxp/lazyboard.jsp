@@ -27,7 +27,7 @@
 		 	line-height: 30px;
 		 	color: #fff;
 		 	font-weight: bold;
-		 	background: url(images/sidaibg.png) no-repeat center center;
+		 	background: url(../static/wx/wximages/sidaibg.png) no-repeat center center;
 		 	background-size: cover;
 		 }
 		 .lazyboardCont .lazyboardHead .lazyboardRank{
