@@ -148,10 +148,10 @@
 			window.location.href="expassitant/expsend.html";
 		});
 		$(".controw2right").click(function(){
-			window.location.href= pageContextVal+"/ul/reqPickExpress";
+			rzAlert("温馨提示","新功能正在开发中，敬请期待！");
 		});
 		$(".controw2Left2").click(function(){
-			window.location.href="expassitant/expdelivery.html";
+			rzAlert("温馨提示","新功能正在开发中，敬请期待！")
 		});
 	});
 </script>

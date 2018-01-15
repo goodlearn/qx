@@ -62,10 +62,10 @@ public class WxAccessTokenManager {
 			 logger.info("getJsApiTicket accessToken is null");
 		 }
 		 String retJsapiTicket = null;
-		 String time = map.get("time");
-         String jsapi_ticket = map.get("jsapi_ticket");
+		 String time = jsApiTicket.get("time");
+         String jsapi_ticket = jsApiTicket.get("jsapi_ticket");
          Long nowDate = new Date().getTime();
-         if (jsapi_ticket != null && time != null && (nowDate - Long.parseLong(time)) < 7000 * 1000) { 
+         if (jsapi_ticket != null && time != null && (nowDate - Long.parseLong(time)) < 7200 * 1000) { 
         	 logger.info("当前时间是：" + nowDate);
         	 logger.info("缓存时间是：" + time);
         	 logger.info("jsapi_ticket 存在，且没有超时 ， 返回单例：" + jsapi_ticket);
@@ -80,8 +80,8 @@ public class WxAccessTokenManager {
 	       		 String errcode = jsonObject.getString("errcode");
 	       		 if("0".equals(errcode)) {
 		       		 retJsapiTicket = jsonObject.getString("ticket");
-		           	 map.put("time", nowDate.toString());
-		           	 map.put("jsapi_ticket", retJsapiTicket);
+		       		jsApiTicket.put("time", nowDate.toString());
+		       		jsApiTicket.put("jsapi_ticket", retJsapiTicket);
 		           	logger.info("jsapi_ticket is " + retJsapiTicket);  
 	       		 }else {
 	       			logger.info("errorCode jsApiTicket" + errcode);  
@@ -102,7 +102,7 @@ public class WxAccessTokenManager {
 		 String time = map.get("time");
          String accessToken = map.get("access_token");
          Long nowDate = new Date().getTime();
-         if (accessToken != null && time != null && (nowDate - Long.parseLong(time)) < 7000 * 1000) {  
+         if (accessToken != null && time != null && (nowDate - Long.parseLong(time)) < 7200 * 1000) {  
         	 logger.info("当前时间是：" + nowDate);
         	 logger.info("缓存时间是：" + time);
         	 logger.info("accessToken 存在，且没有超时 ， 返回单例：" + accessToken);  
