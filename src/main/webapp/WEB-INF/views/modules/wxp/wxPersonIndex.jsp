@@ -22,7 +22,7 @@
 		<div class="middle">
 			<form id="theForm">
 				<div class="forminput">
-					<input type="text" name="expressNum" placeholder="请输入快递单号...">
+					<input type="text" id="expressNum" name="expressNum" placeholder="请输入快递单号...">
 					<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 					<div class="submBtn"></div>
 				</div>
@@ -122,7 +122,25 @@
 
 		//submit arrow
 		$(".submBtn").click(function(){
-			rzAlert("温馨提示","新功能正在开发中，敬请期待！");
+			var expressNum = $("#expressNum").val();//快递单号
+			 $.ajax({
+				    type:'GET',
+				    url:pageContextVal+'/ul/indexQueryExpress',
+				    data:{'expressNum':expressNum},
+				    dataType: "json",
+				    success:function(data){
+				    	var jsontmp = data;
+						switch(jsontmp.code) {
+							case "1" : rzAlert("操作提示",jsontmp.message); break;
+							case "0" : 
+								rzAlert("操作提示",jsontmp.message);
+								break;
+						}
+				    },
+				    error:function(){
+				      
+				    }
+				});
 		});
 	});
 	</script>

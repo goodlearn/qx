@@ -43,43 +43,46 @@
 			margin: 20px auto 20px; 
 			font-size: 14px;
 		}
-		.expUserInfoCont .expUserInfoDiv{
+		.expInfoCont{
+			width:100%;
+		}
+		.expInfoCont .expUserInfoDiv{
 			width: 100%;
 			background: #fff;
 			border: 1px solid #f1f1f1;
 			border-radius: 8px;
 			margin-bottom: 10px;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo{
+		.expInfoCont .expUserInfoDiv .expUserInfo{
 			width: 96%;
 			overflow: hidden;
 			padding: 8px 2%;
 			border-bottom: 1px dotted #f1f1f1;
 			position: relative;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo p{
+		.expInfoCont .expUserInfoDiv .expUserInfo p{
 			margin: 0px 0px 5px;
 			padding: 0px;
 			line-height: 20px;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo .userName{
+		.expInfoCont .expUserInfoDiv .expUserInfo .userName{
 			font-weight: bolder;
 			background: url(../static/wx/wximages/username.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo .userPhone{
+		.expInfoCont .expUserInfoDiv .expUserInfo .userPhone{
 			background: url(../static/wx/wximages/userphone.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo .userAdress{
+		.expInfoCont .expUserInfoDiv .expUserInfo .userAdress{
 			background: url(../static/wx/wximages/useradress.png) no-repeat center left;
 			background-size: 15px;
 			padding-left: 20px;
 			color: #888888;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserInfo .expComp{
+		.expInfoCont .expUserInfoDiv .expUserInfo .expComp{
 			position: absolute;
 			top: 10px;
 			right: 0px;
@@ -92,12 +95,12 @@
 			border-bottom-left-radius: 15px;
 			box-shadow: 3px 3px 3px #888888;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserOrderInfo{
+		.expInfoCont .expUserInfoDiv .expUserOrderInfo{
 			width: 96%;
 			overflow: hidden;
 			padding: 0px 2%;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserOrderInfo .SendOrderDate{
+		.expInfoCont .expUserInfoDiv .expUserOrderInfo .SendOrderDate{
 			margin: 0px;
 			padding: 0px;
 			float: left;
@@ -108,7 +111,7 @@
 			padding-left: 20px;
 			line-height: 40px;
 		}
-		.expUserInfoCont .expUserInfoDiv .expUserOrderInfo .SendOrderConfBtn{
+		.expInfoCont .expUserInfoDiv .expUserOrderInfo .SendOrderConfBtn{
 			margin: 0px;
 			padding: 0px 15px;
 			float: right;
@@ -174,6 +177,9 @@
 		<div class="expUserInfoNull">
 			暂无查到相关信息
 		</div>
+		<div class="expInfoCont">
+			
+		</div>
 	</div>
 
 </div>
@@ -230,7 +236,7 @@
 				 });
 			});
 
-			$(".expUserInfoCont").append($expUserInfoDiv);
+			$(".expInfoCont").append($expUserInfoDiv);
 		}
 		
 		var searchBtnClick = function(){
@@ -254,11 +260,11 @@
 							case "2" : rzAlert("操作提示",jsontmp3.message); break;
 							case "0" : 
 								$(".expUserInfoNull").hide();
-								if (jsontmp3.num == 0) {
+								$(".expInfoCont").empty();
+								if (jsontmp3.num == '0') {
 									$(".expUserInfoNull").show();
 									return;
 								}
-								$(".expUserInfoCont").empty();
 								for(var i=0; i < jsontmp3.num; i++){
 									//alert(expInfo);
 									var expInfo = jsontmp3.expressList[i];

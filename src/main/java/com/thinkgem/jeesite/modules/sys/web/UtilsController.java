@@ -81,6 +81,7 @@ public class UtilsController extends BaseController {
 	private final String ERR_ID_CARD_NULL = "身份证号不能为空";
 	private final String ERR_Q_RECORD_NULL = "无身份信息";
 	private final String ERR_ID_EXPRESS_NULL = "快递号不能为空";
+	private final String ERR_EXPRESS_NOT_ARRIVE = "快递还未到达，请您耐心等候";
 	private final String ERR_USER_ID_NULL = "用户不存在";
 	private final String ERR_USER_NOT_REG = "用户未注册";
 	private final String ERR_EXPREE_ID_NULL = "快递单号不能为空";
@@ -115,11 +116,15 @@ public class UtilsController extends BaseController {
 	private final String ERR_CLIENT_MECHINE = "请在微信客户端打开";
 	private final String ERR_NO_QREORD = "二维码已失效";
 	private final String ERR_NO_QREORD_INFO = "无二维码信息";
+	private final String ERR_NO_EXPRESS_INFO = "无快递状态信息";
 	
 	private final String MSG_PHONE_CODE_MSG = "验证码发送成功";
 	private final String MSG_USER_SAVE_SUCCESS = "用户注册成功,请前往快递中心审核身份信息";
 	private final String MSG_EXPRESS_SAVE_SUCCESS = "快递录入成功";
 	private final String MSG_EXPRESS_QUERY_SUCCESS = "查找成功";
+	private final String MSG_EXPRESS_ARRIVER_SUCCESS = "快递已到达快递中心，请您尽快前往取件";
+	private final String MSG_EXPRESS_END_SUCCESS = "快递已取走，谢谢您的合作";
+	
 	
 	/**
 	 * 测试页面（上线可删除）
@@ -1058,6 +1063,50 @@ public class UtilsController extends BaseController {
 		return backJsonWithCode(successCode,MSG_EXPRESS_SAVE_SUCCESS);
 	}
 	
+	//首页查询快递
+	@ResponseBody
+	@RequestMapping(value="/indexQueryExpress",method=RequestMethod.GET)
+	public String indexQueryExpress(HttpServletRequest request, HttpServletResponse response,Model model) {
+		final String errCode_1 = "1";
+		Map<String, Object> filterData = model.asMap();
+		String errUrl = (String)filterData.get("errUrl");
+		if(null != errUrl) {
+			return backJsonWithCode(errCode_1,(String)filterData.get("message"));
+		}
+		
+		//是否已经注册并且激活
+		String openId = (String)filterData.get("openId");
+		//微信号为空
+		if(StringUtils.isEmpty(openId)) {
+			return backJsonWithCode(errCode_1,ERR_OPEN_ID_NOT_GET);
+		}
+		
+		String expressNum=request.getParameter("expressNum");//获取idCard
+		//快递号
+		if(StringUtils.isEmpty(expressNum)) {
+			return backJsonWithCode(errCode_1,ERR_ID_EXPRESS_NULL);
+		}
+		
+		//查询快递
+		SysExpress sysExpress = wxService.findExpressByExpressId(expressNum);
+		if(null == sysExpress) {
+			return backJsonWithCode(errCode_1,ERR_EXPRESS_NOT_ARRIVE);
+		}
+		
+		final String successCode = "0";//成功码
+		String expressState = sysExpress.getState();
+		String startState = DictUtils.getDictValue("已入库", "expressState", "0");
+		if(expressState.equals(startState)) {
+			return backJsonWithCode(successCode,MSG_EXPRESS_ARRIVER_SUCCESS);
+		}
+		String endState = DictUtils.getDictValue("已完结", "expressState", "0");
+		if(expressState.equals(endState)) {
+			return backJsonWithCode(successCode,MSG_EXPRESS_END_SUCCESS);
+		}
+		return backJsonWithCode(errCode_1,ERR_NO_EXPRESS_INFO);
+	}
+	
+	//解析二维码
 	@ResponseBody
 	@RequestMapping(value="/queryQRecordData",method=RequestMethod.POST)
 	public String queryQRecordData(HttpServletRequest request, HttpServletResponse response,Model model) {
