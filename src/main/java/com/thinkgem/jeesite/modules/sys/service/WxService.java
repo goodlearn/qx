@@ -505,7 +505,7 @@ public class WxService extends BaseService implements InitializingBean {
 			boolean isUpdate = false;
 			if(!StringUtils.isEmpty(nickname)) {
 				isUpdate = true;
-				sysWxInfo.setNickname(nickname);
+				sysWxInfo.setNickname(CasUtils.convertUTF8_MB4(nickname));
 			}
 			if(!StringUtils.isEmpty(sex)) {
 				isUpdate = true;
@@ -537,7 +537,7 @@ public class WxService extends BaseService implements InitializingBean {
 			sysWxInfo.setCreateBy(user);
 			sysWxInfo.setCreateDate(new Date());
 			if(!StringUtils.isEmpty(nickname)) {
-				sysWxInfo.setNickname(nickname);
+				sysWxInfo.setNickname(CasUtils.convertUTF8_MB4(nickname));
 			}
 			if(!StringUtils.isEmpty(sex)) {
 				sysWxInfo.setSex(sex);

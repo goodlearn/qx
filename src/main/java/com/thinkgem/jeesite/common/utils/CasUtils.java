@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.CharUtils;
+
 
 /**
  * Created with Eclipse.
@@ -22,6 +24,24 @@ import java.util.regex.Pattern;
  * 工具类
  */
 public class CasUtils {
+	
+	
+	//自定义过滤规则，将文本中出现的四字节UTF-8字符过滤或转化为自定义类型
+	public static String convertUTF8_MB4(String nickName){
+		byte[] b_text = nickName.getBytes();
+		for (int i = 0; i < b_text.length; i++)
+		{
+		   if((b_text[i] & 0xF8)== 0xF0){
+		       for (int j = 0; j < 4; j++) {
+		        b_text[i+j] =0x5f;
+		       }
+		       i+=3;
+		   }
+		}
+		String ret = new String(b_text);
+		System.out.println("emoj表情:"+ret);
+		return ret;
+	}
 
     /**
      * 由于Java的简单类型不能够精确的对浮点数进行运算，这个工具类提供精

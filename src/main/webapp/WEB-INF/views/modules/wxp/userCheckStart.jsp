@@ -174,18 +174,21 @@
 			$(".solidCont").animate({"margin-left":0+"px"},"fast");
 		});
 
-		
-		$(".userRegSubmitBtn").click(function(){
+		var submitFunc = function(){
+			console.log("[userCheckStart]----submit btn");
+			$(".userRegSubmitBtn").unbind("click");
 			// 信息验证
 
 			// 名字
 			var name = $.trim($("#name").val());
 			if (name.length > 20) {
 				rzAlert("操作提示","名字长度超过20");
+				$(".userRegSubmitBtn").bind("click",submitFunc);
 				return false;
 			}
 			if (!CheckUserName(name)) {
 				rzAlert("操作提示","姓名不能为空！");
+				$(".userRegSubmitBtn").bind("click",submitFunc);
 				return false;
 			}
 
@@ -193,6 +196,7 @@
 			var idCard = $.trim($("#idCard").val());
 			if (!CheckUserId(idCard)) {
 				rzAlert("操作提示","身份证格式不对！");
+				$(".userRegSubmitBtn").bind("click",submitFunc);
 				return false;
 			}
 
@@ -200,6 +204,7 @@
 			var phone = $.trim($("#phone").val());
 			if (!CheckPhoneNum(phone)) {
 				rzAlert("操作提示","手机号码格式不对！");
+				$(".userRegSubmitBtn").bind("click",submitFunc);
 				return false;
 			}
 
@@ -224,12 +229,16 @@
 			    	}else{
 			    		rzAlert(prompt,message);
 			    	}
+			    	
+			    	$(".userRegSubmitBtn").bind("click",submitFunc);
 		    	},
 			    error:function(){
-				      
+			    	$(".userRegSubmitBtn").bind("click",submitFunc);
 			    }
 			});
-		});
+		};
+		
+		$(".userRegSubmitBtn").bind("click",submitFunc);
 
 		$(".verifiBtn").click(function(){
 			// 信息验证
