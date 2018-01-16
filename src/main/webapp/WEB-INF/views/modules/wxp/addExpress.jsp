@@ -135,10 +135,6 @@
 						<div class="commonFuncBtnVoice" id="voiceRecordBtn"></div>
 					</div>
 					<div class="inputTypeCont">
-						<div class="inputTitle">取货码</div>
-						<input type="text" id="pickUpCode" class="commonInputFunc" name="pickUpCode" placeholder="请输入取货码">
-					</div>
-					<div class="inputTypeCont">
 						<div class="inputTitle">公司</div>
 						<select id="company" name="company">  
                              <c:forEach var="dict" items="${fns:getDictList('expressCompany')}">  

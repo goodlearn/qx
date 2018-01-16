@@ -21,12 +21,25 @@ public class SysExpress extends DataEntity<SysExpress> {
 	private String msgState;	//短信状态
 	private String company;		//快递公司
 	private String pickUpCode;  //取货码
+	private String enterTime;//入货时间2018-01-01
+	
+	
+	
+	private String pickUpCodeShow;
 	private SysWxUser sysWxUser;//微信用户
 	private String searchUnEndValue;//未取货搜索条件
 	
 	
 	public SysExpress() {
 		super();
+	}
+
+	public String getEnterTime() {
+		return enterTime;
+	}
+
+	public void setEnterTime(String enterTime) {
+		this.enterTime = enterTime;
 	}
 
 	public SysExpress(String id){
@@ -98,7 +111,14 @@ public class SysExpress extends DataEntity<SysExpress> {
 	public void setPickUpCode(String pickUpCode) {
 		this.pickUpCode = pickUpCode;
 	}
-	
+
+	public String getPickUpCodeShow() {
+		return getEnterTime() + "-" + getPickUpCode();
+	}
+
+	public void setPickUpCodeShow(String pickUpCodeShow) {
+		this.pickUpCodeShow = pickUpCodeShow;
+	}
 	
 
 }

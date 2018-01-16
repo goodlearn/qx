@@ -204,7 +204,7 @@ public class WxController extends BaseController {
 			String code = CasUtils.getRandomDigitalString(4);//验证码
 			logger.info("验证码是:"+code);
 			//发送验证码
-			if(systemService.isAliyunMsgLimit()) {
+			if(wxService.isAliyunMsgLimit()) {
 				//超出限制
 				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
 			}
@@ -216,7 +216,7 @@ public class WxController extends BaseController {
 			}
 			//发送成功 记录下发送的次数
 			
-			systemService.aliyunMsgNumAdd(UserUtils.get("1"));
+			wxService.aliyunMsgNumAdd(UserUtils.get("1"));
 			
 			//添加缓存
 			phoneMsgCache.setValue(code);
@@ -234,7 +234,7 @@ public class WxController extends BaseController {
 			CacheUtils.put(cacheKey, phoneMsgCache);//缓存
 			CacheUtils.putPhoneMsgCacheKey(cacheKey);//添加缓存key 方便之后移除
 			//发送验证码
-			if(systemService.isAliyunMsgLimit()) {
+			if(wxService.isAliyunMsgLimit()) {
 				//超出限制
 				return backJsonWithCode(errorCode,ERR_SEND_MSG_ALIYUN_LIMIT);
 			}
@@ -245,7 +245,7 @@ public class WxController extends BaseController {
 				return backJsonWithCode(errorCode,ERR_SEND_MSG);
 			}
 			//发送成功 记录下发送的次数
-			systemService.aliyunMsgNumAdd(UserUtils.get("1"));
+			wxService.aliyunMsgNumAdd(UserUtils.get("1"));
 			return backJsonWithCode(successCode,MSG_PHONE_CODE_MSG);
 		}
 	}

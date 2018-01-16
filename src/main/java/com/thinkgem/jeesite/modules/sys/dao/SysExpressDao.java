@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.dao;
 
 import java.util.List;
@@ -28,5 +25,8 @@ public interface SysExpressDao extends CrudDao<SysExpress> {
 	
 	//获取快递
 	public SysExpress findByExpressId(String expressId);
+	
+	//获取取货码
+	public Integer findMaxPickUp(String company,String enterTime);
 	
 }

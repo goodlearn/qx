@@ -297,11 +297,16 @@ public class WxService extends BaseService implements InitializingBean {
 		return sysExpressDao.findNoActiveByIdCard(idCard);
 	}
 	
+	
 	/**
 	 * 保存快递
 	 */
 	@Transactional(readOnly = false)
-	public void saveExpress(SysExpress sysExpress,User user) {
+	public SysExpress saveExpress(SysExpress sysExpress,User user) {
+		
+		String today = CasUtils.convertDate2DefaultString(new Date());//当下的日期
+		String company = sysExpress.getCompany();//公司
+		
 		//默认保存数据
 		sysExpress.setId(IdGen.uuid());
 		sysExpress.setMsgState(queryMsgState(sysExpress));
@@ -309,9 +314,22 @@ public class WxService extends BaseService implements InitializingBean {
 		sysExpress.setCreateDate(new Date());
 		sysExpress.setUpdateBy(user);
 		sysExpress.setUpdateDate(new Date());
-		sysExpressDao.insert(sysExpress);
+		sysExpress.setEnterTime(today);
 		
+		/**
+		 * 自动生成取货码
+		 * 该公司当天最大的取货号，后续自动增加一个
+		 */
+		Integer pickUpCode = sysExpressDao.findMaxPickUp(company, today);
+		if(null == pickUpCode) {
+			pickUpCode = 0;
+		}
+		pickUpCode++;//自增一个
+		sysExpress.setPickUpCode(pickUpCode.toString());
+		sysExpressDao.insert(sysExpress);
+		return sysExpress;
 	}
+	
 	
 	//记录快递数量
 	@Transactional(readOnly = false)

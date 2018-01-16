@@ -79,7 +79,7 @@
 					${fns:getDictLabel(sysExpress.company,'expressCompany','其它')}
 				</td>
 				<td>
-					${sysExpress.pickUpCode}
+					${sysExpress.pickUpCodeShow}
 				</td>
 				<td>
 					${fns:getDictLabel(sysExpress.msgState, 'expressMsgState', '0')}

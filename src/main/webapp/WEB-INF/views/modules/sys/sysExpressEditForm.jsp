@@ -64,12 +64,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">取货码：</label>
-			<div class="controls">
-				<form:input path="pickUpCode" htmlEscape="false" maxlength="200" class="input-xlarge "/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>

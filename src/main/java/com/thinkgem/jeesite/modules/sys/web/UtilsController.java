@@ -1010,7 +1010,6 @@ public class UtilsController extends BaseController {
 		String phone=request.getParameter("phone");//获取phone
 		String expressId=request.getParameter("expressId");//获取快递单号
 		String company=request.getParameter("company");//获取公司
-		String pickUpCode=request.getParameter("pickUpCode");//获取phone
 		
 		final String successCode = "0";//成功码
 		final String errCode_2 = "2";//手机号不能为空
@@ -1056,11 +1055,6 @@ public class UtilsController extends BaseController {
 		sysExpress.setState(state);
 		sysExpress.setExpressId(expressId);
 		sysExpress.setPhone(phone);
-		if(!StringUtils.isEmpty(pickUpCode)) {
-			sysExpress.setPickUpCode(pickUpCode);
-		}else {
-			sysExpress.setPickUpCode("0");
-		}
 		if(!StringUtils.isEmpty(company)) {
 			sysExpress.setCompany(company);
 		}else {
@@ -1231,7 +1225,7 @@ public class UtilsController extends BaseController {
 			for(SysExpress index:sysExpresses) {
 				JsonSysExpress temp = new JsonSysExpress();
 				temp.setExpressId(index.getExpressId());
-				temp.setAddress(index.getPickUpCode());//取货码
+				temp.setAddress(index.getPickUpCodeShow());//取货码
 				temp.setName(index.getSysWxUser().getName());
 				temp.setPhone(index.getPhone());
 				temp.setCompany(DictUtils.getDictLabel(index.getCompany(), "expressCompany", "其它"));

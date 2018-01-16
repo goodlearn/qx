@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.express_id AS "expressId",
 		a.phone AS "phone",
+		a.enter_time AS "enterTime",
 		a.pick_up_code AS "pickUpCode",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -33,6 +34,13 @@
 		FROM sys_express a
 		<include refid="sysExpressJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findMaxPickUp" resultType="java.lang.Integer">
+		SELECT 
+			max(pick_up_code) as pickUpCode
+		FROM sys_express a
+		WHERE a.company = #{0} AND a.enter_time = #{1}
 	</select>
 	
 	<select id="findNoActiveByIdCard" resultType="SysExpress">
@@ -150,7 +158,8 @@
 			state,
 			msg_state,
 			pick_up_code,
-			company
+			company,
+			enter_time
 		) VALUES (
 			#{id},
 			#{expressId},
@@ -164,7 +173,8 @@
 			#{state},
 			#{msgState},
 			#{pickUpCode},
-			#{company}
+			#{company},
+			#{enterTime}
 		)
 	</insert>
 	
@@ -178,7 +188,8 @@
 			msg_state = #{msgState},
 			state = #{state},
 			pick_up_code = #{pickUpCode},
-			company= #{company}
+			company= #{company},
+			enter_time = #{enterTime}
 		WHERE id = #{id}
 	</update>
 	

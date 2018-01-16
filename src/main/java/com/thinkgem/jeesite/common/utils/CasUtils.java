@@ -695,7 +695,7 @@ public class CasUtils {
     }
 
     /** 输出格式: 2006-4-16 */
-    private static DateFormat dfDefault = DateFormat.getDateInstance(DateFormat.DEFAULT);
+    private static DateFormat dfDefault = DateFormat.getDateInstance(DateFormat.DEFAULT,Locale.CHINA);
 
     /** 输出格式: 2006年4月16日 星期六 */
     private static DateFormat dfFUll = DateFormat.getDateInstance(DateFormat.FULL);

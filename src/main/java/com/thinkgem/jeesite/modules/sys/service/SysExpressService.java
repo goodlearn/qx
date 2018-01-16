@@ -143,20 +143,6 @@ public class SysExpressService extends CrudService<SysExpressDao, SysExpress> {
 		}
 	}
 	
-	//入库后发送模板消息
-	@Transactional(readOnly = false)
-	public SysExpress save(SysExpress sysExpress,User user) {
-		//默认保存数据
-		sysExpress.setId(IdGen.uuid());
-		sysExpress.setMsgState(wxService.queryMsgState(sysExpress));
-		sysExpress.setCreateBy(user);
-		sysExpress.setCreateDate(new Date());
-		sysExpress.setUpdateBy(user);
-		sysExpress.setUpdateDate(new Date());
-		dao.insert(sysExpress);
-		return sysExpress;
-	}
-	
 	
 	//发送模板消息
 	public String sendMsgTemplate(SysExpress sysExpress,User user) {

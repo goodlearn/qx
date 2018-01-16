@@ -178,7 +178,7 @@ public class SysExpressController extends BaseController {
 		String state = DictUtils.getDictValue("已入库", "expressState", "0");
 		sysExpress.setState(state);
 		//保存成功
-		sysExpress = sysExpressService.save(sysExpress,UserUtils.getUser());
+		sysExpress = wxService.saveExpress(sysExpress,UserUtils.getUser());
 		//发送消息
 		if(null == sysExpressService.sendMsgTemplate(sysExpress, UserUtils.getUser()) ) {
 			//微信发送失败

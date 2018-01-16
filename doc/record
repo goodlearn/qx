@@ -58,5 +58,8 @@ ALTER TABLE sys_wx_info CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode
 # 修改表字段:  
 ALTER TABLE sys_wx_info CHANGE nickname nickname VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; 
 
+ALTER TABLE sys_express ADD COLUMN enter_time DATETIME default '0' 
+
+
 http://localhost:8080/wx/clickUrl?url=index
 http://localhost:8080/wx/getPersonIndex?code=021V5uGz0BH7vg1sRZDz0Fe8Gz0V5uGT
