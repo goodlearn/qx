@@ -1074,7 +1074,7 @@ public class UtilsController extends BaseController {
 		if(null == sendOpenId) {
 			//微信发送失败
 			//改用短信发送
-			String returnMsg = wxService.sendAliyunMsgTemplate(sysExpress, UserUtils.getUser());
+			String returnMsg = wxService.sendAliyunMsgTemplate(sysExpress, user);
 			if(null!=returnMsg) {
 				return backJsonWithCode(successCode,returnMsg + " 快递已入库");
 			}else {
