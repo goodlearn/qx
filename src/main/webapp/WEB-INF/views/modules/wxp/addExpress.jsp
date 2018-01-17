@@ -311,7 +311,8 @@
 							localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
 							isShowProgressTips: 1, // 默认为1，显示进度提示
 							success: function (res) {
-								$("#phone").val(res.translateResult.replace("。",""));
+								var result = res.translateResult.replace(/[^0-9]/ig,"");
+								$("#phone").val(result);
 							}
 						});
 					},
