@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SysWxUserDao">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.WorkShopDao">
     
-	<sql id="sysWxUserColumns">
+	<sql id="workShopColumns">
 		a.id AS "id",
-		a.id_card AS "idCard",
 		a.name AS "name",
-		a.phone AS "phone",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -15,60 +13,29 @@
 		a.del_flag AS "delFlag"
 	</sql>
 	
-	<sql id="sysWxUserJoins">
+	<sql id="workShopJoins">
 	</sql>
     
-	<select id="get" resultType="SysWxUser">
+	<select id="get" resultType="WorkShop">
 		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
+			<include refid="workShopColumns"/>
+		FROM work_shop a
+		<include refid="workShopJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findByIdCard" resultType="SysWxUser">
+	<select id="findList" resultType="WorkShop">
 		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
-		WHERE a.id_card = #{idCard}
-	</select>
-	
-	<select id="findByPhone" resultType="SysWxUser">
-		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
-		WHERE a.phone = #{phone}
-	</select>
-	
-	<select id="findByIdCardAndPhone" resultType="SysWxUser">
-		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
-		WHERE a.id_card = #{0} AND a.phone = #{1}
-	</select>
-	
-	
-	<select id="findList" resultType="SysWxUser">
-		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
+			<include refid="workShopColumns"/>
+		FROM work_shop a
+		<include refid="workShopJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="idCard != null and idCard != ''">
-				AND a.id_card = #{idCard}
-			</if>
 			<if test="name != null and name != ''">
 				AND a.name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="phone != null and phone != ''">
-				AND a.phone = #{phone}
 			</if>
 		</where>
 		<choose>
@@ -81,11 +48,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="SysWxUser">
+	<select id="findAllList" resultType="WorkShop">
 		SELECT 
-			<include refid="sysWxUserColumns"/>
-		FROM sys_wx_user a
-		<include refid="sysWxUserJoins"/>
+			<include refid="workShopColumns"/>
+		FROM work_shop a
+		<include refid="workShopJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
@@ -100,11 +67,9 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO sys_wx_user(
+		INSERT INTO work_shop(
 			id,
-			id_card,
 			name,
-			phone,
 			create_by,
 			create_date,
 			update_by,
@@ -113,9 +78,7 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{idCard},
 			#{name},
-			#{phone},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -126,18 +89,14 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE sys_wx_user SET 	
-			id_card = #{idCard},
+		UPDATE work_shop SET 	
 			name = #{name},
-			phone = #{phone},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
 			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
-		UPDATE sys_wx_user SET 
+		UPDATE work_shop SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

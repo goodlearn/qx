@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao">
+    
+	<sql id="wsMaskWcColumns">
+		a.id AS "id",
+		a.work_shop_mask_id AS "workShopMaskId",
+		a.work_class_id AS "workClassId",
+		a.accept_state AS "acceptState",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="wsMaskWcJoins">
+	</sql>
+    
+	<select id="get" resultType="WsMaskWc">
+		SELECT 
+			<include refid="wsMaskWcColumns"/>
+		FROM ws_mask_wc a
+		<include refid="wsMaskWcJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WsMaskWc">
+		SELECT 
+			<include refid="wsMaskWcColumns"/>
+		FROM ws_mask_wc a
+		<include refid="wsMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="workShopMaskId != null and workShopMaskId != ''">
+				AND a.work_shop_mask_id = #{workShopMaskId}
+			</if>
+			<if test="workClassId != null and workClassId != ''">
+				AND a.work_class_id = #{workClassId}
+			</if>
+			<if test="acceptState != null and acceptState != ''">
+				AND a.accept_state = #{acceptState}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WsMaskWc">
+		SELECT 
+			<include refid="wsMaskWcColumns"/>
+		FROM ws_mask_wc a
+		<include refid="wsMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ws_mask_wc(
+			id,
+			work_shop_mask_id,
+			work_class_id,
+			accept_state,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{workShopMaskId},
+			#{workClassId},
+			#{acceptState},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ws_mask_wc SET 	
+			work_shop_mask_id = #{workShopMaskId},
+			work_class_id = #{workClassId},
+			accept_state = #{acceptState},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE ws_mask_wc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -35,14 +35,12 @@
 	</form:form>
 	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
-		<thead><tr><th>操作菜单</th><th>操作用户</th><th>所在公司</th><th>所在部门</th><th>URI</th><th>提交方式</th><th>操作者IP</th><th>操作时间</th></thead>
+		<thead><tr><th>操作菜单</th><th>操作用户</th><th>URI</th><th>提交方式</th><th>操作者IP</th><th>操作时间</th></thead>
 		<tbody><%request.setAttribute("strEnter", "\n");request.setAttribute("strTab", "\t");%>
 		<c:forEach items="${page.list}" var="log">
 			<tr>
 				<td>${log.title}</td>
 				<td>${log.createBy.name}</td>
-				<td>${log.createBy.company.name}</td>
-				<td>${log.createBy.office.name}</td>
 				<td><strong>${log.requestUri}</strong></td>
 				<td>${log.method}</td>
 				<td>${log.remoteAddr}</td>

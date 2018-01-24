@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao">
+    
+	<sql id="workShopMaskColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.car_info_id AS "carInfoId",
+		a.work_shop_id AS "workShopId",
+		a.work_department AS "workDepartment",
+		a.work_class_id AS "workClassId",
+		a.bussiness_assemble_id AS "bussinessAssembleId",
+		a.release_state AS "releaseState",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		ci.id AS "ci.id",
+		ci.name AS "ci.name",
+		wc.id AS "wc.id",
+		wc.name AS "wc.name",
+		ba.id AS "ba.id",
+		ba.name AS "ba.name",
+		wd.id AS "wd.id",
+		wd.name AS "wd.name",
+		ws.id AS "ws.id",
+		ws.name AS "ws.name"
+	</sql>
+	
+	<sql id="workShopMaskJoins">
+		LEFT JOIN car_info ci ON ci.id = a.car_info_id
+			LEFT JOIN business_assemble ba ON ba.id = a.bussiness_assemble_id
+				LEFT JOIN work_class wc ON wc.id = a.work_class_id
+					LEFT JOIN work_department wd ON wd.id = a.work_department
+						LEFT JOIN work_shop ws ON ws.id = a.work_shop_id
+	</sql>
+    
+	<select id="get" resultType="WorkShopMask">
+		SELECT 
+			<include refid="workShopMaskColumns"/>
+		FROM work_shop_mask a
+		<include refid="workShopMaskJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WorkShopMask">
+		SELECT 
+			<include refid="workShopMaskColumns"/>
+		FROM work_shop_mask a
+		<include refid="workShopMaskJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="releaseState != null and releaseState != ''">
+				AND a.release_state = #{releaseState}
+			</if>
+			<if test="carInfoId != null and carInfoId != ''">
+				AND a.car_info_id = #{carInfoId}
+			</if>
+			<if test="workShopId != null and workShopId != ''">
+				AND a.work_shop_id = #{workShopId}
+			</if>
+			<if test="workDepartment != null and workDepartment != ''">
+				AND a.work_department = #{workDepartment}
+			</if>
+			<if test="workClassId != null and workClassId != ''">
+				AND a.work_class_id = #{workClassId}
+			</if>
+			<if test="bussinessAssembleId != null and bussinessAssembleId != ''">
+				AND a.bussiness_assemble_id = #{bussinessAssembleId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkShopMask">
+		SELECT 
+			<include refid="workShopMaskColumns"/>
+		FROM work_shop_mask a
+		<include refid="workShopMaskJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO work_shop_mask(
+			id,
+			name,
+			car_info_id,
+			work_shop_id,
+			work_department,
+			work_class_id,
+			bussiness_assemble_id,
+			release_state,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{carInfoId},
+			#{workShopId},
+			#{workDepartment},
+			#{workClassId},
+			#{bussinessAssembleId},
+			#{releaseState},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE work_shop_mask SET 	
+			name = #{name},
+			car_info_id = #{carInfoId},
+			work_shop_id = #{workShopId},
+			work_department = #{workDepartment},
+			work_class_id = #{workClassId},
+			bussiness_assemble_id = #{bussinessAssembleId},
+			release_state = #{releaseState},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE work_shop_mask SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
