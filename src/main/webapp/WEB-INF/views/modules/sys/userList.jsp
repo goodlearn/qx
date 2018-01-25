@@ -60,13 +60,13 @@
 	</form:form>
 	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
-		<thead><th class="sort-column login_name">登录名</th><th class="sort-column name">姓名</th><th>身份证</th><th>电话</th><th>手机</th><%--<th>角色</th> --%><shiro:hasPermission name="sys:user:edit"><th>操作</th></shiro:hasPermission></tr></thead>
+		<thead><th class="sort-column login_name">登录名</th><th class="sort-column name">员工编号</th><th>姓名</th><th>电话</th><th>手机</th><%--<th>角色</th> --%><shiro:hasPermission name="sys:user:edit"><th>操作</th></shiro:hasPermission></tr></thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="user">
 			<tr>
 				<td><a href="${ctx}/sys/user/form?id=${user.id}">${user.loginName}</a></td>
+				<td>${user.empNo}</td>
 				<td>${user.name}</td>
-				<td>${user.idCard}</td>
 				<td>${user.phone}</td>
 				<td>${user.mobile}</td><%--
 				<td>${user.roleNames}</td> --%>

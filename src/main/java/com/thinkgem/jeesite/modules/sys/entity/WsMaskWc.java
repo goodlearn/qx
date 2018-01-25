@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.util.Date;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -17,7 +19,10 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private static final long serialVersionUID = 1L;
 	private String workShopMaskId;		// 车间任务号
 	private String workClassId;		// 班级号
-	private String acceptState;		// 接受状态
+	private Date endDate;	// 结束日期
+	private String submitState;//是否提交
+	private WorkShopMask wsm; //任务
+	private WorkClass wc; //班级
 	
 	public WsMaskWc() {
 		super();
@@ -44,14 +49,38 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	public void setWorkClassId(String workClassId) {
 		this.workClassId = workClassId;
 	}
-	
-	@Length(min=1, max=100, message="接受状态长度必须介于 1 和 100 之间")
-	public String getAcceptState() {
-		return acceptState;
+
+	public WorkShopMask getWsm() {
+		return wsm;
 	}
 
-	public void setAcceptState(String acceptState) {
-		this.acceptState = acceptState;
+	public void setWsm(WorkShopMask wsm) {
+		this.wsm = wsm;
 	}
+
+	public WorkClass getWc() {
+		return wc;
+	}
+
+	public void setWc(WorkClass wc) {
+		this.wc = wc;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getSubmitState() {
+		return submitState;
+	}
+
+	public void setSubmitState(String submitState) {
+		this.submitState = submitState;
+	}
+	
 	
 }

@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>车间任务班级关联数据管理</title>
+	<title>点检卡个人负责人任务表数据管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,26 +27,30 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/wsMaskWc/">车间任务班级关联数据列表</a></li>
-		<li class="active"><a href="${ctx}/sys/wsMaskWc/form?id=${wsMaskWc.id}">车间任务班级关联数据<shiro:hasPermission name="sys:wsMaskWc:edit">${not empty wsMaskWc.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:wsMaskWc:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/sys/spotCheckSinglePerson/">点检卡个人负责人任务表数据列表</a></li>
+		<li class="active"><a href="${ctx}/sys/spotCheckSinglePerson/form?id=${spotCheckSinglePerson.id}">点检卡个人负责人任务表数据<shiro:hasPermission name="sys:spotCheckSinglePerson:edit">${not empty spotCheckSinglePerson.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:spotCheckSinglePerson:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="wsMaskWc" action="${ctx}/sys/wsMaskWc/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="spotCheckSinglePerson" action="${ctx}/sys/spotCheckSinglePerson/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
-			<label class="control-label">车间任务号：</label>
+			<label class="control-label">父任务号：</label>
 			<div class="controls">
-				<form:select path="workShopMaskId" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+				<form:input path="scmpId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">班级号：</label>
+			<label class="control-label">个人号：</label>
 			<div class="controls">
-				<form:select path="workClassId" class="input-xlarge required">
+				<form:input path="workPersonId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">提交状态：</label>
+			<div class="controls">
+				<form:select path="submitState" class="input-xlarge required">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
@@ -60,7 +64,7 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="sys:wsMaskWc:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="sys:spotCheckSinglePerson:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

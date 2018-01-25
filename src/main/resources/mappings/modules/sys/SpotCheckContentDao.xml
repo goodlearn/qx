@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SpotCheckContentDao">
+    
+	<sql id="spotCheckContentColumns">
+		a.id AS "id",
+		a.scsp_id AS "scspId",
+		a.old_new AS "oldNew",
+		a.item AS "item",
+		a.part AS "part",
+		a.context AS "context",
+		a.result_content AS "resultContent",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="spotCheckContentJoins">
+	</sql>
+    
+	<select id="get" resultType="SpotCheckContent">
+		SELECT 
+			<include refid="spotCheckContentColumns"/>
+		FROM spot_check_content a
+		<include refid="spotCheckContentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SpotCheckContent">
+		SELECT 
+			<include refid="spotCheckContentColumns"/>
+		FROM spot_check_content a
+		<include refid="spotCheckContentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="scspId != null and scspId != ''">
+				AND a.scsp_id = #{scspId}
+			</if>
+			<if test="oldNew != null and oldNew != ''">
+				AND a.old_new = #{oldNew}
+			</if>
+			<if test="item != null and item != ''">
+				AND a.item = #{item}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpotCheckContent">
+		SELECT 
+			<include refid="spotCheckContentColumns"/>
+		FROM spot_check_content a
+		<include refid="spotCheckContentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO spot_check_content(
+			id,
+			scsp_id,
+			old_new,
+			item,
+			part,
+			context,
+			result_content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{scspId},
+			#{oldNew},
+			#{item},
+			#{part},
+			#{context},
+			#{resultContent},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE spot_check_content SET 	
+			scsp_id = #{scspId},
+			old_new = #{oldNew},
+			item = #{item},
+			part = #{part},
+			context = #{context},
+			result_content = #{resultContent},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE spot_check_content SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

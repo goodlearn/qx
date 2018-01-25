@@ -6,18 +6,24 @@
 		a.id AS "id",
 		a.work_shop_mask_id AS "workShopMaskId",
 		a.work_class_id AS "workClassId",
-		a.accept_state AS "acceptState",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.submit_state AS "submitState",
+		a.end_date AS "endDate",
+		wc.id AS "wc.id",
+		wc.name AS "wc.name",
+		wsm.id AS "wsm.id",
+		wsm.name AS "wsm.name"
 	</sql>
 	
 	<sql id="wsMaskWcJoins">
+			LEFT JOIN work_class wc ON wc.id = a.work_class_id
+			LEFT JOIN work_shop_mask wsm ON wsm.id = a.work_shop_mask_id
 	</sql>
-    
 	<select id="get" resultType="WsMaskWc">
 		SELECT 
 			<include refid="wsMaskWcColumns"/>
@@ -39,8 +45,11 @@
 			<if test="workClassId != null and workClassId != ''">
 				AND a.work_class_id = #{workClassId}
 			</if>
-			<if test="acceptState != null and acceptState != ''">
-				AND a.accept_state = #{acceptState}
+			<if test="submitState != null and submitState != ''">
+				AND a.submit_state = #{submitState}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date &lt; #{endDate}
 			</if>
 		</where>
 		<choose>
@@ -76,24 +85,26 @@
 			id,
 			work_shop_mask_id,
 			work_class_id,
-			accept_state,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			submit_state,
+			end_date
 		) VALUES (
 			#{id},
 			#{workShopMaskId},
 			#{workClassId},
-			#{acceptState},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{submitState},
+			#{endDate}
 		)
 	</insert>
 	
@@ -101,10 +112,11 @@
 		UPDATE ws_mask_wc SET 	
 			work_shop_mask_id = #{workShopMaskId},
 			work_class_id = #{workClassId},
-			accept_state = #{acceptState},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			submit_state = #{submitState},
+			end_date = #{endDate}
 		WHERE id = #{id}
 	</update>
 	

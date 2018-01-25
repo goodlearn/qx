@@ -51,14 +51,15 @@ public class WsMaskWcController extends BaseController {
 	public String list(WsMaskWc wsMaskWc, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<WsMaskWc> page = wsMaskWcService.findPage(new Page<WsMaskWc>(request, response), wsMaskWc); 
 		model.addAttribute("page", page);
-		return "modules/sys/wsMaskWcList";
+		return "modules/wsmaskwc/wsMaskWcList";
 	}
+	
 
 	@RequiresPermissions("sys:wsMaskWc:view")
 	@RequestMapping(value = "form")
 	public String form(WsMaskWc wsMaskWc, Model model) {
 		model.addAttribute("wsMaskWc", wsMaskWc);
-		return "modules/sys/wsMaskWcForm";
+		return "modules/wsmaskwc/wsMaskWcForm";
 	}
 
 	@RequiresPermissions("sys:wsMaskWc:edit")
@@ -80,23 +81,5 @@ public class WsMaskWcController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
 	}
 	
-	//发布任务
-	@RequiresPermissions("sys:wsMaskWc:edit")
-	@RequestMapping(value = "release")
-	public String release(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/release?repage";
-		String paramId = request.getParameter("id");
-		if(StringUtils.isEmpty(paramId)) {
-			addMessage(redirectAttributes, "参数为空");
-			return rediectUrl;
-		}
-		String result = wsMaskWcService.release(paramId);
-		if(null == result) {
-			addMessage(redirectAttributes, "保存数据失败，请检查");
-			return rediectUrl;
-		}
-		addMessage(redirectAttributes, "发布成功");
-		return rediectUrl;
-	}
 
 }

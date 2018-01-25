@@ -47,10 +47,10 @@ public class UserUtils {
 	
 	
 	/**
-	 * 依据身份证查询
+	 * 依据员工编号查询
 	 */
-	public static User findByIdCard(String idCard) {
-		return userDao.findByIdCard(idCard);
+	public static User findByEmpNo(String empNo) {
+		return userDao.findByEmpNo(empNo);
 	}
 	
 	/**

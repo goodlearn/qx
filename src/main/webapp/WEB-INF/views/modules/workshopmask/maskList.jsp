@@ -19,6 +19,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/sys/workShopMask/">车间任务数据列表</a></li>
+		<shiro:hasPermission name="sys:workShopMask:edit"><li><a href="${ctx}/sys/workShopMask/form">车间任务数据添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="workShopMask" action="${ctx}/sys/workShopMask/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -39,22 +40,10 @@
 					<form:options items="${fns:getAllWorkShopList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>部门号：</label>
-				<form:select path="workDepartment" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllDpList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li><label>班级号：</label>
 				<form:select path="workClassId" class="input-medium">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getAllClassList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>业务集：</label>
-				<form:select path="bussinessAssembleId" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getBaList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -80,7 +69,7 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="workShopMask">
 			<tr>
-				<td><a href="${ctx}/sys/workShopMask/form?id=${workShopMask.id}">
+				<td><a href="${ctx}/sys/workShopMask/detalils?id=${workShopMask.id}">
 					${workShopMask.name}
 				</a></td>
 				<td>
@@ -108,7 +97,7 @@
 					${workShopMask.remarks}
 				</td>
 				<shiro:hasPermission name="sys:workShopMask:edit"><td>
-    				<a href="${ctx}/sys/workShopMask/release?id=${workShopMask.id}">发布</a>
+    				<a href="${ctx}/sys/workShopMask/form?id=${workShopMask.id}">分配任务</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

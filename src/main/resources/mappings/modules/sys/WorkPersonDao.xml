@@ -22,6 +22,15 @@
 		LEFT JOIN work_class c ON c.id = a.work_class_id
 	</sql>
     
+    <!-- 根据员工编号查询用户 -->
+	<select id="findByEmpNo" resultType="WorkPerson">
+		SELECT
+			<include refid="workPersonColumns"/>
+		FROM work_person a
+		<include refid="workPersonJoins"/>
+		WHERE a.no = #{0}
+	</select>
+    
 	<select id="get" resultType="WorkPerson">
 		SELECT 
 			<include refid="workPersonColumns"/>

@@ -60,7 +60,7 @@
     	a.id,
     	a.login_name,
     	a.password,
-    	a.id_card,
+    	a.emp_no,
 		a.name,
 		a.email,
 		a.mobile,
@@ -90,13 +90,13 @@
 		WHERE a.id = #{id}
 	</select>
 	
-	<!-- 根据身份证查询用户 -->
-	<select id="findByIdCard" resultType="User">
+	<!-- 根据员工编号查询用户 -->
+	<select id="findByEmpNo" resultType="User">
 		SELECT
 			<include refid="userColumns"/>
 		FROM sys_user a
 		<include refid="userJoins"/>
-		WHERE a.id_card = #{0}
+		WHERE a.emp_no = #{0}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->
@@ -171,7 +171,7 @@
 			id, 
 			login_name, 
 			password, 
-			id_card, 
+			emp_no, 
 			name, 
 			email, 
 			phone, 
@@ -187,7 +187,7 @@
 			#{id}, 
 			#{loginName}, 
 			#{password}, 
-			#{idCard}, 
+			#{empNo}, 
 			#{name}, 
 			#{email}, 
 			#{phone}, 
@@ -207,7 +207,7 @@
 		UPDATE sys_user SET 
 			login_name = #{loginName}, 
 			password = #{password}, 
-			id_card = #{idCard}, 
+			emp_no = #{empNo}, 
 			name = #{name}, 
 			email = #{email}, 
 			phone = #{phone}, 

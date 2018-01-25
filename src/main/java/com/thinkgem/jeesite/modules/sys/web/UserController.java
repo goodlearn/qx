@@ -128,18 +128,14 @@ public class UserController extends BaseController {
 		}
 		
 		String name = user.getName();
-		String idCard = user.getIdCard();
+		String empNo = user.getEmpNo();
 		List<String> roleIdListParam = user.getRoleIdList();
 		if(null == name) {
 			addMessage(model, "用户名为空");
 			return form(user, model);
 		}
-		if(null == idCard) {
-			addMessage(model, "身份证为空");
-			return form(user, model);
-		}
-		if(!IdcardUtils.validateCard(idCard)) {
-			addMessage(model, "身份证格式不正确");
+		if(null == empNo) {
+			addMessage(model, "员工编号为空");
 			return form(user, model);
 		}
 		if(null == roleIdListParam) {
@@ -188,27 +184,23 @@ public class UserController extends BaseController {
 		}
 		
 		String name = user.getName();
-		String idCard = user.getIdCard();
+		String empNo = user.getEmpNo();
 		List<String> roleIdListParam = user.getRoleIdList();
 		if(null == name) {
 			addMessage(model, "用户名为空");
 			return form(user, model);
 		}
-		if(null == idCard) {
-			addMessage(model, "身份证为空");
-			return form(user, model);
-		}
-		if(!IdcardUtils.validateCard(idCard)) {
-			addMessage(model, "身份证格式不正确");
+		if(null == empNo) {
+			addMessage(model, "员工编号为空");
 			return form(user, model);
 		}
 		if(null == roleIdListParam) {
 			addMessage(model, "请勾选用户角色");
 			return form(user, model);
 		}
-		//身份证已存在
-		if(null!=UserUtils.findByIdCard(idCard)) {
-			addMessage(model, "身份证已存在");
+		//员工已存在
+		if(null!=UserUtils.findByEmpNo(empNo)) {
+			addMessage(model, "员工已存在");
 			return form(user, model);
 		}
 		

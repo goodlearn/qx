@@ -79,5 +79,6 @@ public class WorkShopController extends BaseController {
 		addMessage(redirectAttributes, "删除车间数据成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/workShop/?repage";
 	}
+	
 
 }

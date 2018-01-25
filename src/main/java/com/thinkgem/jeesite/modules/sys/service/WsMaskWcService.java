@@ -14,9 +14,11 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 
@@ -30,7 +32,8 @@ import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	
 	@Autowired
-	private WorkShopMaskDao workShopMaskDao;
+	private WorkPersonDao workPersonDao;
+
 
 	public WsMaskWc get(String id) {
 		return super.get(id);
@@ -53,37 +56,5 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	public void delete(WsMaskWc wsMaskWc) {
 		super.delete(wsMaskWc);
 	}
-	
-	//发布任务
-	@Transactional(readOnly = false)
-	public String release(String paramId) {
-		//想将任务表 状态值设置为发布 然后添加关联表数据
-		WorkShopMask workShopMask = workShopMaskDao.get(paramId);
-		if(null == workShopMask) {
-			return null;
-		}
-		
-		User user = UserUtils.getUser();
-		//更新数据
-		workShopMask.setReleaseState("1");
-		workShopMask.setUpdateBy(user);
-		workShopMask.setUpdateDate(new Date());
-		workShopMaskDao.update(workShopMask);
-		
-		//保存关联数据
-		String wcId = workShopMask.getWorkClassId();//班级编号
-		WsMaskWc wsMaskWc = new WsMaskWc();
-		wsMaskWc.setId(IdGen.uuid());
-		wsMaskWc.setCreateBy(user);
-		wsMaskWc.setCreateDate(new Date());
-		wsMaskWc.setUpdateBy(user);
-		wsMaskWc.setUpdateDate(new Date());
-		wsMaskWc.setAcceptState("0");
-		wsMaskWc.setWorkClassId(wcId);
-		wsMaskWc.setWorkShopMaskId(paramId);
-		dao.insert(wsMaskWc);
-		return "0";//返回一个非空数据
-	}
-	
 	
 }

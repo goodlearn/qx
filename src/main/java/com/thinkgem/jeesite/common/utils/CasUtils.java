@@ -704,7 +704,7 @@ public class CasUtils {
     private static DateFormat dfSHORT =  DateFormat.getDateInstance(DateFormat.MEDIUM);
 
     /** 输出格式: 2006-01-01 00:00:00 */
-    private static DateFormat sdfWithHMS = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static DateFormat sdfWithHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /** 输出格式: 2006-01-01*/
     private static DateFormat sdfWithYMD = new SimpleDateFormat("yyyy-MM-dd");

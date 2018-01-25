@@ -76,6 +76,22 @@ public class BaseInfoUtils {
 	}
 	
 	/**
+	 * 获取车间信息
+	 * @return
+	 */
+	public static List<WorkShop> getWorkShopByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<WorkShop> list = getAllWorkShopList();
+		List<WorkShop> rets = Lists.newArrayList();
+		for(WorkShop entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
+	}
+	
+	/**
 	 * 获取所有部门信息
 	 * @return
 	 */
@@ -90,6 +106,22 @@ public class BaseInfoUtils {
 			CacheUtils.put(WORK_DEPARTMENT_LIST, list);
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取部门信息
+	 * @return
+	 */
+	public static List<WorkDepartment> getDpByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<WorkDepartment> list = getAllDpList();
+		List<WorkDepartment> rets = Lists.newArrayList();
+		for(WorkDepartment entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
 	}
 	
 	/**
@@ -110,6 +142,22 @@ public class BaseInfoUtils {
 	}
 	
 	/**
+	 * 获取班组信息
+	 * @return
+	 */
+	public static List<WorkClass> getClassByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<WorkClass> list = getAllClassList();
+		List<WorkClass> rets = Lists.newArrayList();
+		for(WorkClass entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
+	}
+	
+	/**
 	 * 获取结果集信息
 	 * @return
 	 */
@@ -124,6 +172,22 @@ public class BaseInfoUtils {
 			CacheUtils.put(BRA_LIST, list);
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取结果集信息
+	 * @return
+	 */
+	public static List<BusinessResultAssemble> getBraByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<BusinessResultAssemble> list = getBraList();
+		List<BusinessResultAssemble> rets = Lists.newArrayList();
+		for(BusinessResultAssemble entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
 	}
 	
 	/**
@@ -144,6 +208,22 @@ public class BaseInfoUtils {
 	}
 	
 	/**
+	 * 获取业务集信息
+	 * @return
+	 */
+	public static List<BusinessAssemble> getBaByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<BusinessAssemble> list = getBaList();
+		List<BusinessAssemble> rets = Lists.newArrayList();
+		for(BusinessAssemble entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
+	}
+	
+	/**
 	 * 获取车型车号信息
 	 * @return
 	 */
@@ -158,5 +238,21 @@ public class BaseInfoUtils {
 			CacheUtils.put(CAR_INFO_LIST, list);
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取车型车号信息
+	 * @return
+	 */
+	public static List<CarInfo> getCiByIdList(String id){
+		@SuppressWarnings("unchecked")
+		List<CarInfo> list = getCiList();
+		List<CarInfo> rets = Lists.newArrayList();
+		for(CarInfo entity : list) {
+			if(id.equals(entity.getId())) {
+				rets.add(entity);
+			}
+		}
+		return rets;
 	}
 }

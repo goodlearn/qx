@@ -20,7 +20,9 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
+import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 车间任务Controller
@@ -46,14 +48,42 @@ public class WorkShopMaskController extends BaseController {
 		return entity;
 	}
 	
+	/**
+	 * 查询点检任务
+	 * @param wsMaskWc
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("sys:workShopMask:view")
+	@RequestMapping(value = {"sclist"})
+	public String sclist(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<WorkShopMask> page = workShopMaskService.findSpotCheckPage(new Page<WorkShopMask>(request, response), workShopMask); 
+		model.addAttribute("page", page);
+		return "modules/workshopmask/maskList";
+	}
+	
 	//发布页面
 	@RequiresPermissions("sys:workShopMask:view")
-	@RequestMapping(value = {"release"})
-	public String release(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
-		workShopMask.setReleaseState("0");//设置查询条件 只查询未发布数据
+	@RequestMapping(value = {"releaseList"})
+	public String releaseList(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
+		String no = DictUtils.getDictValue("否", "yes_no", "0");
+		workShopMask.setReleaseState(no);//设置查询条件 只查询未发布数据
 		Page<WorkShopMask> page = workShopMaskService.findPage(new Page<WorkShopMask>(request, response), workShopMask); 
 		model.addAttribute("page", page);
 		return "modules/workshopmask/wsmReleaseList";
+	}
+	
+	//撤销发布页面
+	@RequiresPermissions("sys:workShopMask:view")
+	@RequestMapping(value = {"unreleaseList"})
+	public String unreleaseList(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
+		String yes = DictUtils.getDictValue("是", "yes_no", "1");
+		workShopMask.setReleaseState(yes);//设置查询条件 只查询发布数据
+		Page<WorkShopMask> page = workShopMaskService.findPage(new Page<WorkShopMask>(request, response), workShopMask); 
+		model.addAttribute("page", page);
+		return "modules/workshopmask/wsmUnReleaseList";
 	}
 	
 	@RequiresPermissions("sys:workShopMask:view")
@@ -69,6 +99,14 @@ public class WorkShopMaskController extends BaseController {
 	public String form(WorkShopMask workShopMask, Model model) {
 		model.addAttribute("workShopMask", workShopMask);
 		return "modules/workshopmask/workShopMaskForm";
+	}
+	
+	//查看详细数据
+	@RequiresPermissions("sys:workShopMask:view")
+	@RequestMapping(value = "detalils")
+	public String detalils(WorkShopMask workShopMask, Model model) {
+		model.addAttribute("workShopMask", workShopMask);
+		return "modules/workshopmask/wsmDetailsForm";
 	}
 
 	@RequiresPermissions("sys:workShopMask:edit")
@@ -95,6 +133,44 @@ public class WorkShopMaskController extends BaseController {
 		workShopMaskService.delete(workShopMask);
 		addMessage(redirectAttributes, "删除车间任务数据成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/workShopMask/?repage";
+	}
+	
+	//发布任务
+	@RequiresPermissions("sys:workShopMask:edit")
+	@RequestMapping(value = "release")
+	public String release(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/releaseList?repage";
+		String paramId = request.getParameter("id");
+		if(StringUtils.isEmpty(paramId)) {
+			addMessage(redirectAttributes, "参数为空");
+			return rediectUrl;
+		}
+		String result = workShopMaskService.release(paramId);
+		if(null == result) {
+			addMessage(redirectAttributes, "保存数据失败，请检查");
+			return rediectUrl;
+		}
+		addMessage(redirectAttributes, "发布成功");
+		return rediectUrl;
+	}
+	
+	//撤销发布任务
+	@RequiresPermissions("sys:workShopMask:edit")
+	@RequestMapping(value = "unrelease")
+	public String unrelease(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/unreleaseList?repage";
+		String paramId = request.getParameter("id");
+		if(StringUtils.isEmpty(paramId)) {
+			addMessage(redirectAttributes, "参数为空");
+			return rediectUrl;
+		}
+		String result = workShopMaskService.unrelease(paramId);
+		if(null == result) {
+			addMessage(redirectAttributes, "保存数据失败，请检查");
+			return rediectUrl;
+		}
+		addMessage(redirectAttributes, "撤销成功");
+		return rediectUrl;
 	}
 
 }

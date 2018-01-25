@@ -23,6 +23,7 @@
 		wc.name AS "wc.name",
 		ba.id AS "ba.id",
 		ba.name AS "ba.name",
+		ba.type AS "ba.type",
 		wd.id AS "wd.id",
 		wd.name AS "wd.name",
 		ws.id AS "ws.id",
@@ -75,6 +76,9 @@
 			</if>
 			<if test="bussinessAssembleId != null and bussinessAssembleId != ''">
 				AND a.bussiness_assemble_id = #{bussinessAssembleId}
+			</if>
+			<if test="ba != null and ba.type != null and ba.type != ''">
+				AND ba.type = #{ba.type}
 			</if>
 		</where>
 		<choose>

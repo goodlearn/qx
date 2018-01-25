@@ -108,7 +108,7 @@
 					${workShopMask.remarks}
 				</td>
 				<shiro:hasPermission name="sys:workShopMask:edit"><td>
-    				<a href="${ctx}/sys/workShopMask/release?id=${workShopMask.id}">发布</a>
+    				<a href="${ctx}/sys/workShopMask/unrelease?id=${workShopMask.id}">撤销发布</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

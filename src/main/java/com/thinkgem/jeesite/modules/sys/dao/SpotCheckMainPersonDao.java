@@ -5,16 +5,14 @@ package com.thinkgem.jeesite.modules.sys.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
+import com.thinkgem.jeesite.modules.sys.entity.SpotCheckMainPerson;
 
 /**
- * 车间人员DAO接口
+ * 点检卡总负责人任务表DAO接口
  * @author wzy
- * @version 2018-01-24
+ * @version 2018-01-25
  */
 @MyBatisDao
-public interface WorkPersonDao extends CrudDao<WorkPerson> {
-	
-	public WorkPerson findByEmpNo(String empNo);
+public interface SpotCheckMainPersonDao extends CrudDao<SpotCheckMainPerson> {
 	
 }

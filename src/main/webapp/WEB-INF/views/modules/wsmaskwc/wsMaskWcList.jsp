@@ -37,12 +37,6 @@
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>接受状态：</label>
-				<form:select path="acceptState" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -53,7 +47,6 @@
 			<tr>
 				<th>车间任务号</th>
 				<th>班级号</th>
-				<th>接受状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="sys:wsMaskWc:edit"><th>操作</th></shiro:hasPermission>
@@ -67,9 +60,6 @@
 				</a></td>
 				<td>
 					${fns:getDictLabel(wsMaskWc.workClassId, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(wsMaskWc.acceptState, '', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${wsMaskWc.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
