@@ -97,7 +97,7 @@
 					${workShopMask.remarks}
 				</td>
 				<shiro:hasPermission name="sys:workShopMask:edit"><td>
-    				<a href="${ctx}/sys/workShopMask/form?id=${workShopMask.id}">分配任务</a>
+    				<a href="${ctx}/sys/workShopMask/allocation?id=${workShopMask.id}">分配任务</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

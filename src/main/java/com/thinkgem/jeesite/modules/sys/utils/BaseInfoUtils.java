@@ -12,12 +12,14 @@ import com.thinkgem.jeesite.modules.sys.dao.BusinessResultAssembleDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkDepartmentDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessResultAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.CarInfo;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkDepartment;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShop;
 
 /**
@@ -41,6 +43,11 @@ public class BaseInfoUtils {
 	private static WorkClassDao workClassDao = SpringContextHolder.getBean(WorkClassDao.class);
 	
 	public static final String WORK_CLASS_LIST= "workClassMap";
+	
+	//班组人员
+	private static WorkPersonDao workPersonDao = SpringContextHolder.getBean(WorkPersonDao.class);
+	
+	public static final String WORK_PERSON_LIST= "workPersonMap";
 	
 	//所属结果集
 	private static BusinessResultAssembleDao businessResultAssembleDao = SpringContextHolder.getBean(BusinessResultAssembleDao.class);
@@ -155,6 +162,24 @@ public class BaseInfoUtils {
 			}
 		}
 		return rets;
+	}
+	
+	
+	/**
+	 * 获取所有班组人员信息
+	 * @return
+	 */
+	public static List<WorkPerson> getAllPersonList(){
+		@SuppressWarnings("unchecked")
+		List<WorkPerson> list = (List<WorkPerson>)CacheUtils.get(WORK_PERSON_LIST);
+		if (list==null  || list.size() == 0){
+			list = Lists.newArrayList();
+			for (WorkPerson p : workPersonDao.findAllList(new WorkPerson())){
+				list.add(p);
+			}
+			CacheUtils.put(WORK_PERSON_LIST, list);
+		}
+		return list;
 	}
 	
 	/**

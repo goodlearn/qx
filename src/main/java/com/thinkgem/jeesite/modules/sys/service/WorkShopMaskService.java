@@ -136,4 +136,37 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		return "0";//返回一个非空数据
 	}
 	
+	//是否有未提交的数据
+	public boolean isNotSubmit(String empNo) {
+		WorkPerson person = workPersonDao.findByEmpNo(empNo);
+		String classId = person.getWorkClassId();
+		
+		//依据班级号查询任务
+		WsMaskWc query = new WsMaskWc();
+		String no = DictUtils.getDictValue("否", "yes_no", "0");
+		query.setWorkClassId(classId);
+		List<WsMaskWc> wmsList = wsMaskWcDao.findAllList(query);
+		if(null == wmsList || wmsList.size() == 0) {
+			//没有发布过任务
+			//没有发布
+			return false;
+		}
+		
+		query.setSubmitState(no);//未提交的
+		query.setEndDate(new Date());//当前时间小于结束的时间
+		List<WsMaskWc> expired = wsMaskWcDao.findAllList(query);
+		if(null != expired && expired.size() > 0) {
+			//有 没有处理的任务 未过期 未提交
+			return true;
+		}
+		return false;
+	}
+	
+	//获取班级所有人
+	public List<WorkPerson> findWpByClassId(String classId){
+		WorkPerson query = new WorkPerson();
+		query.setWorkClassId(classId);
+		return workPersonDao.findAllList(query);
+	}
+	
 }

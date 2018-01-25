@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,8 +21,11 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
+import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 车间任务班级关联Controller
@@ -81,5 +86,32 @@ public class WsMaskWcController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
 	}
 	
+	//保存点检任务
+	@RequiresPermissions("sys:wsMaskWc:edit")
+	@RequestMapping(value = "saveScMask")
+	public String saveScMask(WsMaskWc wsMaskWc, RedirectAttributes redirectAttributes) {
+		String redirectUrl = "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
+		if(wsMaskWcService.isNotSubmit(UserUtils.getUser().getEmpNo())) {
+			//存在没有提交的数据
+			addMessage(redirectAttributes, "有未提交的数据,不能再进行布置点检任务");
+			return redirectUrl;
+		}
+		addMessage(redirectAttributes, "任务分配成功");
+		return redirectUrl;
+	}
+	
+	
+	//跳转到分配页面 携带参数
+	@RequiresPermissions("sys:wsMaskWc:view")
+	@RequestMapping(value = "allocationPage")
+	public String allocationPage(WsMaskWc wsMaskWc, HttpServletRequest request,Model model) {
+		
+		String classId = request.getParameter("id");
+		
+		//获取班级所有人
+		List<WorkPerson> workPersons = wsMaskWcService.findWpByClassId(classId);
+		model.addAttribute("wp", workPersons);
+		return "modules/wsMaskWc/wsmAllocationForm";
+	}
 
 }

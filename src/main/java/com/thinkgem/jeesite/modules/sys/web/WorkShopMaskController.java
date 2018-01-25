@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,10 +21,12 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 车间任务Controller
@@ -172,5 +176,35 @@ public class WorkShopMaskController extends BaseController {
 		addMessage(redirectAttributes, "撤销成功");
 		return rediectUrl;
 	}
-
+	
+	//获取分配页面
+	@RequiresPermissions("sys:workShopMask:view")
+	@RequestMapping(value = "allocation")
+	public String allocation(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/sclist?repage";
+		String paramId = request.getParameter("id");
+		if(StringUtils.isEmpty(paramId)) {
+			addMessage(redirectAttributes, "参数为空");
+			return rediectUrl;
+		}
+		
+		if(workShopMaskService.isNotSubmit(UserUtils.getUser().getEmpNo())) {
+			//存在没有提交的数据
+			addMessage(redirectAttributes, "有未提交的数据");
+			return rediectUrl;
+		}
+		
+		WorkShopMask workShopMask = workShopMaskService.get(paramId);
+		String type = workShopMask.getBa().getType();
+		String dictType = DictUtils.getDictValue("点检", "businessResultType", "1");
+		if(dictType.equals(type)) {
+			//点检类型
+			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/allocationPage?id="+paramId;
+		}
+		
+		logger.info("不是点检类型，无页面处理");
+		return "redirect:"+Global.getAdminPath()+"/404";
+		
+	}
+	
 }

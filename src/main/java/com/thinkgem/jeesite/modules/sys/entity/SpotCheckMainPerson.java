@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.util.Date;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -17,7 +19,7 @@ public class SpotCheckMainPerson extends DataEntity<SpotCheckMainPerson> {
 	private static final long serialVersionUID = 1L;
 	private String wsMaskWcId;		// 任务号
 	private String workPersonId;		// 个人号
-	private String runTime;		// 运行时间数
+	private Date runTime;		// 运行时间数
 	private String submitState;		// 提交状态
 	
 	public SpotCheckMainPerson() {
@@ -46,15 +48,17 @@ public class SpotCheckMainPerson extends DataEntity<SpotCheckMainPerson> {
 		this.workPersonId = workPersonId;
 	}
 	
-	@Length(min=1, max=100, message="运行时间数长度必须介于 1 和 100 之间")
-	public String getRunTime() {
+
+	
+	
+	public Date getRunTime() {
 		return runTime;
 	}
 
-	public void setRunTime(String runTime) {
+	public void setRunTime(Date runTime) {
 		this.runTime = runTime;
 	}
-	
+
 	@Length(min=1, max=100, message="提交状态长度必须介于 1 和 100 之间")
 	public String getSubmitState() {
 		return submitState;
