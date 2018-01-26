@@ -80,7 +80,7 @@ public class ScBaCreate {
 	private List<SpotCheckContent> findBriList(ScStateParam param,WorkPerson person,WsMaskWc wsMaskWc,List<SpotCheckSinglePerson> scspList){
 		List<SpotCheckContent> sccList = null;
 		SpotCheckContentDao spotCheckContentDao = param.getSpotCheckContentDao();
-		
+		BusinessResultItemDao businessResultItemDao = param.getBusinessResultItemDao();
 		WorkShopMaskDao workShopMaskDao = param.getWorkShopMaskDao();
 		//将每一项的结果补充
 		for(SpotCheckSinglePerson sccp : scspList) {
@@ -88,7 +88,6 @@ public class ScBaCreate {
 			scc.setScspId(sccp.getId());
 			sccList = spotCheckContentDao.findList(scc);
 			for(SpotCheckContent forEntity : sccList) {
-				BusinessResultItemDao businessResultItemDao = param.getBusinessResultItemDao();
 				String workShopMaskId = wsMaskWc.getWorkShopMaskId();
 				WorkShopMask workShopMask = workShopMaskDao.get(workShopMaskId);
 				BusinessAssemble ba = workShopMask.getBa();

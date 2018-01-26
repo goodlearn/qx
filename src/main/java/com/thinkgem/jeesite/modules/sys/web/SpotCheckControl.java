@@ -48,7 +48,28 @@ public class SpotCheckControl extends BaseController {
 	
 	public final String ERROR_URL = "modules/sys/sysError";
 	
-	//车前
+	//修改结果
+	@RequiresPermissions("sys:sc:edit")
+	@RequestMapping(value = {"modifyFormScc"})
+	public String modifyFormScc(HttpServletRequest request, HttpServletResponse response, Model model) {
+		String id = request.getParameter("id");
+		SpotCheckContent scc = wxBaseService.findSccWithBriById(id);
+		model.addAttribute("scc",scc);
+		model.addAttribute("brls",scc.getBriList());
+		return "modules/checkspot/sccmr";
+		
+	}
+	
+	//修改结果
+	@RequiresPermissions("sys:sc:edit")
+	@RequestMapping(value = {"modifyResult"})
+	public String modifyResult(SpotCheckContent spotCheckContent,HttpServletRequest request, HttpServletResponse response, Model model) {
+		spotCheckContentService.save(spotCheckContent);
+		return "redirect:"+Global.getAdminPath()+"/sys/spotCheckContent/?repage";
+		
+	}
+	
+	//添加新项
 	@RequiresPermissions("sys:sc:edit")
 	@RequestMapping(value = {"addFormScc"})
 	public String addFormScc(HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -60,7 +81,7 @@ public class SpotCheckControl extends BaseController {
 		
 	}
 	
-	//车前
+	//添加新项
 	@RequiresPermissions("sys:sc:edit")
 	@RequestMapping(value = {"add"})
 	public String add(HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -72,7 +93,7 @@ public class SpotCheckControl extends BaseController {
 		entity.setPart(part);
 		entity.setContext(context);
 		entity.setResultContent("");
-		entity.setOldNew(DictUtils.getDictValue("否", "yes_no", "0"));
+		entity.setOldNew(DictUtils.getDictValue("是", "yes_no", "1"));
 		spotCheckContentService.save(entity);
 		return "redirect:"+Global.getAdminPath()+"/sys/spotCheckContent/?repage";
 

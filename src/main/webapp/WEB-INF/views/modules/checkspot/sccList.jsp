@@ -50,6 +50,7 @@
 					</td>
 					<shiro:hasPermission name="sys:sc:edit"><td>
     					<a href="${ctx}/sys/sc/addFormScc?scspId=${scsp.scspId}">添加新项</a>
+    					<a href="${ctx}/sys/sc/modifyFormScc?id=${scsp.id}">修改结果</a>
 				</td></shiro:hasPermission>
 				</tr>
 		</c:forEach>
