@@ -19,8 +19,10 @@ public class SpotCheckMainPerson extends DataEntity<SpotCheckMainPerson> {
 	private static final long serialVersionUID = 1L;
 	private String wsMaskWcId;		// 任务号
 	private String workPersonId;		// 个人号
-	private Date runTime;		// 运行时间数
+	private String runTime;		// 运行时间数
 	private String submitState;		// 提交状态
+	private WsMaskWc wsm;
+	private WorkPerson wp;
 	
 	public SpotCheckMainPerson() {
 		super();
@@ -51,11 +53,11 @@ public class SpotCheckMainPerson extends DataEntity<SpotCheckMainPerson> {
 
 	
 	
-	public Date getRunTime() {
+	public String getRunTime() {
 		return runTime;
 	}
 
-	public void setRunTime(Date runTime) {
+	public void setRunTime(String runTime) {
 		this.runTime = runTime;
 	}
 
@@ -67,5 +69,24 @@ public class SpotCheckMainPerson extends DataEntity<SpotCheckMainPerson> {
 	public void setSubmitState(String submitState) {
 		this.submitState = submitState;
 	}
+
+	
+
+	public WsMaskWc getWsm() {
+		return wsm;
+	}
+
+	public void setWsm(WsMaskWc wsm) {
+		this.wsm = wsm;
+	}
+
+	public WorkPerson getWp() {
+		return wp;
+	}
+
+	public void setWp(WorkPerson wp) {
+		this.wp = wp;
+	}
+	
 	
 }

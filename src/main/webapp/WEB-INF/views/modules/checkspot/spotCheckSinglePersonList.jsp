@@ -34,7 +34,13 @@
 			<li><label>提交状态：</label>
 				<form:select path="submitState" class="input-medium">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>项目：</label>
+				<form:select path="item" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('bussinesItem')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -47,6 +53,7 @@
 			<tr>
 				<th>父任务号</th>
 				<th>个人号</th>
+				<th>项目</th>
 				<th>提交状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -57,13 +64,16 @@
 		<c:forEach items="${page.list}" var="spotCheckSinglePerson">
 			<tr>
 				<td><a href="${ctx}/sys/spotCheckSinglePerson/form?id=${spotCheckSinglePerson.id}">
-					${spotCheckSinglePerson.scmpId}
+					${spotCheckSinglePerson.scmp.id}
 				</a></td>
 				<td>
-					${spotCheckSinglePerson.workPersonId}
+					${spotCheckSinglePerson.wp.id}
 				</td>
 				<td>
-					${fns:getDictLabel(spotCheckSinglePerson.submitState, '', '')}
+					${fns:getDictLabel(spotCheckContent.item, 'bussinesItem', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(spotCheckSinglePerson.submitState, 'yes_no', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${spotCheckSinglePerson.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

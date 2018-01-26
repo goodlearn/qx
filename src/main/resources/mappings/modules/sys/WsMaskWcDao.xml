@@ -49,7 +49,7 @@
 				AND a.submit_state = #{submitState}
 			</if>
 			<if test="endDate != null and endDate != ''">
-				AND a.end_date &lt; #{endDate}
+				AND a.end_date &gt; #{endDate}
 			</if>
 		</where>
 		<choose>

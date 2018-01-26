@@ -7,7 +7,7 @@ package com.thinkgem.jeesite.modules.sys.state;
  */
 public abstract class AbsMonitorWsmPageState {
 	
-	protected StateParam param;
+	protected ScStateParam param;
 	
 	//获取任务状态页面
 	protected abstract void requestHandle(MwsmPageStateContext context);

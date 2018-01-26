@@ -13,10 +13,14 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		wsm.id AS "wsm.id",
+		wp.id AS "wp.id"
 	</sql>
 	
 	<sql id="spotCheckMainPersonJoins">
+			LEFT JOIN work_shop_mask wsm ON wsm.id = a.ws_mask_wc_id
+			LEFT JOIN work_person wp ON wp.id = a.work_person_id
 	</sql>
     
 	<select id="get" resultType="SpotCheckMainPerson">

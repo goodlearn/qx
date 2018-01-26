@@ -18,7 +18,7 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
  */
 public class MonitorWsmspState extends AbsMonitorWsmPageState{
 	
-	public MonitorWsmspState(StateParam param) {
+	public MonitorWsmspState(ScStateParam param) {
 		this.param = param;
 	}
 
@@ -43,32 +43,18 @@ public class MonitorWsmspState extends AbsMonitorWsmPageState{
 		WsMaskWc query = new WsMaskWc();
 		String no = DictUtils.getDictValue("否", "yes_no", "0");
 		query.setWorkClassId(classId);
-		List<WsMaskWc> wmsList = wsMaskWcDao.findAllList(query);
+		query.setSubmitState(no);//未提交的
+		query.setEndDate(new Date());//当前时间小于结束的时间
+		List<WsMaskWc> wmsList = wsMaskWcDao.findList(query);
 		if(null == wmsList || wmsList.size() == 0) {
 			//没有发布过任务
 			//没有发布
-			param.setResultCode(param.URL_CODE);//设置结果码
-			param.setValue(param.NO_PUBLISH_WORK_SHOP_MASK_CLASS_URL);
+			param.getModel().addAttribute("message",ScStateParam.NO_PUBLISH_WORK_SHOP_MASK);
+			param.setValue(ScStateParam.ERROR_URL_WX);
 			return;
+		}else {
+			
 		}
-		
-		query.setSubmitState(no);//未提交的
-		query.setEndDate(new Date());//当前时间小于结束的时间
-		List<WsMaskWc> expired = wsMaskWcDao.findAllList(query);
-		if(null != expired && expired.size() > 0) {
-			//有 没有处理的任务 未过期 未提交
-			param.setResultCode(param.URL_CODE);//设置结果码
-			param.setValue(param.NO_CLASS_NO_PROCESS);//还有未处理的任务 去请求URL
-			return;
-		}
-		
-		//如果没发布过 就去发布
-		param.setResultCode(param.URL_CODE);//设置结果码
-		param.setValue(param.NO_PUBLISH_WORK_SHOP_MASK_CLASS_URL);
-		return;
 	}
-	
-	
-	
 
 }

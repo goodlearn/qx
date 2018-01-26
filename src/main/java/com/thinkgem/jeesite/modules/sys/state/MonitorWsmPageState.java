@@ -14,7 +14,7 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
  */
 public class MonitorWsmPageState extends AbsWsmPageState{
 
-	public MonitorWsmPageState(StateParam param) {
+	public MonitorWsmPageState(ScStateParam param) {
 		this.param = param;
 	}
 	
@@ -26,6 +26,7 @@ public class MonitorWsmPageState extends AbsWsmPageState{
 			//不是班长 让工作人员处理
 			NormalWsmPageState normalWsmPageState = new NormalWsmPageState(param);
 			normalWsmPageState.requestHandle(context);
+			return;
 		}
 		
 		//是班长

@@ -145,7 +145,7 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		WsMaskWc query = new WsMaskWc();
 		String no = DictUtils.getDictValue("否", "yes_no", "0");
 		query.setWorkClassId(classId);
-		List<WsMaskWc> wmsList = wsMaskWcDao.findAllList(query);
+		List<WsMaskWc> wmsList = wsMaskWcDao.findList(query);
 		if(null == wmsList || wmsList.size() == 0) {
 			//没有发布过任务
 			//没有发布
@@ -154,7 +154,7 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		
 		query.setSubmitState(no);//未提交的
 		query.setEndDate(new Date());//当前时间小于结束的时间
-		List<WsMaskWc> expired = wsMaskWcDao.findAllList(query);
+		List<WsMaskWc> expired = wsMaskWcDao.findList(query);
 		if(null != expired && expired.size() > 0) {
 			//有 没有处理的任务 未过期 未提交
 			return true;

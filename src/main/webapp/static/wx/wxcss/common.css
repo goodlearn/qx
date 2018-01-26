@@ -1,340 +1,75 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+}
 body{
-  background: #f4f4f4;
+	background: #e8e8e8;
 }
-img{
-  display: block;
-}
-
 .content{
-  max-width: 600px;
-  margin: 0 auto;
-  font-family:"Microsoft YaHei";
-}
-/* --------  common nav ---------*/
-.headerNav{
-  max-width: 100%;
-  height: 50px;
-  margin: auto;
-  position: relative;
-}
-.headerNavTop{
-  width: 100%;
-  height: 50px;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 999;
-}
-.headerNavIcon{
-  color: #ffffff;
-  height: 50px;
-  font-size:25px;
-  text-align: center;
-  float:right;
-  width: 50px;
-  position: relative;
-  -webkit-transition: background 0.5s;
-  -moz-transition: background 0.5s;
-  -o-transition: background 0.5s;
-  transition: background 0.5s;
-}
-.headerNavIcon:hover{
-  cursor: pointer;
-}
-.headerNavIcon span{
-  position: absolute;
-  left: calc((100% - 25px) / 2);
-  top: calc((100% - 1px) / 2);
-  width: 25px;
-  height: 2px;
-  background-color: #333333;
-}
-.headerNavIcon span:nth-child(1){
-transform: translateY(4px) rotate(0deg);
-  }
-.headerNavIcon span:nth-child(2){
-transform: translateY(-4px) rotate(0deg);
-  }
-  
-.headerNavIconClick span:nth-child(1){
-  animation-duration: 0.5s;
-  animation-fill-mode: both;
-  animation-name: clickfirst;
-  }   
-.headerNavIconClick span:nth-child(2){
-  animation-duration: 0.5s;
-  animation-fill-mode: both;
-  animation-name: clicksecond;
-  }
-@keyframes clickfirst {
-  0% {
-    transform: translateY(4px) rotate(0deg);
-    
-  }
-
-  100% {
-    transform: translateY(0) rotate(45deg);
-  }
-} 
-@keyframes clicksecond {
-  0% {
-    transform: translateY(-4px) rotate(0deg);
-  }
-
-  100% {
-    transform: translateY(0) rotate(-45deg);
-  }
-} 
-
-.headerNavIconOut span:nth-child(1){
-  animation-duration: 0.5s;
-  animation-fill-mode: both;
-  animation-name: outfirst;
-  }   
-.headerNavIconOut span:nth-child(2){
-  animation-duration: 0.5s;
-  animation-fill-mode: both;
-  animation-name: outsecond;
-  }
-@keyframes outfirst {
-  0% {
-    transform: translateY(0) rotate(-45deg);
-  }
-
-  100% {
-    transform: translateY(-4px) rotate(0deg);
-  }
-} 
-@keyframes outsecond {
-  0% {
-    transform: translateY(0) rotate(45deg);
-  }
-
-  100% {
-    transform: translateY(4px) rotate(0deg);
-  }
+	max-width: 600px;
+	margin: 0 auto;
+	font-family: "Tahoma","Microsoft YaHei";
 }
 
-.headerNavCont{
-  background-color: rgba(0,0,0,0.9);
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  padding-top: 30px;
-  padding-bottom: 80px;
-  z-index: 99;
-  display: none;
+.pageNav{
+	width: 100%; 
+	overflow: hidden;
+	position: relative;
+	box-shadow: 0px 5px 5px #d1d1d1; 
 }
-.headerNavCont a{
-  display: inline-block;
-  line-height: 50px;
-  text-decoration: none;
-  width: 80%;
-  margin-left: 10%;
-  color: #FFFFFF;
-  border-bottom: solid 1px rgba(255,255,255,0.3);
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  transition: all 0.5s;
-  font-weight:300;
+.pageNav .pageTxt{
+	line-height: 56px;
+	background: #1b1b1b;
+	color: #fff;
+	text-align: center;
+	font-weight: bolder;
 }
-.headerNavCont a:hover{
-  color: rgba(255,255,255,0.4);
-  border-bottom: solid 1px rgba(255,255,255,0.2);
+.pageNav .backBtn{
+	position: absolute;
+	top:15px;
+	left: 5px;
+	line-height: 26px;
+	padding: 0px 8px;
+	background: #fff;
+	font-size: 12px;
+	color: #fff;
+	border: 1px solid #101010;
+	border-radius: 5px;
+	background-image: linear-gradient(to top,#161616,#282826);
 }
 
-/* ---- nav animate ----*/
-.headerNavCont a{
-	-webkit-animation-duration: 0.5s;
-	animation-duration: 0.5s;
-	-webkit-animation-fill-mode: both;
-	animation-fill-mode: both;
-	-webkit-animation-name: returnToNormal;
-	animation-name: returnToNormal;
+.taskInfo{
+	width: calc(96% - 2px);
+	margin: 15px 2%;
+	background: #fff;
+	border:1px solid #d8d8d8;
+	border-radius: 8px;
+	box-shadow: 0px 5px 5px #d1d1d1; 
 }
-	
-		
-@-webkit-keyframes returnToNormal {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100%, 0);
-    transform: translate3d(0, 100%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
+.taskInfo ul li{
+	display: block;
+	width: 100%;
 }
-
-@keyframes returnToNormal {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100%, 0);
-    transform: translate3d(0, 100%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
+.taskInfo ul li p{
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 30px;
+	font-size: 14px;
+	font-weight: bolder;
 }
-
-/* ----  userInput ----*/
-.inputTxtDiv{
-  width: 90%;
-  height:40px;
-  margin:0 auto;
-  overflow: hidden;
-  border: 1px solid #f1f1f1;
-  border-radius: 5px;
-  background: #fff;
+.borderButtom{
+	border-bottom: 1px solid #f2f2f2;
 }
-.inputTxtDiv input[type=text]{
-  width: 80%;
-  height: 40px;
-  border: none;
-  float: left;
-  outline: none;
-  padding-left: 8px;
+.taskInfo ul li p.taskType{
+	background: url(../images/tasktypeicon.png) no-repeat 2% center;
+	background-size: 20px;
 }
-.inputTxtDiv .searchBtn{
-  width: 40px;
-  height: 40px;
-  padding-left: 5px;
-  float: right;
-  background: url(../wximages/search.png) no-repeat center center;
-  background-size: 60%;
-  border-left:1px solid #f1f1f1;
+.taskInfo ul li p.taskProject{
+	background: url(../images/taskProjectIcon.png) no-repeat 2% center;
+	background-size: 20px;
 }
-
-/* ----- input common ----- */
-.userInputCont{
-  width: 90%;
-  margin: 20px auto;
-}
-.userInputCont .inputTypeCont{
-  width: 100%;
-  height: 46px;
-  overflow: hidden;
-  border: 1px solid #c1c1c1;
-  border-radius: 23px;
-  margin-top: 10px;
-  background: #fff;
-}
-.userInputCont .inputTypeCont .inputTitle{
-  line-height:30px;
-  margin: 8px 0px;
-  padding-left: 5px;
-  width: 50px;
-  text-align: center;
-  border-right: 1px solid #c1c1c1;
-  color: #888888;
-  font-size: 14px;
-  float: left;
-}
-.userInputCont .inputTypeCont input.commonInput{
-  border: none;
-  width: 50%;
-  height: 46px;
-  float: left;
-  margin-left:10px;
-  outline: none;
-  font-size: 14px;
-  color: #333333;
-}
-.userInputCont .inputTypeCont input.commonInput[disabled]{
-  background: #fff;
-}
-.userInputCont .inputTypeCont input.commonInputFunc{
-  border: none;
-  width: 140px;
-  height: 46px;
-  float: left;
-  margin-left:10px;
-  outline: none;
-  font-size: 14px;
-  color: #333333;
-}
-.userInputCont .inputTypeCont input.commonInputFunc[disabled]{
-  background: #fff;
-}
-.userInputCont .inputTypeCont .commonFuncBtnScan{
-  float: right;
-  font-size: 12px;
-  width: 50px;
-  height: 46px;
-  line-height: 46px;
-  margin: 0px 18px 0px 0px;
-  background:url(../wximages/scanIcon.png) no-repeat center right;
-  background-size: 50%;
-}
-.userInputCont .inputTypeCont .commonFuncBtnVoice{
-  float: right;
-  font-size: 12px;
-  width: 50px;
-  height: 46px;
-  line-height: 46px;
-  margin: 0px 18px 0px 0px;
-  background:url(../wximages/voiceicon.png) no-repeat center right;
-  background-size: 50%;
-}
-.userInputCont .inputTypeCont .commonFuncBtnModify{
-  float: right;
-  font-size: 12px;
-  width: 50px;
-  height: 46px;
-  line-height: 46px;
-  margin: 0px 18px 0px 0px;
-  background:url(../wximages/modifyIcon.png) no-repeat center right;
-  background-size: 50%;
-}
-.userInputCont .inputTypeCont input.verifiInput{
-  border: none;
-  width: 110px;
-  height: 46px;
-  float: left;
-  margin-left:10px;
-  outline: none;
-  font-size: 14px;
-  color: #333333;
-}
-.userInputCont .inputTypeCont .verifiBtn{
-  background: #1f72ff;
-  float: right;
-  font-size: 12px;
-  line-height: 26px;
-  padding: 0px 10px;
-  margin: 10px 10px 10px 0px;
-  border-radius: 13px;
-  color: #fff;
-  border: none;
-  outline: none;
-}
-.userInputCont .inputTypeCont select{
-  width: 70%;
-  height: 46px;
-  border: none;
-  margin-left:10px;
-  padding: 0px;
-  color: #333333;
-  outline: none;
-  font-size: 14px;
-  background: none;
-}
-
-/* ---- footer ----*/
-.footer{
-  width:100%;
-  overflow: hidden;
-  font-size:14px;
-}
-.footer .copyInfotxt{
-  text-align:center;
-  line-height:30px;
-  margin:0px;
+.taskInfo ul li p.checkPerson{
+	background: url(../images/checkpersonicon.png) no-repeat 2% center;
+	background-size: 20px;
 }

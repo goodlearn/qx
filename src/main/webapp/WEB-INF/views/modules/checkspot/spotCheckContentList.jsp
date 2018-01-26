@@ -28,16 +28,16 @@
 			<li><label>父任务号：</label>
 				<form:input path="scspId" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
+			<li><label>部位：</label>
+				<form:select path="part" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('bussinesPart')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label>新旧内容：</label>
 				<form:select path="oldNew" class="input-medium">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>项目：</label>
-				<form:select path="item" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -50,7 +50,6 @@
 			<tr>
 				<th>父任务号</th>
 				<th>新旧内容</th>
-				<th>项目</th>
 				<th>部位</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -64,13 +63,10 @@
 					${spotCheckContent.scspId}
 				</a></td>
 				<td>
-					${fns:getDictLabel(spotCheckContent.oldNew, '', '')}
+					${fns:getDictLabel(spotCheckContent.oldNew, 'yes_no', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(spotCheckContent.item, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(spotCheckContent.part, '', '')}
+					${fns:getDictLabel(spotCheckContent.part, 'bussinesPart', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${spotCheckContent.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

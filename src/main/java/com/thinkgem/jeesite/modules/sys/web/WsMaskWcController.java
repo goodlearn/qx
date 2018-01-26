@@ -86,16 +86,40 @@ public class WsMaskWcController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
 	}
 	
+	/**
+	 * 未提交数据页面
+	 * @param wsMaskWc
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("sys:wsMaskWc:view")
+	@RequestMapping(value = {"unSubmitList"})
+	public String unSubmitList(WsMaskWc wsMaskWc, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<WsMaskWc> page = wsMaskWcService.findUnSubmitList(new Page<WsMaskWc>(request, response), wsMaskWc); 
+		model.addAttribute("page", page);
+		return "modules/wsmaskwc/wmsUnSubmitList";
+	}
+	
+	//结束任务
+	@RequiresPermissions("sys:wsMaskWc:edit")
+	@RequestMapping(value = "endMask")
+	public String endMask(WsMaskWc wsMaskWc, Model model, RedirectAttributes redirectAttributes) {
+		if (!beanValidator(model, wsMaskWc)){
+			return form(wsMaskWc, model);
+		}
+		wsMaskWcService.endMask(wsMaskWc);
+		addMessage(redirectAttributes, "任务结束");
+		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/unSubmitList?repage";
+	}
+	
 	//保存点检任务
 	@RequiresPermissions("sys:wsMaskWc:edit")
 	@RequestMapping(value = "saveScMask")
 	public String saveScMask(WsMaskWc wsMaskWc, RedirectAttributes redirectAttributes) {
 		String redirectUrl = "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
-		if(wsMaskWcService.isNotSubmit(UserUtils.getUser().getEmpNo())) {
-			//存在没有提交的数据
-			addMessage(redirectAttributes, "有未提交的数据,不能再进行布置点检任务");
-			return redirectUrl;
-		}
+		wsMaskWcService.saveScMask(wsMaskWc);
 		addMessage(redirectAttributes, "任务分配成功");
 		return redirectUrl;
 	}
@@ -106,11 +130,16 @@ public class WsMaskWcController extends BaseController {
 	@RequestMapping(value = "allocationPage")
 	public String allocationPage(WsMaskWc wsMaskWc, HttpServletRequest request,Model model) {
 		
-		String classId = request.getParameter("id");
+		/**
+		 * workShopMaskControl-allocation中已经检测是否有未提交的数据，此处不检查
+		 */
 		
+		String wsmid = request.getParameter("wsmid");
+		wsMaskWc = wsMaskWcService.save(wsmid);//生成任务数据
 		//获取班级所有人
-		List<WorkPerson> workPersons = wsMaskWcService.findWpByClassId(classId);
+		List<WorkPerson> workPersons = wsMaskWcService.findWpByWsmId(wsmid);
 		model.addAttribute("wp", workPersons);
+		model.addAttribute("wsMaskWc",wsMaskWc);
 		return "modules/wsMaskWc/wsmAllocationForm";
 	}
 

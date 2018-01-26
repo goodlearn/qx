@@ -15,7 +15,7 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
  */
 public class MonitorWsmPublisState extends AbsMonitorWsmPageState{
 
-	public MonitorWsmPublisState(StateParam param) {
+	public MonitorWsmPublisState(ScStateParam param) {
 		this.param = param;
 	}
 	
@@ -26,16 +26,20 @@ public class MonitorWsmPublisState extends AbsMonitorWsmPageState{
 		//看车间是不是发布任务了
 		if(!isNoPublish()) {
 			//没有发布
-			param.setResultCode(param.MESSAGE_CODE);//设置结果码
-			param.setValue(param.NO_PUBLISH_WORK_SHOP_MASK);
+			param.getModel().addAttribute("message",ScStateParam.NO_PUBLISH_WORK_SHOP_MASK);
+			if(param.isPC()) {
+				//PC端数据
+				param.setValue(ScStateParam.ERROR_URL_PC);
+			}else {
+				//微信端数据
+				param.setValue(ScStateParam.ERROR_URL_WX);
+			}
 		}else {
 			//发布任务了 就需要进行任务发布 
 			//去班级任务发布状态中进行状态判断
 			MonitorWsmspState state = new MonitorWsmspState(param);
 			state.requestHandle(context);
 		}
-	
-		
 		
 	}
 	

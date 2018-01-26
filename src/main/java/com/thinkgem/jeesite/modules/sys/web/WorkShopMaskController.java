@@ -63,6 +63,10 @@ public class WorkShopMaskController extends BaseController {
 	@RequiresPermissions("sys:workShopMask:view")
 	@RequestMapping(value = {"sclist"})
 	public String sclist(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
+		String repeatMessage = request.getParameter("repeatMessage");
+		if(StringUtils.isNotEmpty(repeatMessage)) {
+			model.addAttribute("repeatMessage", "有未提交的数据");
+		}
 		Page<WorkShopMask> page = workShopMaskService.findSpotCheckPage(new Page<WorkShopMask>(request, response), workShopMask); 
 		model.addAttribute("page", page);
 		return "modules/workshopmask/maskList";
@@ -182,24 +186,23 @@ public class WorkShopMaskController extends BaseController {
 	@RequestMapping(value = "allocation")
 	public String allocation(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/sclist?repage";
-		String paramId = request.getParameter("id");
-		if(StringUtils.isEmpty(paramId)) {
+		String wsmid = request.getParameter("wsmid");
+		if(StringUtils.isEmpty(wsmid)) {
 			addMessage(redirectAttributes, "参数为空");
 			return rediectUrl;
 		}
 		
 		if(workShopMaskService.isNotSubmit(UserUtils.getUser().getEmpNo())) {
 			//存在没有提交的数据
-			addMessage(redirectAttributes, "有未提交的数据");
-			return rediectUrl;
+			return "redirect:"+Global.getAdminPath()+"/sys/workShopMask/sclist?repeatMessage=yes";
 		}
 		
-		WorkShopMask workShopMask = workShopMaskService.get(paramId);
+		WorkShopMask workShopMask = workShopMaskService.get(wsmid);
 		String type = workShopMask.getBa().getType();
 		String dictType = DictUtils.getDictValue("点检", "businessResultType", "1");
 		if(dictType.equals(type)) {
 			//点检类型
-			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/allocationPage?id="+paramId;
+			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/allocationPage?wsmid="+wsmid;
 		}
 		
 		logger.info("不是点检类型，无页面处理");

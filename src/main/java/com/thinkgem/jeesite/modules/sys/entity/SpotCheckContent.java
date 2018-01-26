@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -17,10 +19,13 @@ public class SpotCheckContent extends DataEntity<SpotCheckContent> {
 	private static final long serialVersionUID = 1L;
 	private String scspId;		// 父任务号
 	private String oldNew;		// 新旧内容
-	private String item;		// 项目
 	private String part;		// 部位
 	private String context;		// 检查内容
 	private String resultContent;		// 结果内容
+	
+	
+	//非DB读取数据
+	private List<BusinessResultItem> briList;//结果项
 	
 	public SpotCheckContent() {
 		super();
@@ -48,14 +53,6 @@ public class SpotCheckContent extends DataEntity<SpotCheckContent> {
 		this.oldNew = oldNew;
 	}
 	
-	@Length(min=1, max=100, message="项目长度必须介于 1 和 100 之间")
-	public String getItem() {
-		return item;
-	}
-
-	public void setItem(String item) {
-		this.item = item;
-	}
 	
 	@Length(min=1, max=100, message="部位长度必须介于 1 和 100 之间")
 	public String getPart() {
@@ -83,5 +80,16 @@ public class SpotCheckContent extends DataEntity<SpotCheckContent> {
 	public void setResultContent(String resultContent) {
 		this.resultContent = resultContent;
 	}
+
+	public List<BusinessResultItem> getBriList() {
+		return briList;
+	}
+
+	public void setBriList(List<BusinessResultItem> briList) {
+		this.briList = briList;
+	}
+
+	
+	
 	
 }

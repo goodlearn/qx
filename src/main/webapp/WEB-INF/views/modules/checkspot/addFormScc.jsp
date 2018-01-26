@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>车间任务数据管理</title>
+	<title>点检卡内容表数据管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,43 +27,30 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/workShopMask/">车间任务数据</a></li>
+		<li><a href="${ctx}/sys/spotCheckContent/">点检卡内容表数据列表</a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="wsMaskWc" action="${ctx}/sys/wsMaskWc/saveScMask" method="post" class="form-horizontal">
-		<form:hidden path="id"/>
+	<form:form id="inputForm" modelAttribute="scc" action="${ctx}/sys/sc/add" method="post" class="form-horizontal">
+		<form:hidden path="scspId"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
-			<label class="control-label">前部负责人：</label>
+			<label class="control-label">部位：</label>
 			<div class="controls">
-				<form:select path="frontPerson" class="input-xlarge required">
+				<form:select path="part" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:options items="${wp}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('bussinesPart')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">中部负责人：</label>
+			<label class="control-label">检查新内容：</label>
 			<div class="controls">
-				<form:select path="centralPerson" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${wp}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">后部负责人：</label>
-			<div class="controls">
-				<form:select path="heelPerson" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${wp}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
+				<form:textarea path="context" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="sys:wsMaskWc:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="提 交"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="sys:sc:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

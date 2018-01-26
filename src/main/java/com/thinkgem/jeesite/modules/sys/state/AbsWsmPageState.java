@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public abstract class AbsWsmPageState {
 
-	protected StateParam param;
+	protected ScStateParam param;
 	
 	//获取任务状态页面
 	protected abstract void requestHandle(WsmPageStateContext context);

@@ -37,7 +37,7 @@
 			<li><label>提交状态：</label>
 				<form:select path="submitState" class="input-medium">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -61,16 +61,16 @@
 		<c:forEach items="${page.list}" var="spotCheckMainPerson">
 			<tr>
 				<td><a href="${ctx}/sys/spotCheckMainPerson/form?id=${spotCheckMainPerson.id}">
-					${spotCheckMainPerson.wsMaskWcId}
+					${spotCheckMainPerson.wsm.id}
 				</a></td>
 				<td>
-					${spotCheckMainPerson.workPersonId}
+					${spotCheckMainPerson.wp.id}
 				</td>
 				<td>
 					${spotCheckMainPerson.runTime}
 				</td>
 				<td>
-					${fns:getDictLabel(spotCheckMainPerson.submitState, '', '')}
+					${fns:getDictLabel(spotCheckMainPerson.submitState, 'yes_no', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${spotCheckMainPerson.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

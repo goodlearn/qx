@@ -6,7 +6,6 @@
 		a.id AS "id",
 		a.scsp_id AS "scspId",
 		a.old_new AS "oldNew",
-		a.item AS "item",
 		a.part AS "part",
 		a.context AS "context",
 		a.result_content AS "resultContent",
@@ -42,9 +41,6 @@
 			<if test="oldNew != null and oldNew != ''">
 				AND a.old_new = #{oldNew}
 			</if>
-			<if test="item != null and item != ''">
-				AND a.item = #{item}
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -79,7 +75,6 @@
 			id,
 			scsp_id,
 			old_new,
-			item,
 			part,
 			context,
 			result_content,
@@ -93,7 +88,6 @@
 			#{id},
 			#{scspId},
 			#{oldNew},
-			#{item},
 			#{part},
 			#{context},
 			#{resultContent},
@@ -110,7 +104,6 @@
 		UPDATE spot_check_content SET 	
 			scsp_id = #{scspId},
 			old_new = #{oldNew},
-			item = #{item},
 			part = #{part},
 			context = #{context},
 			result_content = #{resultContent},

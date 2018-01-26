@@ -18,6 +18,9 @@ public class SpotCheckSinglePerson extends DataEntity<SpotCheckSinglePerson> {
 	private String scmpId;		// 父任务号
 	private String workPersonId;		// 个人号
 	private String submitState;		// 提交状态
+	private String item;		// 项目
+	private SpotCheckMainPerson scmp;
+	private WorkPerson wp;
 	
 	public SpotCheckSinglePerson() {
 		super();
@@ -27,6 +30,15 @@ public class SpotCheckSinglePerson extends DataEntity<SpotCheckSinglePerson> {
 		super(id);
 	}
 
+	@Length(min=1, max=100, message="项目长度必须介于 1 和 100 之间")
+	public String getItem() {
+		return item;
+	}
+
+	public void setItem(String item) {
+		this.item = item;
+	}
+	
 	@Length(min=1, max=64, message="父任务号长度必须介于 1 和 64 之间")
 	public String getScmpId() {
 		return scmpId;
@@ -53,5 +65,22 @@ public class SpotCheckSinglePerson extends DataEntity<SpotCheckSinglePerson> {
 	public void setSubmitState(String submitState) {
 		this.submitState = submitState;
 	}
+
+	public SpotCheckMainPerson getScmp() {
+		return scmp;
+	}
+
+	public void setScmp(SpotCheckMainPerson scmp) {
+		this.scmp = scmp;
+	}
+
+	public WorkPerson getWp() {
+		return wp;
+	}
+
+	public void setWp(WorkPerson wp) {
+		this.wp = wp;
+	}
+	
 	
 }

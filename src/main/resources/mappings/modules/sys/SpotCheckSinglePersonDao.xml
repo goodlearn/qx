@@ -6,16 +6,21 @@
 		a.id AS "id",
 		a.scmp_id AS "scmpId",
 		a.work_person_id AS "workPersonId",
+		a.item AS "item",
 		a.submit_state AS "submitState",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		scmp.id AS "scmp.id",
+		wp.id AS "wp.id"
 	</sql>
 	
 	<sql id="spotCheckSinglePersonJoins">
+			LEFT JOIN spot_check_main_person scmp ON scmp.id = a.scmp_id
+			LEFT JOIN work_person wp ON wp.id = a.work_person_id
 	</sql>
     
 	<select id="get" resultType="SpotCheckSinglePerson">
@@ -41,6 +46,9 @@
 			</if>
 			<if test="submitState != null and submitState != ''">
 				AND a.submit_state = #{submitState}
+			</if>
+			<if test="item != null and item != ''">
+				AND a.item = #{item}
 			</if>
 		</where>
 		<choose>
@@ -76,6 +84,7 @@
 			id,
 			scmp_id,
 			work_person_id,
+			item,
 			submit_state,
 			create_by,
 			create_date,
@@ -87,6 +96,7 @@
 			#{id},
 			#{scmpId},
 			#{workPersonId},
+			#{item},
 			#{submitState},
 			#{createBy.id},
 			#{createDate},
@@ -100,6 +110,7 @@
 	<update id="update">
 		UPDATE spot_check_single_person SET 	
 			scmp_id = #{scmpId},
+			item = #{item},
 			work_person_id = #{workPersonId},
 			submit_state = #{submitState},
 			update_by = #{updateBy.id},
