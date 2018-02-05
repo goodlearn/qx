@@ -239,6 +239,15 @@
     <example>${fns:getAllWorkShopList()}</example>  
   </function>
   
+    <!-- 获取车型信息 -->
+   <function>
+    <description>获取车型信息列表</description>
+    <name>getAllCmcList</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.util.List getAllCmcList()</function-signature>
+    <example>${fns:getAllCmcList()}</example>  
+  </function>
+  
    <!-- 获取车间信息 -->
    <function>
     <description>获取车间信息列表</description>
@@ -264,6 +273,15 @@
     <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
     <function-signature>java.util.List getDpByIdList(java.lang.String)</function-signature>
     <example>${fns:getDpByIdList(id)}</example>  
+  </function>
+  
+   <!-- 获取工种信息 -->
+  <function>
+    <description>获取工种信息列表</description>
+    <name>getAllWorkKindList</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.util.List getAllWorkKindList()</function-signature>
+    <example>${fns:getAllWorkKindList()}</example>  
   </function>
   
   <!-- 获取班级信息 -->

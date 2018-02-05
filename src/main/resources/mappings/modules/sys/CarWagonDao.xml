@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.WorkClassDao">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.CarWagonDao">
     
-	<sql id="workClassColumns">
+	<sql id="carWagonColumns">
 		a.id AS "id",
 		a.name AS "name",
-		a.work_kind_id AS "workKindId",
+		a.car_motor_cycle_id AS "carMotorCycleId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		k.id AS "workKind.id",
-		k.name AS "workKind.name"
+		cm.id AS "cmc.id",
+		cm.name AS "cmc.name"
 	</sql>
 	
-	<sql id="workClassJoins">
-		LEFT JOIN work_kind k ON k.id = a.work_kind_id
+	<sql id="carWagonJoins">
+				LEFT JOIN car_motor_cycle cm ON cm.id = a.car_motor_cycle_id
 	</sql>
     
-	<select id="get" resultType="WorkClass">
+	<select id="get" resultType="CarWagon">
 		SELECT 
-			<include refid="workClassColumns"/>
-		FROM work_class a
-		<include refid="workClassJoins"/>
+			<include refid="carWagonColumns"/>
+		FROM car_wagon a
+		<include refid="carWagonJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="WorkClass">
+	<select id="findList" resultType="CarWagon">
 		SELECT 
-			<include refid="workClassColumns"/>
-		FROM work_class a
-		<include refid="workClassJoins"/>
+			<include refid="carWagonColumns"/>
+		FROM car_wagon a
+		<include refid="carWagonJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
@@ -41,8 +41,8 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
-			<if test="workKindId != null and workKindId != ''">
-				AND a.work_kind_id = #{workKindId}
+			<if test="carMotorCycleId != null and carMotorCycleId != ''">
+				AND a.car_motor_cycle_id = #{carMotorCycleId}
 			</if>
 		</where>
 		<choose>
@@ -55,11 +55,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="WorkClass">
+	<select id="findAllList" resultType="CarWagon">
 		SELECT 
-			<include refid="workClassColumns"/>
-		FROM work_class a
-		<include refid="workClassJoins"/>
+			<include refid="carWagonColumns"/>
+		FROM car_wagon a
+		<include refid="carWagonJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
@@ -74,10 +74,10 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO work_class(
+		INSERT INTO car_wagon(
 			id,
 			name,
-			work_kind_id,
+			car_motor_cycle_id,
 			create_by,
 			create_date,
 			update_by,
@@ -87,7 +87,7 @@
 		) VALUES (
 			#{id},
 			#{name},
-			#{workKindId},
+			#{carMotorCycleId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -98,9 +98,9 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE work_class SET 	
+		UPDATE car_wagon SET 	
 			name = #{name},
-			work_kind_id = #{workKindId},
+			car_motor_cycle_id = #{carMotorCycleId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -108,7 +108,7 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE work_class SET 
+		UPDATE car_wagon SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

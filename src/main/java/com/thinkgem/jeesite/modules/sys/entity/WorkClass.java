@@ -10,14 +10,14 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 /**
  * 车间班组Entity
  * @author wzy
- * @version 2018-01-24
+ * @version 2018-02-05
  */
 public class WorkClass extends DataEntity<WorkClass> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 班组名称
-	private String workDepartmentId;		// 所属部门
-	private WorkDepartment workDepartment;	//所属部门
+	private String workKindId;		// work_kind_id
+	private WorkKind workKind;
 	
 	public WorkClass() {
 		super();
@@ -36,22 +36,21 @@ public class WorkClass extends DataEntity<WorkClass> {
 		this.name = name;
 	}
 	
-	@Length(min=1, max=64, message="所属部门长度必须介于 1 和 64 之间")
-	public String getWorkDepartmentId() {
-		return workDepartmentId;
+	@Length(min=1, max=64, message="work_kind_id长度必须介于 1 和 64 之间")
+	public String getWorkKindId() {
+		return workKindId;
 	}
 
-	public void setWorkDepartmentId(String workDepartmentId) {
-		this.workDepartmentId = workDepartmentId;
+	public void setWorkKindId(String workKindId) {
+		this.workKindId = workKindId;
 	}
 
-	public WorkDepartment getWorkDepartment() {
-		return workDepartment;
+	public WorkKind getWorkKind() {
+		return workKind;
 	}
 
-	public void setWorkDepartment(WorkDepartment workDepartment) {
-		this.workDepartment = workDepartment;
+	public void setWorkKind(WorkKind workKind) {
+		this.workKind = workKind;
 	}
-	
 	
 }

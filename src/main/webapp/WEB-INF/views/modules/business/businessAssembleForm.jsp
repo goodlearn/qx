@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>业务集数据管理</title>
+	<title>总表数据管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,21 +27,21 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/businessAssemble/">业务集数据列表</a></li>
-		<li class="active"><a href="${ctx}/sys/businessAssemble/form?id=${businessAssemble.id}">业务集数据<shiro:hasPermission name="sys:businessAssemble:edit">${not empty businessAssemble.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:businessAssemble:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/sys/businessAssemble/">总表数据列表</a></li>
+		<li class="active"><a href="${ctx}/sys/businessAssemble/form?id=${businessAssemble.id}">总表数据<shiro:hasPermission name="sys:businessAssemble:edit">${not empty businessAssemble.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:businessAssemble:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="businessAssemble" action="${ctx}/sys/businessAssemble/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
-			<label class="control-label">业务集名称：</label>
+			<label class="control-label">总表名称：</label>
 			<div class="controls">
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">业务集类型：</label>
+			<label class="control-label">总表类型：</label>
 			<div class="controls">
 				<form:select path="type" class="input-xlarge required">
 					<form:option value="" label=""/>

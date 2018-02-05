@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao">
+    
+	<sql id="motorCheckSpotItem1Columns">
+		a.id AS "id",
+		a.part AS "part",
+		a.number AS "number",
+		a.item AS "item",
+		a.standard AS "standard",
+		a.tool AS "tool",
+		a.person AS "person",
+		a.assemble_id AS "assembleId",
+		a.result_assemble_id AS "resultAssembleId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		ba.id AS "ba.id",
+		ba.name AS "ba.name",
+		bra.id AS "bra.id",
+		bra.name AS "bra.name"
+	</sql>
+	
+	<sql id="motorCheckSpotItem1Joins">
+			LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
+			LEFT JOIN business_result_assemble bra ON bra.id = a.result_assemble_id
+	</sql>
+    
+	<select id="get" resultType="MotorCheckSpotItem1">
+		SELECT 
+			<include refid="motorCheckSpotItem1Columns"/>
+		FROM motor_check_spot_item_1 a
+		<include refid="motorCheckSpotItem1Joins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MotorCheckSpotItem1">
+		SELECT 
+			<include refid="motorCheckSpotItem1Columns"/>
+		FROM motor_check_spot_item_1 a
+		<include refid="motorCheckSpotItem1Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MotorCheckSpotItem1">
+		SELECT 
+			<include refid="motorCheckSpotItem1Columns"/>
+		FROM motor_check_spot_item_1 a
+		<include refid="motorCheckSpotItem1Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO motor_check_spot_item_1(
+			id,
+			part,
+			number,
+			item,
+			standard,
+			tool,
+			person,
+			assemble_id,
+			result_assemble_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{part},
+			#{number},
+			#{item},
+			#{standard},
+			#{tool},
+			#{person},
+			#{assembleId},
+			#{resultAssembleId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE motor_check_spot_item_1 SET 	
+			part = #{part},
+			number = #{number},
+			item = #{item},
+			standard = #{standard},
+			tool = #{tool},
+			person = #{person},
+			assemble_id = #{assembleId},
+			result_assemble_id = #{resultAssembleId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE motor_check_spot_item_1 SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

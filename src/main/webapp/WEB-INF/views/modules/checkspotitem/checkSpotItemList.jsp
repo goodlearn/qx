@@ -28,7 +28,7 @@
 			<li><label>名称：</label>
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>所属业务集：</label>
+			<li><label>所属表格：</label>
 				<form:select path="assembleId" class="input-medium">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getBaList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
@@ -55,7 +55,7 @@
 		<thead>
 			<tr>
 				<th>名称</th>
-				<th>所属业务集</th>
+				<th>所属表格</th>
 				<th>项目</th>
 				<th>部位</th>
 				<th>结果集</th>

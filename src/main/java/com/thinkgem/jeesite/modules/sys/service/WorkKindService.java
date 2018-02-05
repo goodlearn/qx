@@ -10,38 +10,38 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
-import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
+import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
+import com.thinkgem.jeesite.modules.sys.dao.WorkKindDao;
 
 /**
- * 车间班组Service
+ * 车间工种Service
  * @author wzy
  * @version 2018-02-05
  */
 @Service
 @Transactional(readOnly = true)
-public class WorkClassService extends CrudService<WorkClassDao, WorkClass> {
+public class WorkKindService extends CrudService<WorkKindDao, WorkKind> {
 
-	public WorkClass get(String id) {
+	public WorkKind get(String id) {
 		return super.get(id);
 	}
 	
-	public List<WorkClass> findList(WorkClass workClass) {
-		return super.findList(workClass);
+	public List<WorkKind> findList(WorkKind workKind) {
+		return super.findList(workKind);
 	}
 	
-	public Page<WorkClass> findPage(Page<WorkClass> page, WorkClass workClass) {
-		return super.findPage(page, workClass);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(WorkClass workClass) {
-		super.save(workClass);
+	public Page<WorkKind> findPage(Page<WorkKind> page, WorkKind workKind) {
+		return super.findPage(page, workKind);
 	}
 	
 	@Transactional(readOnly = false)
-	public void delete(WorkClass workClass) {
-		super.delete(workClass);
+	public void save(WorkKind workKind) {
+		super.save(workKind);
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(WorkKind workKind) {
+		super.delete(workKind);
 	}
 	
 }

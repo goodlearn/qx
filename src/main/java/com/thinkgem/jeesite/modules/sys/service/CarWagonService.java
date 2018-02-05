@@ -10,38 +10,38 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
-import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
+import com.thinkgem.jeesite.modules.sys.entity.CarWagon;
+import com.thinkgem.jeesite.modules.sys.dao.CarWagonDao;
 
 /**
- * 车间班组Service
+ * 车间车号Service
  * @author wzy
  * @version 2018-02-05
  */
 @Service
 @Transactional(readOnly = true)
-public class WorkClassService extends CrudService<WorkClassDao, WorkClass> {
+public class CarWagonService extends CrudService<CarWagonDao, CarWagon> {
 
-	public WorkClass get(String id) {
+	public CarWagon get(String id) {
 		return super.get(id);
 	}
 	
-	public List<WorkClass> findList(WorkClass workClass) {
-		return super.findList(workClass);
+	public List<CarWagon> findList(CarWagon carWagon) {
+		return super.findList(carWagon);
 	}
 	
-	public Page<WorkClass> findPage(Page<WorkClass> page, WorkClass workClass) {
-		return super.findPage(page, workClass);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(WorkClass workClass) {
-		super.save(workClass);
+	public Page<CarWagon> findPage(Page<CarWagon> page, CarWagon carWagon) {
+		return super.findPage(page, carWagon);
 	}
 	
 	@Transactional(readOnly = false)
-	public void delete(WorkClass workClass) {
-		super.delete(workClass);
+	public void save(CarWagon carWagon) {
+		super.save(carWagon);
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(CarWagon carWagon) {
+		super.delete(carWagon);
 	}
 	
 }

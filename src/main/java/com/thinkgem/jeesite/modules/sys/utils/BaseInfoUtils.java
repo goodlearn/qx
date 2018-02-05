@@ -10,16 +10,20 @@ import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessResultAssembleDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarInfoDao;
+import com.thinkgem.jeesite.modules.sys.dao.CarMotorCycleDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkDepartmentDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkKindDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessResultAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.CarInfo;
+import com.thinkgem.jeesite.modules.sys.entity.CarMotorCycle;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkDepartment;
+import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShop;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -46,10 +50,20 @@ public class BaseInfoUtils {
 	
 	public static final String WORK_CLASS_LIST= "workClassMap";
 	
+	//工种
+	private static WorkKindDao workKindDao = SpringContextHolder.getBean(WorkKindDao.class);
+	
+	public static final String WORK_KIND_LIST= "workKindMap";
+	
 	//班组人员
 	private static WorkPersonDao workPersonDao = SpringContextHolder.getBean(WorkPersonDao.class);
 	
 	public static final String WORK_PERSON_LIST= "workPersonMap";
+	
+	//车型
+	private static CarMotorCycleDao carMotorCycleDao = SpringContextHolder.getBean(CarMotorCycleDao.class);
+	
+	public static final String CMC_LIST= "cmcMap";
 	
 	//车间任务
 	private static WorkShopMaskDao workShopMaskDao = SpringContextHolder.getBean(WorkShopMaskDao.class);
@@ -88,6 +102,24 @@ public class BaseInfoUtils {
 		}
 		return list;
 	}
+	
+	/**
+	 * 获取所有车型信息
+	 * @return
+	 */
+	public static List<CarMotorCycle> getAllCmcList(){
+		@SuppressWarnings("unchecked")
+		List<CarMotorCycle> list = (List<CarMotorCycle>)CacheUtils.get(CMC_LIST);
+		if (list==null || list.size() == 0){
+			list = Lists.newArrayList();
+			for (CarMotorCycle cmc : carMotorCycleDao.findAllList(new CarMotorCycle())){
+				list.add(cmc);
+			}
+			CacheUtils.put(CMC_LIST, list);
+		}
+		return list;
+	}
+	
 	
 	/**
 	 * 获取车间信息
@@ -136,6 +168,23 @@ public class BaseInfoUtils {
 			}
 		}
 		return rets;
+	}
+	
+	/**
+	 * 获取所有工种信息
+	 * @return
+	 */
+	public static List<WorkKind> getAllWorkKindList(){
+		@SuppressWarnings("unchecked")
+		List<WorkKind> list = (List<WorkKind>)CacheUtils.get(WORK_KIND_LIST);
+		if (list==null  || list.size() == 0){
+			list = Lists.newArrayList();
+			for (WorkKind cl : workKindDao.findAllList(new WorkKind())){
+				list.add(cl);
+			}
+			CacheUtils.put(WORK_KIND_LIST, list);
+		}
+		return list;
 	}
 	
 	/**
