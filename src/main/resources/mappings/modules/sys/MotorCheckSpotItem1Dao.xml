@@ -11,7 +11,6 @@
 		a.tool AS "tool",
 		a.person AS "person",
 		a.assemble_id AS "assembleId",
-		a.result_assemble_id AS "resultAssembleId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -19,14 +18,11 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		ba.id AS "ba.id",
-		ba.name AS "ba.name",
-		bra.id AS "bra.id",
-		bra.name AS "bra.name"
+		ba.name AS "ba.name"
 	</sql>
 	
 	<sql id="motorCheckSpotItem1Joins">
 			LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
-			LEFT JOIN business_result_assemble bra ON bra.id = a.result_assemble_id
 	</sql>
     
 	<select id="get" resultType="MotorCheckSpotItem1">
@@ -83,7 +79,6 @@
 			tool,
 			person,
 			assemble_id,
-			result_assemble_id,
 			create_by,
 			create_date,
 			update_by,
@@ -99,7 +94,6 @@
 			#{tool},
 			#{person},
 			#{assembleId},
-			#{resultAssembleId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -118,7 +112,6 @@
 			tool = #{tool},
 			person = #{person},
 			assemble_id = #{assembleId},
-			result_assemble_id = #{resultAssembleId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

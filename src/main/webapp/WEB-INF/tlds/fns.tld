@@ -365,22 +365,13 @@
     <example>${fns:getBaByIdList(id)}</example>  
   </function>
   
-   <!-- 获取车型车号信息 -->
+   <!-- 获取车号信息 -->
   <function>
-    <description>获取车型车号信息列表</description>
-    <name>getCiList</name>
+    <description>获取车号信息列表</description>
+    <name>getCwList</name>
     <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
-    <function-signature>java.util.List getCiList()</function-signature>
-    <example>${fns:getCiList()}</example>  
+    <function-signature>java.util.List getCwList()</function-signature>
+    <example>${fns:getCwList()}</example>  
   </function>
   
-  
-     <!-- 获取车型车号信息 -->
-  <function>
-    <description>获取车型车号信息列表</description>
-    <name>getCiByIdList</name>
-    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
-    <function-signature>java.util.List getCiByIdList(java.lang.String)</function-signature>
-    <example>${fns:getCiByIdList(id)}</example>  
-  </function>
-</taglib>
+  </taglib>

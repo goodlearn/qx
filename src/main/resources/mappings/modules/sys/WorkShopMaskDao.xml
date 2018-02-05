@@ -5,7 +5,8 @@
 	<sql id="workShopMaskColumns">
 		a.id AS "id",
 		a.name AS "name",
-		a.car_info_id AS "carInfoId",
+		a.car_motor_cycle_id AS "carMotorCycleId",
+		a.car_wagon_id AS "carWagonId",
 		a.work_shop_id AS "workShopId",
 		a.work_department AS "workDepartment",
 		a.work_class_id AS "workClassId",
@@ -17,8 +18,10 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		ci.id AS "ci.id",
-		ci.name AS "ci.name",
+		cmc.id AS "cmc.id",
+		cmc.name AS "cmc.name",
+		cw.id AS "cw.id",
+		cw.name AS "cw.name",
 		wc.id AS "wc.id",
 		wc.name AS "wc.name",
 		ba.id AS "ba.id",
@@ -31,7 +34,8 @@
 	</sql>
 	
 	<sql id="workShopMaskJoins">
-		LEFT JOIN car_info ci ON ci.id = a.car_info_id
+		LEFT JOIN car_motor_cycle cmc ON cmc.id = a.car_motor_cycle_id
+		LEFT JOIN car_wagon cw ON cw.id = a.car_wagon_id
 			LEFT JOIN business_assemble ba ON ba.id = a.bussiness_assemble_id
 				LEFT JOIN work_class wc ON wc.id = a.work_class_id
 					LEFT JOIN work_department wd ON wd.id = a.work_department
@@ -61,9 +65,6 @@
 			</if>
 			<if test="releaseState != null and releaseState != ''">
 				AND a.release_state = #{releaseState}
-			</if>
-			<if test="carInfoId != null and carInfoId != ''">
-				AND a.car_info_id = #{carInfoId}
 			</if>
 			<if test="workShopId != null and workShopId != ''">
 				AND a.work_shop_id = #{workShopId}
@@ -113,7 +114,8 @@
 		INSERT INTO work_shop_mask(
 			id,
 			name,
-			car_info_id,
+			car_motor_cycle_id,
+			car_wagon_id,
 			work_shop_id,
 			work_department,
 			work_class_id,
@@ -128,7 +130,8 @@
 		) VALUES (
 			#{id},
 			#{name},
-			#{carInfoId},
+			#{carMotorCycleId},
+			#{carWagonId},
 			#{workShopId},
 			#{workDepartment},
 			#{workClassId},
@@ -146,7 +149,8 @@
 	<update id="update">
 		UPDATE work_shop_mask SET 	
 			name = #{name},
-			car_info_id = #{carInfoId},
+			car_motor_cycle_id = #{carMotorCycleId},
+			car_wagon_id = #{carWagonId},
 			work_shop_id = #{workShopId},
 			work_department = #{workDepartment},
 			work_class_id = #{workClassId},

@@ -104,9 +104,9 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		if(null == workShopMask) {
 			return null;
 		}
-		
+		String yes = DictUtils.getDictValue("是", "yes_no", "1");
 		//更新数据
-		workShopMask.setReleaseState("1");
+		workShopMask.setReleaseState(yes);
 		save(workShopMask);
 		
 		return "0";//返回一个非空数据
@@ -120,9 +120,9 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		if(null == workShopMask) {
 			return null;
 		}
-		
+		String no = DictUtils.getDictValue("否", "yes_no", "0");
 		//更新数据
-		workShopMask.setReleaseState("0");
+		workShopMask.setReleaseState(no);
 		save(workShopMask);
 		
 		//设置关联数据查询条件

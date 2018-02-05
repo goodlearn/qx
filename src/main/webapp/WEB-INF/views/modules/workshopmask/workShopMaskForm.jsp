@@ -41,11 +41,21 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">车型车号：</label>
+			<label class="control-label">车型：</label>
 			<div class="controls">
-				<form:select path="carInfoId" class="input-xlarge required">
+				<form:select path="carMotorCycleId" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getCiList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+					<form:options items="${fns:getAllCmcList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">车号：</label>
+			<div class="controls">
+				<form:select path="carWagonId" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getCwList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -81,7 +91,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">业务集：</label>
+			<label class="control-label">使用表格：</label>
 			<div class="controls">
 				<form:select path="bussinessAssembleId" class="input-xlarge required">
 					<form:option value="" label=""/>

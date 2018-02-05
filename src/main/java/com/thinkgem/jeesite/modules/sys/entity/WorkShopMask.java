@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
@@ -16,13 +13,15 @@ public class WorkShopMask extends DataEntity<WorkShopMask> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 名称
-	private String carInfoId;		// 车型
+	private String carMotorCycleId;		// 车型
+	private String carWagonId;		// 车号
 	private String workShopId;		// 车间号
 	private String workDepartment;		// 部门号
 	private String workClassId;		// 班级号
 	private String releaseState;		// 发布状态
 	private String bussinessAssembleId;		// 业务集
-	private CarInfo ci;		// 车型
+	private CarMotorCycle cmc;		// 车型
+	private CarWagon cw;		// 车号
 	private WorkShop ws;		// 车间号
 	private WorkDepartment wd;		// 部门号
 	private WorkClass wc;		// 班级号
@@ -45,18 +44,27 @@ public class WorkShopMask extends DataEntity<WorkShopMask> {
 		this.name = name;
 	}
 	
-	@Length(min=1, max=64, message="车型长度必须介于 1 和 64 之间")
-	public String getCarInfoId() {
-		return carInfoId;
-	}
-
-	public void setCarInfoId(String carInfoId) {
-		this.carInfoId = carInfoId;
-	}
 	
 	@Length(min=1, max=64, message="车间号长度必须介于 1 和 64 之间")
 	public String getWorkShopId() {
 		return workShopId;
+	}
+
+	public String getCarMotorCycleId() {
+		return carMotorCycleId;
+	}
+
+	public void setCarMotorCycleId(String carMotorCycleId) {
+		this.carMotorCycleId = carMotorCycleId;
+	}
+	
+	@Length(min=1, max=64, message="车号长度必须介于 1 和 64 之间")
+	public String getCarWagonId() {
+		return carWagonId;
+	}
+
+	public void setCarWagonId(String carWagonId) {
+		this.carWagonId = carWagonId;
 	}
 
 	public void setWorkShopId(String workShopId) {
@@ -100,12 +108,21 @@ public class WorkShopMask extends DataEntity<WorkShopMask> {
 		this.releaseState = releaseState;
 	}
 
-	public CarInfo getCi() {
-		return ci;
+	
+	public CarMotorCycle getCmc() {
+		return cmc;
 	}
 
-	public void setCi(CarInfo ci) {
-		this.ci = ci;
+	public void setCmc(CarMotorCycle cmc) {
+		this.cmc = cmc;
+	}
+
+	public CarWagon getCw() {
+		return cw;
+	}
+
+	public void setCw(CarWagon cw) {
+		this.cw = cw;
 	}
 
 	public WorkShop getWs() {

@@ -86,16 +86,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">结果集：</label>
-			<div class="controls">
-				<form:select path="resultAssembleId" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getBraList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>

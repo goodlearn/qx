@@ -32,7 +32,6 @@
 				<th>工具</th>
 				<th>人数</th>
 				<th>所属业务集</th>
-				<th>结果集</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="sys:motorCheckSpotItem1:edit"><th>操作</th></shiro:hasPermission>
@@ -60,10 +59,7 @@
 					${motorCheckSpotItem1.person}
 				</td>
 				<td>
-					${motorCheckSpotItem1.ba.name)}
-				</td>
-				<td>
-					${motorCheckSpotItem1.bra.name}
+					${motorCheckSpotItem1.ba.name}
 				</td>
 				<td>
 					<fmt:formatDate value="${motorCheckSpotItem1.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

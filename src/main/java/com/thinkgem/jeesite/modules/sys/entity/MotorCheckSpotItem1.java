@@ -22,9 +22,7 @@ public class MotorCheckSpotItem1 extends DataEntity<MotorCheckSpotItem1> {
 	private String tool;		// 工具
 	private String person;		// 人数
 	private String assembleId;		// 所属业务集
-	private String resultAssembleId;		// 结果集
 	private BusinessAssemble ba;
-	private BusinessResultAssemble bra;
 	
 	public MotorCheckSpotItem1() {
 		super();
@@ -97,15 +95,6 @@ public class MotorCheckSpotItem1 extends DataEntity<MotorCheckSpotItem1> {
 		this.assembleId = assembleId;
 	}
 	
-	@Length(min=1, max=64, message="结果集长度必须介于 1 和 64 之间")
-	public String getResultAssembleId() {
-		return resultAssembleId;
-	}
-
-	public void setResultAssembleId(String resultAssembleId) {
-		this.resultAssembleId = resultAssembleId;
-	}
-
 	public BusinessAssemble getBa() {
 		return ba;
 	}
@@ -113,14 +102,5 @@ public class MotorCheckSpotItem1 extends DataEntity<MotorCheckSpotItem1> {
 	public void setBa(BusinessAssemble ba) {
 		this.ba = ba;
 	}
-
-	public BusinessResultAssemble getBra() {
-		return bra;
-	}
-
-	public void setBra(BusinessResultAssemble bra) {
-		this.bra = bra;
-	}
-	
 	
 }
