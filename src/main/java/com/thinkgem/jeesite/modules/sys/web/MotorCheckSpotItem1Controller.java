@@ -3,6 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,16 +17,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.MotorCheckSpotItem1;
 import com.thinkgem.jeesite.modules.sys.service.MotorCheckSpotItem1Service;
+import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 
 /**
  * 发动机点检单一Controller
@@ -44,6 +55,15 @@ public class MotorCheckSpotItem1Controller extends BaseController {
 			entity = new MotorCheckSpotItem1();
 		}
 		return entity;
+	}
+
+	//获取任务分配数据
+	@RequestMapping(value = "allocation",method= {RequestMethod.POST})
+	@ResponseBody
+	public String allocation(@RequestBody ViewMcsi1[] ViewMcsi1) {
+		
+		System.out.println("data "+ ViewMcsi1.length);
+		return "modules/motorcheckspotitem1/motorCheckSpotItem1List";
 	}
 	
 	@RequiresPermissions("sys:motorCheckSpotItem1:view")

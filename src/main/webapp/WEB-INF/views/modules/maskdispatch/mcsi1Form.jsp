@@ -29,6 +29,7 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/sys/workShopMask/">车间任务数据</a></li>
 	</ul>
+		<input id="PageContext" type="hidden" value="${ctx}" />
 		<table class="table table-striped table-bordered" style="width:70%;" id="mssiTable">
 			<thead>
 				<tr>
@@ -57,9 +58,9 @@
 <script type="text/javascript">
  $(function(){
 	$("#mcsiSubmit").click(function(){
+		var pageContextVal = $("#PageContext").val();
 		var mcsijson = {
-				"length":"0",
-				"data":[]
+				"viewMcsi1":[]
 		};
 		var trArr = $("#mssiTable tbody tr");
 		
@@ -71,13 +72,26 @@
 			}
 		}
 		
-		mcsijson.length = trArr.length;
 		for(var i=0; i<trArr.length; i++){  
 			var empname = trArr.eq(i).children("td:nth-child(1)").attr("title");
 			var empno = trArr.eq(i).children("td:nth-child(2)").find("option:selected").val();
 			var empd = {"name":empname,"empno":empno};
-			mcsijson.data.push(empd);
+			mcsijson.viewMcsi1.push(empd);
 		}
+		
+		 $.ajax({
+		     type:'POST',
+		     url:pageContextVal+'/sys/motorCheckSpotItem1/allocation',
+		     data:JSON.stringify(mcsijson.viewMcsi1),
+			 dataType: "json",
+			 contentType:"application/json",
+		     success:function(data){
+		    	   alert("123");
+		     },
+		     error:function(){
+		    	 alert("456");
+		     }
+		 });
 	});
  });
 </script>

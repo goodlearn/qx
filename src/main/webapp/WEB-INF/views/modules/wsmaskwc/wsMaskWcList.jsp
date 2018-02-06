@@ -76,7 +76,7 @@
 					${wsMaskWc.remarks}
 				</td>
 				<shiro:hasPermission name="sys:wsMaskWc:edit"><td>
-					<a href="${ctx}/sys/maskDispatch/maskDispatch?maskId=${wsMaskWc.id}">发布</a>
+					<a href="${ctx}/sys/maskDispatch/maskDispatch?maskId=${wsMaskWc.id}">分配</a>
     				<a href="${ctx}/sys/wsMaskWc/form?id=${wsMaskWc.id}">修改</a>
 					<a href="${ctx}/sys/wsMaskWc/delete?id=${wsMaskWc.id}" onclick="return confirmx('确认要删除该车间任务班级关联数据吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
