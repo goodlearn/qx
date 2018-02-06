@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.Date2Utils;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
@@ -109,6 +111,20 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		workShopMask.setReleaseState(yes);
 		save(workShopMask);
 		
+		//班级任务生成
+		User user = UserUtils.getUser();
+		WsMaskWc wsMaskWc = new WsMaskWc();
+		String no = DictUtils.getDictValue("否", "yes_no", "0");
+		wsMaskWc.setId(IdGen.uuid());
+		wsMaskWc.setWorkClassId(workShopMask.getWorkClassId());
+		wsMaskWc.setWorkShopMaskId(workShopMask.getId());
+		wsMaskWc.setSubmitState(no);//未提交的
+		wsMaskWc.setCreateBy(user);
+		wsMaskWc.setCreateDate(new Date());
+		wsMaskWc.setUpdateBy(user);
+		wsMaskWc.setUpdateDate(new Date());
+		wsMaskWc.setEndDate(Date2Utils.getEndDayOfTomorrow());
+		wsMaskWcDao.insert(wsMaskWc);
 		return "0";//返回一个非空数据
 	}
 	

@@ -45,6 +45,7 @@ public class WsmScStateService extends BaseService {
 	@Autowired
 	private SpotCheckContentDao spotCheckContentDao;
 	
+	
 	//获取所有Dao 给状态业务传递参数
 	private ScStateParam getAllDao(){
 		ScStateParam stateParam = new ScStateParam();

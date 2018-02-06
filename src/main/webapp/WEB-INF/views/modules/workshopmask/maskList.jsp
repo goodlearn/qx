@@ -28,12 +28,6 @@
 			<li><label>名称：</label>
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>车型车号：</label>
-				<form:select path="carInfoId" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getCiList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li><label>车间号：</label>
 				<form:select path="workShopId" class="input-medium">
 					<form:option value="" label=""/>
@@ -75,7 +69,7 @@
 					${workShopMask.name}
 				</a></td>
 				<td>
-					${workShopMask.ci.name}
+					${workShopMask.cmc.name}
 				</td>
 				<td>
 					${workShopMask.ws.name}

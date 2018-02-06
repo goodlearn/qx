@@ -41,7 +41,7 @@
 		<c:forEach items="${page.list}" var="motorCheckSpotItem1">
 			<tr>
 				<td><a href="${ctx}/sys/motorCheckSpotItem1/form?id=${motorCheckSpotItem1.id}">
-					${motorCheckSpotItem1.part}
+					${fns:getDictLabel(motorCheckSpotItem1.part, 'motorCsItem1', '')}
 				</a></td>
 				<td>
 					${motorCheckSpotItem1.number}
