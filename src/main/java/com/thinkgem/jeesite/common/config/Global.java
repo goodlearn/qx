@@ -37,6 +37,11 @@ public class Global {
 	private static PropertiesLoader loader = new PropertiesLoader("jeesite.properties");
 
 	/**
+	 * 任务表名称
+	 */
+	public static final String MOTOR_CHECK_SPOT_ITEM_1 = "发动机点检单一";
+	
+	/**
 	 * 显示/隐藏
 	 */
 	public static final String SHOW = "1";

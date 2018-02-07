@@ -6,14 +6,10 @@ public class ViewMcsi1 {
 	
 	private String empno;
 	
+	private String maskId;
+	
 	public ViewMcsi1() {
 		super();
-	}
-	
-	public ViewMcsi1(String name,String empno) {
-		super();
-		this.name = name;
-		this.empno = empno;
 	}
 
 	public String getName() {
@@ -30,6 +26,14 @@ public class ViewMcsi1 {
 
 	public void setEmpno(String empno) {
 		this.empno = empno;
+	}
+
+	public String getMaskId() {
+		return maskId;
+	}
+
+	public void setMaskId(String maskId) {
+		this.maskId = maskId;
 	}
 	
 	

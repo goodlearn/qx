@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MaskContentDao">
+    
+	<sql id="maskContentColumns">
+		a.id AS "id",
+		a.msp_id AS "mspId",
+		a.problem AS "problem",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		mc.id AS "mc.id"
+	</sql>
+	
+	<sql id="maskContentJoins">
+		LEFT JOIN mask_content mc ON mc.id = a.msp_id
+	</sql>
+    
+	<select id="get" resultType="MaskContent">
+		SELECT 
+			<include refid="maskContentColumns"/>
+		FROM mask_content a
+		<include refid="maskContentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MaskContent">
+		SELECT 
+			<include refid="maskContentColumns"/>
+		FROM mask_content a
+		<include refid="maskContentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mspId != null and mspId != ''">
+				AND a.msp_id = #{mspId}
+			</if>
+			<if test="problem != null and problem != ''">
+				AND a.problem = #{problem}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MaskContent">
+		SELECT 
+			<include refid="maskContentColumns"/>
+		FROM mask_content a
+		<include refid="maskContentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mask_content(
+			id,
+			msp_id,
+			problem,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{mspId},
+			#{problem},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mask_content SET 	
+			msp_id = #{mspId},
+			problem = #{problem},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE mask_content SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

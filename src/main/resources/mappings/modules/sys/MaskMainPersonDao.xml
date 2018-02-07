@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao">
+    
+	<sql id="maskMainPersonColumns">
+		a.id AS "id",
+		a.ws_mask_wc_id AS "wsMaskWcId",
+		a.work_person_id AS "workPersonId",
+		a.run_time AS "runTime",
+		a.submit_state AS "submitState",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		wmw.id AS "wmw.id",
+		wp.id AS "wp.id",
+		wp.name AS "wp.name",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="maskMainPersonJoins">
+			LEFT JOIN ws_mask_wc wmw ON wmw.id = a.ws_mask_wc_id
+			LEFT JOIN work_person wp ON wp.id = a.work_person_id
+	</sql>
+    
+	<select id="get" resultType="MaskMainPerson">
+		SELECT 
+			<include refid="maskMainPersonColumns"/>
+		FROM mask_main_person a
+		<include refid="maskMainPersonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MaskMainPerson">
+		SELECT 
+			<include refid="maskMainPersonColumns"/>
+		FROM mask_main_person a
+		<include refid="maskMainPersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="wsMaskWcId != null and wsMaskWcId != ''">
+				AND a.ws_mask_wc_id = #{wsMaskWcId}
+			</if>
+			<if test="workPersonId != null and workPersonId != ''">
+				AND a.work_person_id = #{workPersonId}
+			</if>
+			<if test="runTime != null and runTime != ''">
+				AND a.run_time &lt;= #{runTime}
+			</if>
+			<if test="submitState != null and submitState != ''">
+				AND a.submit_state = #{submitState}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MaskMainPerson">
+		SELECT 
+			<include refid="maskMainPersonColumns"/>
+		FROM mask_main_person a
+		<include refid="maskMainPersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mask_main_person(
+			id,
+			ws_mask_wc_id,
+			work_person_id,
+			run_time,
+			submit_state,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{wsMaskWcId},
+			#{workPersonId},
+			#{runTime},
+			#{submitState},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mask_main_person SET 	
+			ws_mask_wc_id = #{wsMaskWcId},
+			work_person_id = #{workPersonId},
+			run_time = #{runTime},
+			submit_state = #{submitState},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE mask_main_person SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

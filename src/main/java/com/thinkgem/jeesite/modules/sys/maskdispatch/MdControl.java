@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.ui.Model;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessResultItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
@@ -19,6 +20,7 @@ import com.thinkgem.jeesite.modules.sys.entity.MotorCheckSpotItem1;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
+import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.state.ScStateParam;
 import com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
@@ -76,7 +78,8 @@ public class MdControl {
 	private void setMaskAllocation() {
 		
 		//依据任务号找到车间任务号
-		String workShopMaskId = wsMaskWcDao.get(maskId).getWorkShopMaskId();
+		WsMaskWc wsMaskWc = wsMaskWcDao.get(maskId);
+		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
 		//找到车间任务
 		WorkShopMask workShopMask = workShopMaskDao.get(workShopMaskId);
 		//找到业务集号
@@ -87,7 +90,7 @@ public class MdControl {
 		String type = businessAssemble.getType();
 		
 		//字典数据
-		if(type.equals(DictUtils.getDictValue("发动机点检单一", "businessResultType", "1"))) {
+		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "businessResultType", "1"))) {
 			//模板表1 发动机点检单一
 			setMotorCheckSpotItem1Data();//设置数据
 		}
@@ -97,6 +100,7 @@ public class MdControl {
 	private void setMotorCheckSpotItem1Data() {
 		model.addAttribute("mcsis", DictUtils.getDictList("motorCsItem1"));
 		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
 		setValue(MOTOR_CHECK_SPOT_ITEM_1);
 	}
 	

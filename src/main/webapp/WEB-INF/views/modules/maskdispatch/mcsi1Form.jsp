@@ -30,6 +30,7 @@
 		<li><a href="${ctx}/sys/workShopMask/">车间任务数据</a></li>
 	</ul>
 		<input id="PageContext" type="hidden" value="${ctx}" />
+		<input id="maskId" type="hidden" value="${maskId}" />
 		<table class="table table-striped table-bordered" style="width:70%;" id="mssiTable">
 			<thead>
 				<tr>
@@ -45,7 +46,7 @@
 							<select style="width:200px;">
 								<option value="0" selected>请选择人员...</option>
 								<c:forEach items="${wp}" var="wpvar">
-									<option value="${wpvar.id}">${wpvar.name}</option>
+									<option value="${wpvar.no}">${wpvar.name}</option>
 								</c:forEach>
 							</select>
 						</td>
@@ -59,6 +60,7 @@
  $(function(){
 	$("#mcsiSubmit").click(function(){
 		var pageContextVal = $("#PageContext").val();
+		var maskId = $("#maskId").val();
 		var mcsijson = {
 				"viewMcsi1":[]
 		};
@@ -75,7 +77,7 @@
 		for(var i=0; i<trArr.length; i++){  
 			var empname = trArr.eq(i).children("td:nth-child(1)").attr("title");
 			var empno = trArr.eq(i).children("td:nth-child(2)").find("option:selected").val();
-			var empd = {"name":empname,"empno":empno};
+			var empd = {"name":empname,"empno":empno,"maskId":maskId};
 			mcsijson.viewMcsi1.push(empd);
 		}
 		
@@ -86,10 +88,10 @@
 			 dataType: "json",
 			 contentType:"application/json",
 		     success:function(data){
-		    	   alert("123");
+		    	 alert(data.message);
 		     },
 		     error:function(){
-		    	 alert("456");
+		    	 alert("未知失败");
 		     }
 		 });
 	});

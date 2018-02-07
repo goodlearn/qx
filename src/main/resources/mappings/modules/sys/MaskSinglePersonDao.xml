@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao">
+    
+	<sql id="maskSinglePersonColumns">
+		a.id AS "id",
+		a.mmp_id AS "mmpId",
+		a.work_person_id AS "workPersonId",
+		a.submit_state AS "submitState",
+		a.part AS "part",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		mmp.id AS "mmp.id",
+		wp.id AS "wp.id",
+		wp.name AS "wp.name"
+	</sql>
+	
+	<sql id="maskSinglePersonJoins">
+		LEFT JOIN mask_main_person mmp ON mmp.id = a.mmp_id
+		LEFT JOIN work_person wp ON wp.id = a.work_person_id
+	</sql>
+    
+	<select id="get" resultType="MaskSinglePerson">
+		SELECT 
+			<include refid="maskSinglePersonColumns"/>
+		FROM mask_single_person a
+		<include refid="maskSinglePersonJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MaskSinglePerson">
+		SELECT 
+			<include refid="maskSinglePersonColumns"/>
+		FROM mask_single_person a
+		<include refid="maskSinglePersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mmpId != null and mmpId != ''">
+				AND a.mmp_id = #{mmpId}
+			</if>
+			<if test="workPersonId != null and workPersonId != ''">
+				AND a.work_person_id = #{workPersonId}
+			</if>
+			<if test="submitState != null and submitState != ''">
+				AND a.submit_state = #{submitState}
+			</if>
+			<if test="part != null and part != ''">
+				AND a.part = #{part}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MaskSinglePerson">
+		SELECT 
+			<include refid="maskSinglePersonColumns"/>
+		FROM mask_single_person a
+		<include refid="maskSinglePersonJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mask_single_person(
+			id,
+			mmp_id,
+			work_person_id,
+			submit_state,
+			part,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{mmpId},
+			#{workPersonId},
+			#{submitState},
+			#{part},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mask_single_person SET 	
+			mmp_id = #{mmpId},
+			work_person_id = #{workPersonId},
+			submit_state = #{submitState},
+			part = #{part},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE mask_single_person SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

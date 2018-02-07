@@ -374,4 +374,40 @@
     <example>${fns:getCwList()}</example>  
   </function>
   
+   <!-- 获取车间班级任务关联信息 -->
+  <function>
+    <description> 获取车间班级任务关联信息</description>
+    <name>getAllWmwList</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.util.List getAllWmwList()</function-signature>
+    <example>${fns:getAllWmwList()}</example>  
+  </function>
+  
+  
+  <!-- 获取总负责人任务信息 -->
+  <function>
+    <description> 获取总负责人任务信息</description>
+    <name>getAllmmpList</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.util.List getAllmmpList()</function-signature>
+    <example>${fns:getAllmmpList()}</example>  
+  </function>
+  
+    <!-- 获取个人负责人任务信息 -->
+  <function>
+    <description> 获取个人负责人任务信息</description>
+    <name>getAllmspList</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.util.List getAllmspList()</function-signature>
+    <example>${fns:getAllmspList()}</example>  
+  </function>
+  
+    <function>
+    <description>获取字典部位标签</description>
+    <name>getPartDictValue</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
+    <function-signature>java.lang.String getPartDictValue(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+    <example>${fns:getDictLabel(part, mspId, defaultValue)}</example>  
+  </function>
+  
   </taglib>

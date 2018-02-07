@@ -45,6 +45,14 @@ public class MotorCheckSpotItem1Controller extends BaseController {
 	@Autowired
 	private MotorCheckSpotItem1Service motorCheckSpotItem1Service;
 	
+	//信息
+	private final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
+	
+	//成功
+	private final String SUC_CODE = "0";
+	//失败
+	private final String ERR_CODE = "1";
+	
 	@ModelAttribute
 	public MotorCheckSpotItem1 get(@RequestParam(required=false) String id) {
 		MotorCheckSpotItem1 entity = null;
@@ -60,10 +68,10 @@ public class MotorCheckSpotItem1Controller extends BaseController {
 	//获取任务分配数据
 	@RequestMapping(value = "allocation",method= {RequestMethod.POST})
 	@ResponseBody
-	public String allocation(@RequestBody ViewMcsi1[] ViewMcsi1) {
+	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s) {
 		
-		System.out.println("data "+ ViewMcsi1.length);
-		return "modules/motorcheckspotitem1/motorCheckSpotItem1List";
+		motorCheckSpotItem1Service.createMask(viewMcsi1s);
+		return backJsonWithCode(SUC_CODE,MSG_ALLOCATION_SUCCESS);
 	}
 	
 	@RequiresPermissions("sys:motorCheckSpotItem1:view")

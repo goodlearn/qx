@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
@@ -12,23 +13,29 @@ import com.thinkgem.jeesite.modules.sys.dao.BusinessResultAssembleDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarMotorCycleDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarWagonDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkDepartmentDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkKindDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
+import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessResultAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.CarInfo;
 import com.thinkgem.jeesite.modules.sys.entity.CarMotorCycle;
 import com.thinkgem.jeesite.modules.sys.entity.CarWagon;
+import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
+import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkDepartment;
 import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShop;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
+import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 
 /**
  * 基础信息
@@ -77,6 +84,21 @@ public class BaseInfoUtils {
 	
 	public static final String WORK_SHOP_MASK_LIST= "workShopMaskMap";
 	
+	//班级关联车间任务
+	private static WsMaskWcDao wsMaskWcDao = SpringContextHolder.getBean(WsMaskWcDao.class);
+	
+	public static final String WS_MASK_WC_LIST= "wsMaskWcMap";
+	
+	//总负责人任务
+	private static MaskMainPersonDao maskMainPersonDao = SpringContextHolder.getBean(MaskMainPersonDao.class);
+	
+	public static final String MMP_LIST= "mmpMap";
+	
+	//个人负责人任务
+	private static MaskSinglePersonDao maskSinglePersonDao = SpringContextHolder.getBean(MaskSinglePersonDao.class);
+	
+	public static final String MSP_LIST= "mspMap";
+	
 	//所属结果集
 	private static BusinessResultAssembleDao businessResultAssembleDao = SpringContextHolder.getBean(BusinessResultAssembleDao.class);
 	
@@ -88,6 +110,87 @@ public class BaseInfoUtils {
 	
 	public static final String BA_LIST= "baMap";
 	
+	//根据个人任务查找部位
+	public static String getPartDictValue(String part,String mspId, String defaultLabel){
+		//查找个人任务
+		MaskSinglePerson msp = maskSinglePersonDao.get(mspId);
+		//查找总负责人号
+		String mmpId = msp.getMmpId();
+		//查找总负责人
+		MaskMainPerson mmp = maskMainPersonDao.get(mmpId);
+		//任务号
+		String wmwId = mmp.getWsMaskWcId();
+		//任务
+		WsMaskWc wmw = wsMaskWcDao.get(wmwId);
+		//车间任务号
+		String workShopMaskId = wmw.getWorkShopMaskId();
+		//车间任务
+		//找到车间任务
+		WorkShopMask workShopMask = workShopMaskDao.get(workShopMaskId);
+		//找到业务集号
+		String bussinessAssembleId = workShopMask.getBussinessAssembleId();
+		//找到业务集
+		BusinessAssemble businessAssemble = businessAssembleDao.get(bussinessAssembleId);
+		//找到类型
+		String type = businessAssemble.getType();
+		//字典数据检验
+		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "businessResultType", "1"))) {
+			//不是模板表1 发动机点检单一
+			return DictUtils.getDictLabel(part, "motorCsItem1", "1");
+		}
+		return null;
+	}
+	
+	/**
+	 * 获取总负责人任务信息
+	 * @return
+	 */
+	public static List<MaskSinglePerson> getAllmspList(){
+		@SuppressWarnings("unchecked")
+		List<MaskSinglePerson> list = (List<MaskSinglePerson>)CacheUtils.get(MSP_LIST);
+		if (list==null || list.size() == 0){
+			list = Lists.newArrayList();
+			for (MaskSinglePerson forEntity : maskSinglePersonDao.findAllList(new MaskSinglePerson())){
+				list.add(forEntity);
+			}
+			CacheUtils.put(MSP_LIST, list);
+		}
+		return list;
+	}
+	
+	/**
+	 * 获取总负责人任务信息
+	 * @return
+	 */
+	public static List<MaskMainPerson> getAllmmpList(){
+		@SuppressWarnings("unchecked")
+		List<MaskMainPerson> list = (List<MaskMainPerson>)CacheUtils.get(MMP_LIST);
+		if (list==null || list.size() == 0){
+			list = Lists.newArrayList();
+			for (MaskMainPerson forEntity : maskMainPersonDao.findAllList(new MaskMainPerson())){
+				list.add(forEntity);
+			}
+			CacheUtils.put(MMP_LIST, list);
+		}
+		return list;
+	}
+	
+	/**
+	 * 获取所有车间班级任务关联信息
+	 * @return
+	 */
+	public static List<WsMaskWc> getAllWmwList(){
+		@SuppressWarnings("unchecked")
+		List<WsMaskWc> list = (List<WsMaskWc>)CacheUtils.get(WS_MASK_WC_LIST);
+		if (list==null || list.size() == 0){
+			list = Lists.newArrayList();
+			for (WsMaskWc forEntity : wsMaskWcDao.findAllList(new WsMaskWc())){
+				list.add(forEntity);
+			}
+			CacheUtils.put(WS_MASK_WC_LIST, list);
+		}
+		return list;
+	}
 	
 	/**
 	 * 获取所有车间信息
