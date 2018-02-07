@@ -14,7 +14,6 @@ public class MaskMainPerson extends DataEntity<MaskMainPerson> {
 	private static final long serialVersionUID = 1L;
 	private String wsMaskWcId;		// 任务号
 	private String workPersonId;		// 个人号
-	private String runTime;		// 运行时间数
 	private String submitState;		// 提交状态
 	private WsMaskWc wmw;//任务关联
 	private WorkPerson wp;
@@ -45,14 +44,6 @@ public class MaskMainPerson extends DataEntity<MaskMainPerson> {
 		this.workPersonId = workPersonId;
 	}
 	
-	@Length(min=1, max=100, message="运行时间数长度必须介于 1 和 100 之间")
-	public String getRunTime() {
-		return runTime;
-	}
-
-	public void setRunTime(String runTime) {
-		this.runTime = runTime;
-	}
 	
 	@Length(min=1, max=100, message="提交状态长度必须介于 1 和 100 之间")
 	public String getSubmitState() {

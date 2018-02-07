@@ -54,13 +54,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">运行时间数：</label>
-			<div class="controls">
-				<form:input path="runTime" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">提交状态：</label>
 			<div class="controls">
 				<form:select path="submitState" class="input-xlarge required">

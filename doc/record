@@ -62,6 +62,25 @@ ALTER TABLE sys_wx_info CHANGE nickname nickname VARCHAR(200) CHARACTER SET utf8
 
 ALTER TABLE sys_express ADD COLUMN enter_time DATETIME default '0' 
 
+DELETE FROM mask_content;
+DELETE FROM mask_main_person;
+DELETE FROM mask_single_person;
+DELETE FROM ws_mask_wc;
+DELETE FROM work_shop_mask;
 
+DELETE FROM work_shop;
+DELETE FROM work_person;
+DELETE FROM work_kind;
+DELETE FROM work_class;
+DELETE FROM work_department;
+DELETE FROM car_motor_cycle;
+DELETE FROM car_wagon;
+DELETE FROM business_assemble;
+
+DELETE FROM fitter_check_spot_item_1;
+DELETE FROM motor_check_spot_item_1;
+DELETE FROM mask_content;
+DELETE FROM mask_main_person;
+DELETE FROM mask_single_person;
 http://localhost:8080/wx/clickUrl?url=index
 http://localhost:8080/wx/getPersonIndex?code=021V5uGz0BH7vg1sRZDz0Fe8Gz0V5uGT

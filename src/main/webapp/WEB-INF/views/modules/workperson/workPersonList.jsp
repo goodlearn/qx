@@ -28,7 +28,7 @@
 			<li><label>编号：</label>
 				<form:input path="no" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>名称：</label>
+			<li><label>姓名：</label>
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>所属班组：</label>
@@ -50,8 +50,9 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>姓名</th>
 				<th>编号</th>
-				<th>名称</th>
+				<th>所属部门</th>
 				<th>所属班组</th>
 				<th>级别</th>
 				<th>更新时间</th>
@@ -63,10 +64,13 @@
 		<c:forEach items="${page.list}" var="workPerson">
 			<tr>
 				<td><a href="${ctx}/sys/workPerson/form?id=${workPerson.id}">
-					${workPerson.no}
-				</a></td>
-				<td>
 					${workPerson.name}
+				</td></a>
+				<td>
+					${workPerson.no}
+				</td>
+				<td>
+					${workPerson.workClass.workKind.workDepartment.name}
 				</td>
 				<td>
 					${workPerson.workClass.name}

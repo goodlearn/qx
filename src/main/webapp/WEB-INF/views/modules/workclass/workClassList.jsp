@@ -28,6 +28,12 @@
 			<li><label>班组名称：</label>
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li><label>所属部门：</label>
+				<form:select path="workKind.workDepartmentId" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getAllDpList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label>所属工种：</label>
 				<form:select path="workKindId" class="input-medium">
 					<form:option value="" label=""/>
@@ -43,6 +49,7 @@
 		<thead>
 			<tr>
 				<th>班组名称</th>
+				<th>所属部门</th>
 				<th>所属工种</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -55,6 +62,9 @@
 				<td><a href="${ctx}/sys/workClass/form?id=${workClass.id}">
 					${workClass.name}
 				</a></td>
+				<td>
+					${workClass.workKind.workDepartment.name}
+				</td>
 				<td>
 					${workClass.workKind.name}
 				</td>

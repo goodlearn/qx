@@ -19,6 +19,7 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private static final long serialVersionUID = 1L;
 	private String workShopMaskId;		// 车间任务号
 	private String workClassId;		// 班级号
+	private String runTime;  //运行时间数
 	private Date endDate;	// 结束日期
 	private String submitState;//是否提交
 	private WorkShopMask wsm; //任务
@@ -36,8 +37,14 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	public WsMaskWc(String id){
 		super(id);
 	}
-	
-	
+
+	public String getRunTime() {
+		return runTime;
+	}
+
+	public void setRunTime(String runTime) {
+		this.runTime = runTime;
+	}
 
 	public String getFrontPerson() {
 		return frontPerson;

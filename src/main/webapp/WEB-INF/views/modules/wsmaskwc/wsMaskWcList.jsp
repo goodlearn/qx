@@ -48,6 +48,7 @@
 				<th>车间任务号</th>
 				<th>班级号</th>
 				<th>提交状态</th>
+				<th>运行时间</th>
 				<th>结束时间</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -65,6 +66,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(wsMaskWc.submitState, 'yes_no', '')}
+				</td>
+				<td>
+					${wsMaskWc.runTime}
 				</td>
 				<td>
 					<fmt:formatDate value="${wsMaskWc.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

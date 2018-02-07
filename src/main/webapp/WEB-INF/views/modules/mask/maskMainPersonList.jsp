@@ -47,7 +47,6 @@
 			<tr>
 				<th>所属任务</th>
 				<th>总负责人</th>
-				<th>运行时间数</th>
 				<th>提交状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -62,9 +61,6 @@
 				</a></td>
 				<td>
 					${maskMainPerson.wp.name}
-				</td>
-				<td>
-					${maskMainPerson.runTime}
 				</td>
 				<td>
 					${fns:getDictLabel(maskMainPerson.submitState, 'yes_no', '')}

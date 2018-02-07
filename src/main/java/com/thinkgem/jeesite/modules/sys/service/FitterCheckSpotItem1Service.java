@@ -130,7 +130,6 @@ public class FitterCheckSpotItem1Service extends CrudService<FitterCheckSpotItem
 		maskMainPerson.setId(maskMainPersonId);
 		maskMainPerson.setWsMaskWcId(maskId);
 		maskMainPerson.setWorkPersonId(wp.getId());
-		maskMainPerson.setRunTime("0");
 		maskMainPerson.setSubmitState(noSubmit);
 		maskMainPerson.setCreateBy(user);
 		maskMainPerson.setCreateDate(new Date());

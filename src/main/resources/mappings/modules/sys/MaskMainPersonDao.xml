@@ -6,7 +6,6 @@
 		a.id AS "id",
 		a.ws_mask_wc_id AS "wsMaskWcId",
 		a.work_person_id AS "workPersonId",
-		a.run_time AS "runTime",
 		a.submit_state AS "submitState",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -45,9 +44,6 @@
 			<if test="workPersonId != null and workPersonId != ''">
 				AND a.work_person_id = #{workPersonId}
 			</if>
-			<if test="runTime != null and runTime != ''">
-				AND a.run_time &lt;= #{runTime}
-			</if>
 			<if test="submitState != null and submitState != ''">
 				AND a.submit_state = #{submitState}
 			</if>
@@ -85,7 +81,6 @@
 			id,
 			ws_mask_wc_id,
 			work_person_id,
-			run_time,
 			submit_state,
 			create_by,
 			create_date,
@@ -97,7 +92,6 @@
 			#{id},
 			#{wsMaskWcId},
 			#{workPersonId},
-			#{runTime},
 			#{submitState},
 			#{createBy.id},
 			#{createDate},
@@ -112,7 +106,6 @@
 		UPDATE mask_main_person SET 	
 			ws_mask_wc_id = #{wsMaskWcId},
 			work_person_id = #{workPersonId},
-			run_time = #{runTime},
 			submit_state = #{submitState},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},

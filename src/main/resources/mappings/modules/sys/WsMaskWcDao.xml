@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.work_shop_mask_id AS "workShopMaskId",
 		a.work_class_id AS "workClassId",
+		a.run_time AS "runTime",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -44,6 +45,9 @@
 			</if>
 			<if test="workClassId != null and workClassId != ''">
 				AND a.work_class_id = #{workClassId}
+			</if>
+			<if test="runTime != null and runTime != ''">
+				AND a.run_time = #{runTime}
 			</if>
 			<if test="submitState != null and submitState != ''">
 				AND a.submit_state = #{submitState}
@@ -85,6 +89,7 @@
 			id,
 			work_shop_mask_id,
 			work_class_id,
+			run_time,
 			create_by,
 			create_date,
 			update_by,
@@ -97,6 +102,7 @@
 			#{id},
 			#{workShopMaskId},
 			#{workClassId},
+			#{runTime},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,6 +118,7 @@
 		UPDATE ws_mask_wc SET 	
 			work_shop_mask_id = #{workShopMaskId},
 			work_class_id = #{workClassId},
+			run_time = #{runTime},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
