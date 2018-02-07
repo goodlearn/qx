@@ -16,6 +16,7 @@ public class MaskContent extends DataEntity<MaskContent> {
 	
 	private static final long serialVersionUID = 1L;
 	private String mspId;		// 父任务号
+	private String templateId;		// 模板号
 	private String problem;		// 有无问题
 	private MaskSinglePerson msp;
 	
@@ -31,6 +32,14 @@ public class MaskContent extends DataEntity<MaskContent> {
 
 	
 	
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
+	}
+
 	public MaskSinglePerson getMsp() {
 		return msp;
 	}

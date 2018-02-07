@@ -6,22 +6,16 @@ import org.springframework.ui.Model;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.BusinessResultItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckContentDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckMainPersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.BusinessResultItem;
 import com.thinkgem.jeesite.modules.sys.entity.MotorCheckSpotItem1;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
-import com.thinkgem.jeesite.modules.sys.state.ScStateParam;
 import com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -42,13 +36,6 @@ public class MdControl {
 	
 	private BusinessAssembleDao businessAssembleDao;
 	
-	private SpotCheckMainPersonDao spotCheckMainPersonDao;
-	
-	private SpotCheckSinglePersonDao spotCheckSinglePersonDao;
-	
-	private SpotCheckContentDao spotCheckContentDao;
-	
-	private BusinessResultItemDao businessResultItemDao;
 	
 	private MotorCheckSpotItem1Dao motorCheckSpotItem1Daol;
 	
@@ -177,37 +164,6 @@ public class MdControl {
 		this.wsMaskWcDao = wsMaskWcDao;
 	}
 
-	public SpotCheckMainPersonDao getSpotCheckMainPersonDao() {
-		return spotCheckMainPersonDao;
-	}
-
-	public void setSpotCheckMainPersonDao(SpotCheckMainPersonDao spotCheckMainPersonDao) {
-		this.spotCheckMainPersonDao = spotCheckMainPersonDao;
-	}
-
-	public SpotCheckSinglePersonDao getSpotCheckSinglePersonDao() {
-		return spotCheckSinglePersonDao;
-	}
-
-	public void setSpotCheckSinglePersonDao(SpotCheckSinglePersonDao spotCheckSinglePersonDao) {
-		this.spotCheckSinglePersonDao = spotCheckSinglePersonDao;
-	}
-
-	public SpotCheckContentDao getSpotCheckContentDao() {
-		return spotCheckContentDao;
-	}
-
-	public void setSpotCheckContentDao(SpotCheckContentDao spotCheckContentDao) {
-		this.spotCheckContentDao = spotCheckContentDao;
-	}
-
-	public BusinessResultItemDao getBusinessResultItemDao() {
-		return businessResultItemDao;
-	}
-
-	public void setBusinessResultItemDao(BusinessResultItemDao businessResultItemDao) {
-		this.businessResultItemDao = businessResultItemDao;
-	}
 
 	public MotorCheckSpotItem1Dao getMotorCheckSpotItem1Daol() {
 		return motorCheckSpotItem1Daol;

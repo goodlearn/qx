@@ -24,7 +24,9 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
+import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -38,6 +40,9 @@ public class WsMaskWcController extends BaseController {
 
 	@Autowired
 	private WsMaskWcService wsMaskWcService;
+	
+	@Autowired
+	private WorkShopMaskService workShopMaskService;
 	
 	@ModelAttribute
 	public WsMaskWc get(@RequestParam(required=false) String id) {
@@ -87,6 +92,41 @@ public class WsMaskWcController extends BaseController {
 	}
 	
 	/**
+	 * 查找车间任务
+	 * @param workShopMask
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequiresPermissions("sys:wsMaskWc:edit")
+	@RequestMapping(value = {"wsmlist"})
+	public String wsmlist(WorkShopMask workShopMask,HttpServletRequest request, HttpServletResponse response, Model model) {
+		String no = DictUtils.getDictValue("是", "yes_no", "1");
+		workShopMask.setReleaseState(no);//设置查询条件 只查询未发布数据
+		Page<WorkShopMask> page = workShopMaskService.findPage(new Page<WorkShopMask>(request, response), workShopMask); 
+		model.addAttribute("page", page);
+		return "modules/wsmaskwc/wsmInwsmList";
+	}
+	
+	/**
+	 * 每日发布
+	 */
+	@RequiresPermissions("sys:wsMaskWc:view")
+	@RequestMapping(value = {"releasePd"})
+	public String releasePd(HttpServletRequest request, HttpServletResponse response, Model model,RedirectAttributes redirectAttributes) {
+		String wsmId = request.getParameter("wsmId");
+		String validateMsg = wsMaskWcService.validateReleasePd(wsmId);
+		if(null != validateMsg) {
+			addMessage(redirectAttributes, validateMsg);
+			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/wsmlist/?repage";
+		}
+		wsMaskWcService.releasePd(wsmId);
+		addMessage(redirectAttributes, "今日任务发布成功");
+		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
+	}
+	
+	/**
 	 * 未提交数据页面
 	 * @param wsMaskWc
 	 * @param request
@@ -114,33 +154,6 @@ public class WsMaskWcController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/unSubmitList?repage";
 	}
 	
-	//保存点检任务
-	@RequiresPermissions("sys:wsMaskWc:edit")
-	@RequestMapping(value = "saveScMask")
-	public String saveScMask(WsMaskWc wsMaskWc, RedirectAttributes redirectAttributes) {
-		String redirectUrl = "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
-		wsMaskWcService.saveScMask(wsMaskWc);
-		addMessage(redirectAttributes, "任务分配成功");
-		return redirectUrl;
-	}
 	
-	
-	//跳转到分配页面 携带参数
-	@RequiresPermissions("sys:wsMaskWc:view")
-	@RequestMapping(value = "allocationPage")
-	public String allocationPage(WsMaskWc wsMaskWc, HttpServletRequest request,Model model) {
-		
-		/**
-		 * workShopMaskControl-allocation中已经检测是否有未提交的数据，此处不检查
-		 */
-		
-		String wsmid = request.getParameter("wsmid");
-		wsMaskWc = wsMaskWcService.save(wsmid);//生成任务数据
-		//获取班级所有人
-		List<WorkPerson> workPersons = wsMaskWcService.findWpByWsmId(wsmid);
-		model.addAttribute("wp", workPersons);
-		model.addAttribute("wsMaskWc",wsMaskWc);
-		return "modules/wsMaskWc/wsmAllocationForm";
-	}
 
 }

@@ -5,9 +5,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.ui.Model;
-
-import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;

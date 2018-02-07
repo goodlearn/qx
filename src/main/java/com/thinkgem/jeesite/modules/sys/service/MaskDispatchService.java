@@ -7,11 +7,7 @@ import org.springframework.ui.Model;
 
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.BusinessResultItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckContentDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckMainPersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
@@ -31,14 +27,6 @@ public class MaskDispatchService extends BaseService {
 	@Autowired
 	private WsMaskWcDao wsMaskWcDao;
 	@Autowired
-	private SpotCheckMainPersonDao spotCheckMainPersonDao;
-	@Autowired
-	private SpotCheckSinglePersonDao spotCheckSinglePersonDao;
-	@Autowired
-	private BusinessResultItemDao businessResultItemDao;
-	@Autowired
-	private SpotCheckContentDao spotCheckContentDao;
-	@Autowired
 	private BusinessAssembleDao businessAssembleDao;
 	@Autowired
 	private MotorCheckSpotItem1Dao motorCheckSpotItem1Daol;
@@ -49,10 +37,6 @@ public class MaskDispatchService extends BaseService {
 		param.setWorkPersonDao(workPersonDao);
 		param.setWorkShopMaskDao(workShopMaskDao);
 		param.setWsMaskWcDao(wsMaskWcDao);
-		param.setSpotCheckMainPersonDao(spotCheckMainPersonDao);
-		param.setSpotCheckSinglePersonDao(spotCheckSinglePersonDao);
-		param.setBusinessResultItemDao(businessResultItemDao);
-		param.setSpotCheckContentDao(spotCheckContentDao);
 		param.setBusinessAssembleDao(businessAssembleDao);
 		param.setMotorCheckSpotItem1Daol(motorCheckSpotItem1Daol);
 		return param;
@@ -64,10 +48,6 @@ public class MaskDispatchService extends BaseService {
 		param.setWorkPersonDao(workPersonDao);
 		param.setWorkShopMaskDao(workShopMaskDao);
 		param.setWsMaskWcDao(wsMaskWcDao);
-		param.setSpotCheckMainPersonDao(spotCheckMainPersonDao);
-		param.setSpotCheckSinglePersonDao(spotCheckSinglePersonDao);
-		param.setBusinessResultItemDao(businessResultItemDao);
-		param.setSpotCheckContentDao(spotCheckContentDao);
 		param.setBusinessAssembleDao(businessAssembleDao);
 		param.setMotorCheckSpotItem1Daol(motorCheckSpotItem1Daol);
 		return param;

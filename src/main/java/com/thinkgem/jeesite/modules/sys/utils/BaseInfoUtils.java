@@ -4,13 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.BusinessResultAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.CarInfoDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarMotorCycleDao;
 import com.thinkgem.jeesite.modules.sys.dao.CarWagonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
@@ -23,8 +20,6 @@ import com.thinkgem.jeesite.modules.sys.dao.WorkShopDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.BusinessResultAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.CarInfo;
 import com.thinkgem.jeesite.modules.sys.entity.CarMotorCycle;
 import com.thinkgem.jeesite.modules.sys.entity.CarWagon;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
@@ -99,10 +94,6 @@ public class BaseInfoUtils {
 	
 	public static final String MSP_LIST= "mspMap";
 	
-	//所属结果集
-	private static BusinessResultAssembleDao businessResultAssembleDao = SpringContextHolder.getBean(BusinessResultAssembleDao.class);
-	
-	public static final String BRA_LIST= "braMap";
 	
 	
 	//所属结果集
@@ -377,38 +368,6 @@ public class BaseInfoUtils {
 		return list;
 	}
 	
-	/**
-	 * 获取结果集信息
-	 * @return
-	 */
-	public static List<BusinessResultAssemble> getBraList(){
-		@SuppressWarnings("unchecked")
-		List<BusinessResultAssemble> list = (List<BusinessResultAssemble>)CacheUtils.get(BRA_LIST);
-		if (list==null  || list.size() == 0){
-			list = Lists.newArrayList();
-			for (BusinessResultAssemble bra : businessResultAssembleDao.findAllList(new BusinessResultAssemble())){
-				list.add(bra);
-			}
-			CacheUtils.put(BRA_LIST, list);
-		}
-		return list;
-	}
-	
-	/**
-	 * 获取结果集信息
-	 * @return
-	 */
-	public static List<BusinessResultAssemble> getBraByIdList(String id){
-		@SuppressWarnings("unchecked")
-		List<BusinessResultAssemble> list = getBraList();
-		List<BusinessResultAssemble> rets = Lists.newArrayList();
-		for(BusinessResultAssemble entity : list) {
-			if(id.equals(entity.getId())) {
-				rets.add(entity);
-			}
-		}
-		return rets;
-	}
 	
 	/**
 	 * 获取业务集信息

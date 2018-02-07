@@ -63,41 +63,6 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 	}
 	
 	
-	//点检任务查看
-	public Page<WorkShopMask> findSpotCheckPage(Page<WorkShopMask> page, WorkShopMask workShopMask) {
-		//获取点检类型
-		String type = DictUtils.getDictValue("点检", "businessResultType", "0");
-		BusinessAssemble ba = new BusinessAssemble();
-		ba.setType(type);
-		workShopMask.setBa(ba);
-		
-		//已经发布
-		String releaseState = DictUtils.getDictValue("是", "yes_no", "0");
-		workShopMask.setReleaseState(releaseState);
-		
-		//查看每个人员班级的任务，管理员可以全部查看
-		User user = UserUtils.getUser();
-		if("1".equals(user.getId())) {
-			//管理员
-			return super.findPage(page, workShopMask);
-		}
-		
-		String empNo = user.getEmpNo();
-		WorkPerson workPerson = workPersonDao.findByEmpNo(empNo);
-		if(null == workPerson) {
-			return page;//没有数据
-		}
-		
-		
-		String classId = workPerson.getWorkClassId();
-		if(null == classId) {
-			return page;//没有数据
-		}
-		
-		workShopMask.setWorkClassId(classId);
-		return super.findPage(page, workShopMask);
-	}
-	
 	//发布任务
 	@Transactional(readOnly = false)
 	public String release(String paramId) {
@@ -110,21 +75,7 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		//更新数据
 		workShopMask.setReleaseState(yes);
 		save(workShopMask);
-		
-		//班级任务生成
-		User user = UserUtils.getUser();
-		WsMaskWc wsMaskWc = new WsMaskWc();
-		String no = DictUtils.getDictValue("否", "yes_no", "0");
-		wsMaskWc.setId(IdGen.uuid());
-		wsMaskWc.setWorkClassId(workShopMask.getWorkClassId());
-		wsMaskWc.setWorkShopMaskId(workShopMask.getId());
-		wsMaskWc.setSubmitState(no);//未提交的
-		wsMaskWc.setCreateBy(user);
-		wsMaskWc.setCreateDate(new Date());
-		wsMaskWc.setUpdateBy(user);
-		wsMaskWc.setUpdateDate(new Date());
-		wsMaskWc.setEndDate(Date2Utils.getEndDayOfTomorrow());
-		wsMaskWcDao.insert(wsMaskWc);
+	
 		return "0";//返回一个非空数据
 	}
 	
@@ -140,42 +91,7 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		//更新数据
 		workShopMask.setReleaseState(no);
 		save(workShopMask);
-		
-		//设置关联数据查询条件
-		WsMaskWc wsMaskWc = new WsMaskWc();
-		wsMaskWc.setWorkShopMaskId(paramId);
-		List<WsMaskWc> wsMaskWcs = wsMaskWcDao.findList(wsMaskWc);//查询
-		//删除
-		for(WsMaskWc forEntity : wsMaskWcs) {
-			wsMaskWcDao.delete(forEntity);
-		}
 		return "0";//返回一个非空数据
-	}
-	
-	//是否有未提交的数据
-	public boolean isNotSubmit(String empNo) {
-		WorkPerson person = workPersonDao.findByEmpNo(empNo);
-		String classId = person.getWorkClassId();
-		
-		//依据班级号查询任务
-		WsMaskWc query = new WsMaskWc();
-		String no = DictUtils.getDictValue("否", "yes_no", "0");
-		query.setWorkClassId(classId);
-		List<WsMaskWc> wmsList = wsMaskWcDao.findList(query);
-		if(null == wmsList || wmsList.size() == 0) {
-			//没有发布过任务
-			//没有发布
-			return false;
-		}
-		
-		query.setSubmitState(no);//未提交的
-		query.setEndDate(new Date());//当前时间小于结束的时间
-		List<WsMaskWc> expired = wsMaskWcDao.findList(query);
-		if(null != expired && expired.size() > 0) {
-			//有 没有处理的任务 未过期 未提交
-			return true;
-		}
-		return false;
 	}
 	
 	//获取班级所有人

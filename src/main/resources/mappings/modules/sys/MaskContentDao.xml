@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.msp_id AS "mspId",
 		a.problem AS "problem",
+		a.template_id AS "templateId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -74,6 +75,7 @@
 			id,
 			msp_id,
 			problem,
+			template_id,
 			create_by,
 			create_date,
 			update_by,
@@ -84,6 +86,7 @@
 			#{id},
 			#{mspId},
 			#{problem},
+			#{templateId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -97,6 +100,7 @@
 		UPDATE mask_content SET 	
 			msp_id = #{mspId},
 			problem = #{problem},
+			template_id = #{templateId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

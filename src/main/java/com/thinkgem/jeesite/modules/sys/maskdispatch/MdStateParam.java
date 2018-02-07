@@ -3,11 +3,7 @@ package com.thinkgem.jeesite.modules.sys.maskdispatch;
 import org.springframework.ui.Model;
 
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.BusinessResultItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckContentDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckMainPersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
@@ -24,14 +20,6 @@ public class MdStateParam {
 	private WorkShopMaskDao workShopMaskDao;
 	
 	private WsMaskWcDao wsMaskWcDao;
-	
-	private SpotCheckMainPersonDao spotCheckMainPersonDao;
-	
-	private SpotCheckSinglePersonDao spotCheckSinglePersonDao;
-	
-	private SpotCheckContentDao spotCheckContentDao;
-	
-	private BusinessResultItemDao businessResultItemDao;
 	
 	private BusinessAssembleDao businessAssembleDao;
 	
@@ -96,37 +84,6 @@ public class MdStateParam {
 		this.wsMaskWcDao = wsMaskWcDao;
 	}
 
-	public SpotCheckMainPersonDao getSpotCheckMainPersonDao() {
-		return spotCheckMainPersonDao;
-	}
-
-	public void setSpotCheckMainPersonDao(SpotCheckMainPersonDao spotCheckMainPersonDao) {
-		this.spotCheckMainPersonDao = spotCheckMainPersonDao;
-	}
-
-	public SpotCheckSinglePersonDao getSpotCheckSinglePersonDao() {
-		return spotCheckSinglePersonDao;
-	}
-
-	public void setSpotCheckSinglePersonDao(SpotCheckSinglePersonDao spotCheckSinglePersonDao) {
-		this.spotCheckSinglePersonDao = spotCheckSinglePersonDao;
-	}
-
-	public SpotCheckContentDao getSpotCheckContentDao() {
-		return spotCheckContentDao;
-	}
-
-	public void setSpotCheckContentDao(SpotCheckContentDao spotCheckContentDao) {
-		this.spotCheckContentDao = spotCheckContentDao;
-	}
-
-	public BusinessResultItemDao getBusinessResultItemDao() {
-		return businessResultItemDao;
-	}
-
-	public void setBusinessResultItemDao(BusinessResultItemDao businessResultItemDao) {
-		this.businessResultItemDao = businessResultItemDao;
-	}
 
 	public boolean isPC() {
 		return isPC;

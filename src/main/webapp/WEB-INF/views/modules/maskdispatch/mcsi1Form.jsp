@@ -27,7 +27,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/workShopMask/">车间任务数据</a></li>
+		<li><a href="${ctx}/sys/wsMaskWc/wsmlist">车间任务数据</a></li>
 	</ul>
 		<input id="PageContext" type="hidden" value="${ctx}" />
 		<input id="maskId" type="hidden" value="${maskId}" />

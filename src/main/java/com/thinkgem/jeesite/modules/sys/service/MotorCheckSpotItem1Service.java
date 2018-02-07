@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.MotorCheckSpotItem1;
@@ -23,13 +24,10 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
-import com.thinkgem.jeesite.modules.sys.dao.BusinessResultItemDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckContentDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckMainPersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.SpotCheckSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
@@ -50,19 +48,13 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 	@Autowired
 	private WsMaskWcDao wsMaskWcDao;
 	@Autowired
-	private SpotCheckMainPersonDao spotCheckMainPersonDao;
-	@Autowired
-	private SpotCheckSinglePersonDao spotCheckSinglePersonDao;
-	@Autowired
-	private BusinessResultItemDao businessResultItemDao;
-	@Autowired
-	private SpotCheckContentDao spotCheckContentDao;
-	@Autowired
 	private BusinessAssembleDao businessAssembleDao;
 	@Autowired
 	private MaskMainPersonDao maskMainPersonDao;
 	@Autowired
 	private MaskSinglePersonDao maskSinglePersonDao;
+	@Autowired
+	private MaskContentDao maskContentDao;
 	
 	/**
 	 * 生成任务
@@ -101,6 +93,8 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 		WorkPerson wp = workPersonDao.findByEmpNo(empNo);//员工
 		//提交状态
 		String noSubmit = DictUtils.getDictValue("否", "yes_no", "0");
+		//有无问题
+		String noProblem = DictUtils.getDictValue("没有", "have_no", "1");
 		
 		//主负责人
 		MaskMainPerson maskMainPerson = new MaskMainPerson();
@@ -117,8 +111,18 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 		maskMainPersonDao.insert(maskMainPerson);
 		
 		for(ViewMcsi1 viewMsci1 : viewMcsi1s) {
+			
+			
+			
 			String singleEmpNo = viewMsci1.getEmpno();
 			String part = viewMsci1.getName();//部位
+			
+			//依据任务集和部位号 查询个人需要操作的行项
+			MotorCheckSpotItem1 queryMcsi1 = new MotorCheckSpotItem1();
+			queryMcsi1.setPart(part);
+			queryMcsi1.setAssembleId(bussinessAssembleId);
+			List<MotorCheckSpotItem1> mcsi1List = dao.findAllList(queryMcsi1);
+			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();
 			//各负责人
@@ -133,6 +137,21 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 			maskSinglePerson.setUpdateBy(user);
 			maskSinglePerson.setUpdateDate(new Date());
 			maskSinglePersonDao.insert(maskSinglePerson);
+			
+			for(MotorCheckSpotItem1 forEntity :mcsi1List) {
+				//每个人关联的任务保存
+				MaskContent mcEntity= new MaskContent();
+				String mcEntityId = IdGen.uuid();
+				forEntity.setId(mcEntityId);
+				mcEntity.setMspId(singlePersonId);
+				mcEntity.setTemplateId(forEntity.getId());
+				mcEntity.setProblem(noProblem);
+				mcEntity.setCreateBy(user);
+				mcEntity.setCreateDate(new Date());
+				mcEntity.setUpdateBy(user);
+				mcEntity.setUpdateDate(new Date());
+				maskContentDao.insert(mcEntity);
+			}
 		}
 	}
 

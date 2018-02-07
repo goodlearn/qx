@@ -329,24 +329,6 @@
     <example>${fns:getReleaseWsmList()}</example>  
   </function>
   
-  <!-- 获取结果集信息 -->
-  <function>
-    <description>获取结果信息列表</description>
-    <name>getBraList</name>
-    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
-    <function-signature>java.util.List getBraList()</function-signature>
-    <example>${fns:getBraList()}</example>  
-  </function>
-  
-    <!-- 获取结果集信息 -->
-  <function>
-    <description>获取结果信息列表</description>
-    <name>getBraByIdList</name>
-    <function-class>com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils</function-class>
-    <function-signature>java.util.List getBraByIdList(java.lang.String)</function-signature>
-    <example>${fns:getBraByIdList(id)}</example>  
-  </function>
-  
   <!-- 获取业务集信息 -->
   <function>
     <description>获取业务信息列表</description>

@@ -52,26 +52,6 @@ public class WorkShopMaskController extends BaseController {
 		return entity;
 	}
 	
-	/**
-	 * 查询点检任务
-	 * @param wsMaskWc
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequiresPermissions("sys:workShopMask:view")
-	@RequestMapping(value = {"sclist"})
-	public String sclist(WorkShopMask workShopMask, HttpServletRequest request, HttpServletResponse response, Model model) {
-		String repeatMessage = request.getParameter("repeatMessage");
-		if(StringUtils.isNotEmpty(repeatMessage)) {
-			model.addAttribute("repeatMessage", "有未提交的数据");
-		}
-		Page<WorkShopMask> page = workShopMaskService.findSpotCheckPage(new Page<WorkShopMask>(request, response), workShopMask); 
-		model.addAttribute("page", page);
-		return "modules/workshopmask/maskList";
-	}
-	
 	//发布页面
 	@RequiresPermissions("sys:workShopMask:view")
 	@RequestMapping(value = {"releaseList"})
@@ -181,33 +161,5 @@ public class WorkShopMaskController extends BaseController {
 		return rediectUrl;
 	}
 	
-	//获取分配页面
-	@RequiresPermissions("sys:workShopMask:view")
-	@RequestMapping(value = "allocation")
-	public String allocation(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-		String rediectUrl =  "redirect:"+Global.getAdminPath()+"/sys/workShopMask/sclist?repage";
-		String wsmid = request.getParameter("wsmid");
-		if(StringUtils.isEmpty(wsmid)) {
-			addMessage(redirectAttributes, "参数为空");
-			return rediectUrl;
-		}
-		
-		if(workShopMaskService.isNotSubmit(UserUtils.getUser().getEmpNo())) {
-			//存在没有提交的数据
-			return "redirect:"+Global.getAdminPath()+"/sys/workShopMask/sclist?repeatMessage=yes";
-		}
-		
-		WorkShopMask workShopMask = workShopMaskService.get(wsmid);
-		String type = workShopMask.getBa().getType();
-		String dictType = DictUtils.getDictValue("点检", "businessResultType", "1");
-		if(dictType.equals(type)) {
-			//点检类型
-			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/allocationPage?wsmid="+wsmid;
-		}
-		
-		logger.info("不是点检类型，无页面处理");
-		return "redirect:"+Global.getAdminPath()+"/404";
-		
-	}
 	
 }
