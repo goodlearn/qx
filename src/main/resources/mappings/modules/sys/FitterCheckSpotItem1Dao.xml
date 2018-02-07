@@ -1,46 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MaskContentDao">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.FitterCheckSpotItem1Dao">
     
-	<sql id="maskContentColumns">
+	<sql id="fitterCheckSpotItem1Columns">
 		a.id AS "id",
-		a.msp_id AS "mspId",
-		a.problem AS "problem",
-		a.template_id AS "templateId",
+		a.part AS "part",
+		a.number AS "number",
+		a.content AS "content",
+		a.assemble_id AS "assembleId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		msp.id AS "msp.id"
+		ba.id AS "ba.id",
+		ba.name AS "ba.name"
 	</sql>
 	
-	<sql id="maskContentJoins">
-		LEFT JOIN mask_single_person msp ON msp.id = a.msp_id
+	<sql id="fitterCheckSpotItem1Joins">
+		LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
 	</sql>
     
-	<select id="get" resultType="MaskContent">
+	<select id="get" resultType="FitterCheckSpotItem1">
 		SELECT 
-			<include refid="maskContentColumns"/>
-		FROM mask_content a
-		<include refid="maskContentJoins"/>
+			<include refid="fitterCheckSpotItem1Columns"/>
+		FROM fitter_check_spot_item_1 a
+		<include refid="fitterCheckSpotItem1Joins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="MaskContent">
+	<select id="findList" resultType="FitterCheckSpotItem1">
 		SELECT 
-			<include refid="maskContentColumns"/>
-		FROM mask_content a
-		<include refid="maskContentJoins"/>
+			<include refid="fitterCheckSpotItem1Columns"/>
+		FROM fitter_check_spot_item_1 a
+		<include refid="fitterCheckSpotItem1Joins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="mspId != null and mspId != ''">
-				AND a.msp_id = #{mspId}
-			</if>
-			<if test="problem != null and problem != ''">
-				AND a.problem = #{problem}
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -52,11 +48,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="MaskContent">
+	<select id="findAllList" resultType="FitterCheckSpotItem1">
 		SELECT 
-			<include refid="maskContentColumns"/>
-		FROM mask_content a
-		<include refid="maskContentJoins"/>
+			<include refid="fitterCheckSpotItem1Columns"/>
+		FROM fitter_check_spot_item_1 a
+		<include refid="fitterCheckSpotItem1Joins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
@@ -71,11 +67,12 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO mask_content(
+		INSERT INTO fitter_check_spot_item_1(
 			id,
-			msp_id,
-			problem,
-			template_id,
+			part,
+			number,
+			content,
+			assemble_id,
 			create_by,
 			create_date,
 			update_by,
@@ -84,9 +81,10 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{mspId},
-			#{problem},
-			#{templateId},
+			#{part},
+			#{number},
+			#{content},
+			#{assembleId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -97,10 +95,11 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE mask_content SET 	
-			msp_id = #{mspId},
-			problem = #{problem},
-			template_id = #{templateId},
+		UPDATE fitter_check_spot_item_1 SET 	
+			part = #{part},
+			number = #{number},
+			content = #{content},
+			assemble_id = #{assembleId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -108,7 +107,7 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE mask_content SET 
+		UPDATE fitter_check_spot_item_1 SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

@@ -1,3 +1,6 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ */
 package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.Date;
@@ -12,6 +15,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.FitterCheckSpotItem1;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
@@ -24,22 +28,23 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
+import com.thinkgem.jeesite.modules.sys.dao.FitterCheckSpotItem1Dao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.MotorCheckSpotItem1Dao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 
 /**
- * 发动机点检单一Service
+ * 钳工周检点检卡Service
  * @author wzy
- * @version 2018-02-05
+ * @version 2018-02-07
  */
 @Service
 @Transactional(readOnly = true)
-public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1Dao, MotorCheckSpotItem1> {
+public class FitterCheckSpotItem1Service extends CrudService<FitterCheckSpotItem1Dao, FitterCheckSpotItem1> {
+
 	
 	@Autowired
 	private WorkPersonDao workPersonDao;
@@ -55,6 +60,29 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 	private MaskSinglePersonDao maskSinglePersonDao;
 	@Autowired
 	private MaskContentDao maskContentDao;
+	
+	
+	public FitterCheckSpotItem1 get(String id) {
+		return super.get(id);
+	}
+	
+	public List<FitterCheckSpotItem1> findList(FitterCheckSpotItem1 fitterCheckSpotItem1) {
+		return super.findList(fitterCheckSpotItem1);
+	}
+	
+	public Page<FitterCheckSpotItem1> findPage(Page<FitterCheckSpotItem1> page, FitterCheckSpotItem1 fitterCheckSpotItem1) {
+		return super.findPage(page, fitterCheckSpotItem1);
+	}
+	
+	@Transactional(readOnly = false)
+	public void save(FitterCheckSpotItem1 fitterCheckSpotItem1) {
+		super.save(fitterCheckSpotItem1);
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(FitterCheckSpotItem1 fitterCheckSpotItem1) {
+		super.delete(fitterCheckSpotItem1);
+	}
 	
 	/**
 	 * 生成任务
@@ -83,8 +111,8 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 		String type = businessAssemble.getType();
 		
 		//字典数据检验
-		if(!type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
-			//不是模板表1 发动机点检单一
+		if(!type.equals(DictUtils.getDictValue(Global.FITTER_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
+			//不是模板表1
 			return;
 		}
 		 
@@ -118,10 +146,10 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 			String part = viewMsci1.getName();//部位
 			
 			//依据任务集和部位号 查询个人需要操作的行项
-			MotorCheckSpotItem1 queryMcsi1 = new MotorCheckSpotItem1();
+			FitterCheckSpotItem1 queryMcsi1 = new FitterCheckSpotItem1();
 			queryMcsi1.setPart(part);
 			queryMcsi1.setAssembleId(bussinessAssembleId);
-			List<MotorCheckSpotItem1> mcsi1List = dao.findAllList(queryMcsi1);
+			List<FitterCheckSpotItem1> mcsi1List = dao.findAllList(queryMcsi1);
 			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();
@@ -138,7 +166,7 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 			maskSinglePerson.setUpdateDate(new Date());
 			maskSinglePersonDao.insert(maskSinglePerson);
 			
-			for(MotorCheckSpotItem1 forEntity :mcsi1List) {
+			for(FitterCheckSpotItem1 forEntity :mcsi1List) {
 				//每个人关联的任务保存
 				MaskContent mcEntity= new MaskContent();
 				String mcEntityId = IdGen.uuid();
@@ -153,28 +181,6 @@ public class MotorCheckSpotItem1Service extends CrudService<MotorCheckSpotItem1D
 				maskContentDao.insert(mcEntity);
 			}
 		}
-	}
-
-	public MotorCheckSpotItem1 get(String id) {
-		return super.get(id);
-	}
-	
-	public List<MotorCheckSpotItem1> findList(MotorCheckSpotItem1 motorCheckSpotItem1) {
-		return super.findList(motorCheckSpotItem1);
-	}
-	
-	public Page<MotorCheckSpotItem1> findPage(Page<MotorCheckSpotItem1> page, MotorCheckSpotItem1 motorCheckSpotItem1) {
-		return super.findPage(page, motorCheckSpotItem1);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(MotorCheckSpotItem1 motorCheckSpotItem1) {
-		super.save(motorCheckSpotItem1);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(MotorCheckSpotItem1 motorCheckSpotItem1) {
-		super.delete(motorCheckSpotItem1);
 	}
 	
 }

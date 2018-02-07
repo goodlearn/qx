@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
@@ -50,7 +47,7 @@ public class MotorCheckSpotItem1 extends DataEntity<MotorCheckSpotItem1> {
 		this.number = number;
 	}
 	
-	@Length(min=1, max=100, message="项目长度必须介于 1 和 100 之间")
+	@Length(min=1, max=255, message="项目长度必须介于 1 和 255 之间")
 	public String getItem() {
 		return item;
 	}
@@ -59,7 +56,7 @@ public class MotorCheckSpotItem1 extends DataEntity<MotorCheckSpotItem1> {
 		this.item = item;
 	}
 	
-	@Length(min=1, max=100, message="标准长度必须介于 1 和 100 之间")
+	@Length(min=1, max=255, message="标准长度必须介于 1 和 255 之间")
 	public String getStandard() {
 		return standard;
 	}

@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.service.DictService;
+import com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils;
 
 /**
  * 字典Controller
@@ -120,4 +121,18 @@ public class DictController extends BaseController {
 		return dictService.findList(dict);
 	}
 
+	/**
+	 * 清除缓存
+	 * @param dict
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequiresPermissions("sys:dict:edit")
+	@RequestMapping(value = "clearCache")
+	public String clearCache(RedirectAttributes redirectAttributes) {
+		BaseInfoUtils.clearAllCache();
+		addMessage(redirectAttributes, "清除缓存成功");
+		return "redirect:" + adminPath + "/sys/dict/?repage";
+	}
 }

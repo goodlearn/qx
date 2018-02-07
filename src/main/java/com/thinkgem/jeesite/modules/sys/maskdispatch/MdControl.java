@@ -41,6 +41,7 @@ public class MdControl {
 	
 	public final static String ERROR_URL_PC = "modules/sys/sysError";
 	public final static String MOTOR_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/mcsi1Form";//模板表1 发动机点检单一
+	public final static String FITTER_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/fcsi1Form";//汽修车间220T卡车钳工周检点检卡
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -77,9 +78,11 @@ public class MdControl {
 		String type = businessAssemble.getType();
 		
 		//字典数据
-		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "businessResultType", "1"))) {
+		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
 			//模板表1 发动机点检单一
 			setMotorCheckSpotItem1Data();//设置数据
+		}else if(type.equals(DictUtils.getDictValue(Global.FITTER_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
+			setFitterCheckSpotItem1Data();
 		}
 	}
 
@@ -89,6 +92,14 @@ public class MdControl {
 		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		setValue(MOTOR_CHECK_SPOT_ITEM_1);
+	}
+	
+	//模板表 汽修车间220T卡车钳工周检点检卡
+	private void setFitterCheckSpotItem1Data() {
+		model.addAttribute("fcsis", DictUtils.getDictList("fitterCsItem1"));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		setValue(FITTER_CHECK_SPOT_ITEM_1);
 	}
 	
 	//先看看是不是班长

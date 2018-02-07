@@ -38,6 +38,20 @@ import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
  *
  */
 public class BaseInfoUtils {
+	
+	public static void clearAllCache() {
+		CacheUtils.remove(WORK_SHOP_LIST);
+		CacheUtils.remove(WORK_DEPARTMENT_LIST);
+		CacheUtils.remove(WORK_CLASS_LIST);
+		CacheUtils.remove(WORK_KIND_LIST);
+		CacheUtils.remove(WORK_PERSON_LIST);
+		CacheUtils.remove(CMC_LIST);
+		CacheUtils.remove(CAR_WAGON_LIST);
+		CacheUtils.remove(WORK_SHOP_MASK_LIST);
+		CacheUtils.remove(MMP_LIST);
+		CacheUtils.remove(MSP_LIST);
+		CacheUtils.remove(BA_LIST);
+	}
 
 	//车间
 	private static WorkShopDao workShopDao = SpringContextHolder.getBean(WorkShopDao.class);
@@ -125,7 +139,7 @@ public class BaseInfoUtils {
 		//找到类型
 		String type = businessAssemble.getType();
 		//字典数据检验
-		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "businessResultType", "1"))) {
+		if(type.equals(DictUtils.getDictValue(Global.MOTOR_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
 			//不是模板表1 发动机点检单一
 			return DictUtils.getDictLabel(part, "motorCsItem1", "1");
 		}

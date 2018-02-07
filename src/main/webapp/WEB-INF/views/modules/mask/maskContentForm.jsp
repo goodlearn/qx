@@ -34,16 +34,6 @@
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
-			<label class="control-label">父任务号：</label>
-			<div class="controls">
-				<form:select path="mspId" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllmspList()}" itemLabel="id" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">有无问题：</label>
 			<div class="controls">
 				<form:select path="problem" class="input-xlarge required">

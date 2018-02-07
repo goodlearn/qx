@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>发动机点检单一管理</title>
+	<title>钳工周检点检卡管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,22 +27,12 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/motorCheckSpotItem1/">发动机点检单一列表</a></li>
-		<li class="active"><a href="${ctx}/sys/motorCheckSpotItem1/form?id=${motorCheckSpotItem1.id}">发动机点检单一<shiro:hasPermission name="sys:motorCheckSpotItem1:edit">${not empty motorCheckSpotItem1.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:motorCheckSpotItem1:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/sys/fitterCheckSpotItem1/">钳工周检点检卡列表</a></li>
+		<li class="active"><a href="${ctx}/sys/fitterCheckSpotItem1/form?id=${fitterCheckSpotItem1.id}">钳工周检点检卡<shiro:hasPermission name="sys:fitterCheckSpotItem1:edit">${not empty fitterCheckSpotItem1.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:fitterCheckSpotItem1:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="motorCheckSpotItem1" action="${ctx}/sys/motorCheckSpotItem1/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="fitterCheckSpotItem1" action="${ctx}/sys/fitterCheckSpotItem1/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
-		<div class="control-group">
-			<label class="control-label">部位：</label>
-			<div class="controls">
-				<form:select path="part" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('motorCsItem1')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>				
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
 		<div class="control-group">
 			<label class="control-label">序号：</label>
 			<div class="controls">
@@ -51,36 +41,24 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">项目：</label>
+			<label class="control-label">点检项目：</label>
 			<div class="controls">
-				<form:textarea path="item" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		
-		<div class="control-group">
-			<label class="control-label">标准：</label>
-			<div class="controls">
-				<form:textarea path="standard" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge required"/>
+				<form:select path="part" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('fitterCsItem1')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">工具：</label>
+			<label class="control-label">检查内容：</label>
 			<div class="controls">
-				<form:input path="tool" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<form:textarea path="content" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">人数：</label>
-			<div class="controls">
-				<form:input path="person" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">所属业务集：</label>
+			<label class="control-label">表格模板：</label>
 			<div class="controls">
 				<form:select path="assembleId" class="input-xlarge required">
 					<form:option value="" label=""/>
@@ -96,7 +74,7 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="sys:motorCheckSpotItem1:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="sys:fitterCheckSpotItem1:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

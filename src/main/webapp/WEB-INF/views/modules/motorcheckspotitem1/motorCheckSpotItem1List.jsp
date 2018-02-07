@@ -25,8 +25,8 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>部位</th>
 				<th>序号</th>
+				<th>部位</th>
 				<th>项目</th>
 				<th>标准</th>
 				<th>工具</th>
@@ -41,10 +41,10 @@
 		<c:forEach items="${page.list}" var="motorCheckSpotItem1">
 			<tr>
 				<td><a href="${ctx}/sys/motorCheckSpotItem1/form?id=${motorCheckSpotItem1.id}">
-					${fns:getDictLabel(motorCheckSpotItem1.part, 'motorCsItem1', '')}
-				</a></td>
+					${motorCheckSpotItem1.number}</a>
+				</td>
 				<td>
-					${motorCheckSpotItem1.number}
+					${fns:getDictLabel(motorCheckSpotItem1.part, 'motorCsItem1', '')}
 				</td>
 				<td>
 					${motorCheckSpotItem1.item}
