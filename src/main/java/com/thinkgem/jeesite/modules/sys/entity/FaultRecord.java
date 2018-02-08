@@ -52,7 +52,7 @@ public class FaultRecord extends DataEntity<FaultRecord> {
 	public String getWorkKindName() {
 		return wk.getName();
 	}
-	@ExcelField(title="cehxing", align=2, sort=3)
+	@ExcelField(title="所属班组", align=2, sort=3)
 	public String getWorkClassName() {
 		return wc.getName();
 	}
