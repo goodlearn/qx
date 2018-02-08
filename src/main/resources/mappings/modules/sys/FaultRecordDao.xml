@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.FaultRecordDao">
+    
+	<sql id="faultRecordColumns">
+		a.id AS "id",
+		a.work_department_id AS "workDepartmentId",
+		a.work_kind_id AS "workKindId",
+		a.work_class_id AS "workClassId",
+		a.car_motor_cycle_id AS "carMotorCycleId",
+		a.car_wagon_id AS "carWagonId",
+		a.wp_total_id AS "wpTotalId",
+		a.wp_part_id AS "wpPartId",
+		a.run_time AS "runTime",
+		a.type AS "type",
+		a.description AS "description",
+		a.deal_method AS "dealMethod",
+		a.fault_date AS "faultDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		wd.id AS "wd.id",
+		wd.name AS "wd.name",
+		wk.id AS "wk.id",
+		wk.name AS "wk.name",
+		wc.id AS "wc.id",
+		wc.name AS "wc.name",
+		cmc.id AS "cmc.id",
+		cmc.name AS "cmc.name",
+		cw.id AS "cw.id",
+		cw.name AS "cw.name",
+		wpt.id AS "wpTotal.id",
+		wpt.name AS "wpTotal.name",
+		wpp.id AS "wpPart.id",
+		wpp.name AS "wpPart.name"
+	</sql>
+	
+	<sql id="faultRecordJoins">
+			LEFT JOIN work_department wd ON wd.id = a.work_department_id
+			LEFT JOIN work_kind wk ON wk.id = a.work_kind_id
+			LEFT JOIN work_class wc ON wc.id = a.work_class_id
+			LEFT JOIN car_motor_cycle cmc ON cmc.id = a.car_motor_cycle_id
+			LEFT JOIN car_wagon cw ON cw.id = a.car_wagon_id
+			LEFT JOIN work_person wpt ON wpt.id = a.wp_total_id
+			LEFT JOIN work_person wpp ON wpp.id = a.wp_part_id
+	</sql>
+    
+	<select id="get" resultType="FaultRecord">
+		SELECT 
+			<include refid="faultRecordColumns"/>
+		FROM fault_record a
+		<include refid="faultRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="FaultRecord">
+		SELECT 
+			<include refid="faultRecordColumns"/>
+		FROM fault_record a
+		<include refid="faultRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="workDepartmentId != null and workDepartmentId != ''">
+				AND a.work_department_id = #{workDepartmentId}
+			</if>
+			<if test="workKindId != null and workKindId != ''">
+				AND a.work_kind_id = #{workKindId}
+			</if>
+			<if test="workClassId != null and workClassId != ''">
+				AND a.work_class_id = #{workClassId}
+			</if>
+			<if test="carMotorCycleId != null and carMotorCycleId != ''">
+				AND a.car_motor_cycle_id = #{carMotorCycleId}
+			</if>
+			<if test="carWagonId != null and carWagonId != ''">
+				AND a.car_wagon_id = #{carWagonId}
+			</if>
+			<if test="wpTotalId != null and wpTotalId != ''">
+				AND a.wp_total_id = #{wpTotalId}
+			</if>
+			<if test="wpPartId != null and wpPartId != ''">
+				AND a.wp_part_id = #{wpPartId}
+			</if>
+			<if test="runTime != null and runTime != ''">
+				AND a.run_time = #{runTime}
+			</if>
+			<if test="faultDate != null and faultDate != ''">
+				AND a.fault_date &lt;= #{faultDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="FaultRecord">
+		SELECT 
+			<include refid="faultRecordColumns"/>
+		FROM fault_record a
+		<include refid="faultRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO fault_record(
+			id,
+			work_department_id,
+			work_kind_id,
+			work_class_id,
+			car_motor_cycle_id,
+			car_wagon_id,
+			wp_total_id,
+			wp_part_id,
+			run_time,
+			type,
+			description,
+			deal_method,
+			fault_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{workDepartmentId},
+			#{workKindId},
+			#{workClassId},
+			#{carMotorCycleId},
+			#{carWagonId},
+			#{wpTotalId},
+			#{wpPartId},
+			#{runTime},
+			#{type},
+			#{description},
+			#{dealMethod},
+			#{faultDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE fault_record SET 	
+			work_department_id = #{workDepartmentId},
+			work_kind_id = #{workKindId},
+			work_class_id = #{workClassId},
+			car_motor_cycle_id = #{carMotorCycleId},
+			car_wagon_id = #{carWagonId},
+			wp_total_id = #{wpTotalId},
+			wp_part_id = #{wpPartId},
+			run_time = #{runTime},
+			type = #{type},
+			description = #{description},
+			deal_method = #{dealMethod},
+			fault_date = #{faultDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE fault_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
