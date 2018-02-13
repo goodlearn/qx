@@ -9,7 +9,7 @@ body{
 .content{
 	max-width: 600px;
 	margin: 0 auto;
-	font-family: "Tahoma","Microsoft YaHei";
+	font-family: "Microsoft YaHei";
 }
 
 .pageNav{
@@ -50,11 +50,12 @@ body{
 .taskInfo ul li{
 	display: block;
 	width: 100%;
+	overflow: hidden;
 }
 .taskInfo ul li p{
 	padding-top: 15px;
 	padding-bottom: 15px;
-	padding-left: 30px;
+	padding-left: 35px;
 	font-size: 14px;
 	font-weight: bolder;
 }

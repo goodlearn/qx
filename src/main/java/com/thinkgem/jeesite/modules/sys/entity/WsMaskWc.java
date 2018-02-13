@@ -25,11 +25,6 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private WorkShopMask wsm; //任务
 	private WorkClass wc; //班级
 	
-	//非数据库数据
-	private String frontPerson;//前部人员
-	private String centralPerson;//中部人员
-	private String heelPerson;//后部人员
-	
 	public WsMaskWc() {
 		super();
 	}
@@ -46,29 +41,6 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 		this.runTime = runTime;
 	}
 
-	public String getFrontPerson() {
-		return frontPerson;
-	}
-
-	public void setFrontPerson(String frontPerson) {
-		this.frontPerson = frontPerson;
-	}
-
-	public String getCentralPerson() {
-		return centralPerson;
-	}
-
-	public void setCentralPerson(String centralPerson) {
-		this.centralPerson = centralPerson;
-	}
-
-	public String getHeelPerson() {
-		return heelPerson;
-	}
-
-	public void setHeelPerson(String heelPerson) {
-		this.heelPerson = heelPerson;
-	}
 
 	@Length(min=1, max=64, message="车间任务号长度必须介于 1 和 64 之间")
 	public String getWorkShopMaskId() {

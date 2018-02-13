@@ -7,6 +7,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/datePicker.js" type="text/javascript"></script>
+	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
 	
 	<style type="text/css">
 		*{
@@ -32,23 +34,27 @@
 			box-shadow: 0px 5px 5px #e1e1e1; 
 		}
 		.userInfo{
-			width: 90%;
 			background: #fff; 
-			padding: 15px 5%;
 			overflow: hidden;
 			margin: 15px 0px;
 			border-top:1px solid #dbdbdb;
 			border-bottom:1px solid #dbdbdb;
 			box-shadow: 0px 5px 5px #e1e1e1; 
 		}
-		.userInfo .userImgDiv{
+		.userInfoCont{
+			overflow: hidden;
+			width: 90%;
+			padding: 15px 5%; 
+			border-bottom:1px solid #f1f1f1;
+		}
+		.userInfo .userInfoCont .userImgDiv{
 			width: 40px;
 			height: 40px;
 			float: left;
 			overflow: hidden;
 			border-radius: 20px;
 		}
-		.userInfo .userName{
+		.userInfo .userInfoCont .userName{
 			float: left;
 			width: calc(100% - 40px - 20px - 10px);
 			margin-left: 20px;
@@ -59,6 +65,43 @@
 			font-size: 16px;
 			font-weight: bolder;
 		}
+		.userInfo .userFunc{
+			width: 100%;
+			overflow: hidden;
+		}
+		.userInfo .userFunc ul li{
+			width: calc((100% - 3px) / 4); 
+			float: left;
+			padding: 5px 0px;
+		}
+		.userInfo .userFunc ul li.leftborder{
+			border-right: 1px solid #f1f1f1;
+		}
+		.userInfo .userFunc ul li .funcIcon{
+			width: 100%;
+			height: 40px;
+		}
+		.userInfo .userFunc ul li:nth-child(1) .funcIcon{
+			background: url(../static/wx/wximages/taskexefocus.png) no-repeat center center;
+			background-size: 24px;
+		}
+		.userInfo .userFunc ul li:nth-child(2) .funcIcon{
+			background: url(../static/wx/wximages/taskpubunfocus.png) no-repeat center center;
+			background-size: 24px;
+		}
+		.userInfo .userFunc ul li:nth-child(3) .funcIcon{
+			background: url(../static/wx/wximages/taskanalunfocus.png) no-repeat center center;
+			background-size: 24px;
+		}
+		.userInfo .userFunc ul li:nth-child(4) .funcIcon{
+			background: url(../static/wx/wximages/taskwaitunfocus.png) no-repeat center center;
+			background-size: 24px;
+		}
+		.userInfo .userFunc ul li .funcTxt{
+			text-align: center;
+			font-size: 12px;
+			padding: 5px 0px;
+		}
 
 		.notask{
 			width: 100%;
@@ -66,21 +109,42 @@
 			text-align: center; 
 			font-size: 14px;
 			color: #888888;
-			display: none;
 		}
 		.notask .notaskimg{
 			width: 70px;
 			margin: 0 auto 20px;
 		}
 
+		.sliderCont{
+			width: 100%;
+			overflow: hidden; 
+		}
+		.sliderCont>ul{
+			width: 400%;
+			overflow: hidden;
+		}
+		.sliderCont>ul>li{
+			width: 25%;
+			float: left;
+		}
+		
+		.funcDesc{
+			width: 100%;
+			line-height: 40px;
+			text-align: center;
+			font-size: 14px;
+			color: #888888;
+		}
+		.taksInfoCont{
+			box-shadow: 0px 5px 5px #e1e1e1; 
+			margin-bottom: 10px;
+			border-top:1px solid #dbdbdb;
+			border-bottom:1px solid #dbdbdb;
+		}
 		.workTaskCont{
 			width: 100%;
 			background: #fff; 
 			overflow: hidden;
-			margin-bottom: 10px;
-			border-top:1px solid #dbdbdb;
-			border-bottom:1px solid #dbdbdb;
-			box-shadow: 0px 5px 5px #e1e1e1; 
 		}
 		.workTaskCont .taskType{
 			width: 96%;
@@ -96,20 +160,59 @@
 			font-size: 16px;
 			font-weight: bolder;
 			color: #666666;
-			background: url(./images/tasktypeicon.png) no-repeat left center;
+			background: url(../static/wx/wximages/tasktypeicon.png) no-repeat left center;
 			background-size: 23px;
 		}
-		.workTaskCont .taskType .taskSubmit{
+		.workTaskCont .taskType .taskComplete{
+			float: left;
+			padding-left: 27px;
+			padding-top: 20px;
+			padding-bottom: 20px;
+			font-size: 16px;
+			font-weight: bolder;
+			color: #666666;
+			background: url(../static/wx/wximages/tasktypeicon.png) no-repeat left center;
+			background-size: 23px;
+		}
+		.workTaskCont .taskType .taskCompleteState{
+			background: url(../static/wx/wximages/completeicon.png) no-repeat left center;
+			background-size: 23px;
+		}
+		.workTaskCont .taskType .taskUnCompleteState{
+			background: url(../static/wx/wximages/uncompleteicon.png) no-repeat left center;
+			background-size: 23px;
+		}
+		.workTaskCont .taskType .taskBtn{
 			float: right;
 			font-size: 14px;
 			background: #1f72ff;
 			padding: 5px 15px;
-			margin-top: 15px;
+			margin: 15px 8px 0px 0px;
 			color: #fff;
 			border-radius: 5px;
 		}
+		.workTaskCont .taskType .taskInfoBtn{
+			float: right;
+			font-size: 14px;
+			padding: 5px 15px;
+			margin: 15px 8px 0px 0px;
+			color: #fff;
+			border-radius: 5px;
+		}
+		.workTaskCont .taskType .taskCompleteBtn{
+			background: #1f72ff;
+		}
+		.workTaskCont .taskType .taskUnCompleteBtn{
+			background: #888888;
+		}
+		.taskInfoBtn a:link,.taskInfoBtn a:visited,.taskInfoBtn a:hover{
+			color: #fff;
+			text-decoration: none;
+		}
+
 		.taskCont{
 			width: 100%;
+			display: none;
 		}
 		.taskCont ul li{
 			display: block;
@@ -117,7 +220,7 @@
 			padding: 0px 2%;
 			overflow: hidden;
 			border-bottom: 1px solid #ebebeb;
-			background: url(./images/arrowrighticon.png) no-repeat 97% center;
+			background: url(../static/wx/wximages/arrowrighticon.png) no-repeat 97% center;
 			background-size: 20px;
 		}
 		.taskCont ul li p{
@@ -129,245 +232,378 @@
 			color: #666666;
 		}
 		.taskCont ul li .uncomplete{
-			background: url(./images/uncompleteicon.png) no-repeat left center;
+			background: url(../static/wx/wximages/uncompleteicon.png) no-repeat left center;
 			background-size: 16px;
 		}
 		.taskCont ul li .complete{
-			background: url(./images/completeicon.png) no-repeat left center;
+			background: url(../static/wx/wximages/completeicon.png) no-repeat left center;
 			background-size: 16px;
 		}
-		.taskCont a:hover,a:visited,a:link{
+		.taskCont ul a:hover,.taskCont ul a:visited,.taskCont ul a:link{
 			text-decoration: none;
 			color: #666666;
 		}
+		
+		.dateSelector{
+			width: 92%;
+			margin: 0 auto 20px;
+			padding: 0 2%;
+			overflow: hidden;
+			border:1px solid #dbdbdb;
+			border-radius: 8px;
+			position: relative;
+			background: #fff;
+		}
+		.dateSelector input{
+			width: 100%;
+			height: 40px;
+			padding: 5px 0px;
+			border: none;
+			outline: none;
+			background: url(/static/wx/images/dateicon.png) no-repeat right center;
+			background-size: 30px;
+		}
+
 	</style>
 </head>
 <body>
 <div class="content">
-	<div class="pageDesc">${wc.name}</div>
+	<div class="pageDesc">神华维修110号车间</div>
 	<div class="userInfo">
-		<div class="userImgDiv">
-			<img src="images/headerimgicon.png" alt="" width="100%">
+		<div class="userInfoCont">
+			<div class="userImgDiv">
+				<img src="../static/wx/wximages/headerimgicon.png" alt="" width="100%">
+			</div>
+			<div class="userName">王宇</div>
 		</div>
-		<div class="userName">${wp.name}</div>
+		<div class="userFunc">
+			<ul>
+				<li class="leftborder">
+					<p class="funcIcon"></p>
+					<p class="funcTxt">任务执行</p>
+				</li>
+				<li class="leftborder">
+					<p class="funcIcon"></p>
+					<p class="funcTxt">任务发布</p>
+				</li>
+				<li class="leftborder">
+					<p class="funcIcon"></p>
+					<p class="funcTxt">任务情况</p>
+				</li>
+				<li>
+					<p class="funcIcon"></p>
+					<p class="funcTxt">暂未开发</p>
+				</li>
+			</ul>
+		</div>
 	</div>
+	
+	<div class="sliderCont">
+		<ul>
+			<li><!-- 任务执行 -->
+				<div class="funcDesc">当前待完成任务</div>
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M789点检任务</div>
+							<div class="taskBtn showtaskBtn">展开</div>
+							<div class="taskBtn verifyBtn">审核</div>
+						</div>
 
-	<div class="expEnterCont">
-		<div class="expEnterIcon">
-			<img src="${ctxStatic}/wx/wximages/expentericon.png" width="100%">
-			<p>录入快递</p>
-		</div>
-		${message}
-		<div class="expEnterInput">
-				<input id="timestamp" type="hidden" value="${timestamp}" />
-				<input id="noncestr" type="hidden" value="${nonceStr}" />
-				<input id="signature" type="hidden" value="${signature}" />
-				<input id="appId" type="hidden" value="${appId}" />
-			<form>
-				<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-				<input id="wxCode" type="hidden" value="${wxCode}" />
-				<div class="userInputCont">
-					<div class="inputTypeCont">
-						<div class="inputTitle">单号</div>
-						<input type="text" id="expressId" class="commonInputFunc" name="expressId" placeholder="请输入快递单号...">
-						<div class="commonFuncBtnScan" id="scanQRCodeBtn"></div>
+						<div class="taskCont">
+							<ul>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车前</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车中</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车后</p></li>
+								</a>
+							</ul>
+						</div>
 					</div>
-					<div class="inputTypeCont">
-						<div class="inputTitle">手机</div>
-						<input type="text" id="phone" class="commonInputFunc" name="phone" placeholder="请输入收件人号码...">
-						<div class="commonFuncBtnVoice" id="voiceRecordBtn"></div>
-					</div>
-					<div class="inputTypeCont">
-						<div class="inputTitle">公司</div>
-						<select id="company" name="company">  
-                             <c:forEach var="dict" items="${fns:getDictList('expressCompany')}">  
-                                <option value="${dict.value}">  
-                                ${dict.label}  
-                                </option>  
-                              </c:forEach>  
-                         </select>  
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M790点检任务</div>
+							<div class="taskBtn showtaskBtn">展开</div>
+							<div class="taskBtn verifyBtn">审核</div>
+						</div>
+
+						<div class="taskCont">
+							<ul>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车前</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="complete">车中</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车后</p></li>
+								</a>
+							</ul>
+						</div>
 					</div>
 				</div>
-			</form>
-			<div class="submitBtn">录入信息</div>
-		</div>
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M789保养任务</div>
+							<div class="taskBtn showtaskBtn">展开</div>
+							<div class="taskBtn verifyBtn">审核</div>
+						</div>
+
+						<div class="taskCont">
+							<ul>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车前</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车中</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车后</p></li>
+								</a>
+							</ul>
+						</div>
+					</div>
+
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M790保养任务</div>
+							<div class="taskBtn showtaskBtn">展开</div>
+							<div class="taskBtn verifyBtn">审核</div>
+						</div>
+
+						<div class="taskCont">
+							<ul>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车前</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="complete">车中</p></li>
+								</a>
+								<a href="userTask.html">
+									<li><p class="uncomplete">车后</p></li>
+								</a>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</li>
+
+			<li> <!-- 任务发布 -->
+				<div class="funcDesc">当前待发布任务</div>
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M789点检任务</div>
+							<div class="taskBtn taskPubBtn">发布</div>
+						</div>
+					</div>
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M790点检任务</div>
+							<div class="taskBtn taskPubBtn">发布</div>
+						</div>
+					</div>
+				</div>
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M789保养任务</div>
+							<div class="taskBtn taskPubBtn">发布</div>
+						</div>
+					</div>
+
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskTypeTxt">M790保养任务</div>
+							<div class="taskBtn taskPubBtn">发布</div>
+						</div>
+					</div>
+				</div>
+			</li>
+
+			<li><!-- 任务情况 -->
+				<div class="funcDesc">任务情况查看</div>
+				<div class="dateSelector">
+					<input id="dateInput" readonly="true" value="2018-02-12">
+				</div>
+
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskComplete taskUnCompleteState">M789点检任务</div>
+							<div class="taskInfoBtn taskUnCompleteBtn"><a href="#">详情</a></div>
+						</div>
+					</div>
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskComplete taskCompleteState">M789点检任务</div>
+							<div class="taskInfoBtn taskCompleteBtn"><a href="taskInfo.html">详情</a></div>
+						</div>
+					</div>
+				</div>
+				<div class="taksInfoCont">
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskComplete taskUnCompleteState">M789点检任务</div>
+							<div class="taskInfoBtn taskUnCompleteBtn"><a href="#">详情</a></div>
+						</div>
+					</div>
+
+					<div class="workTaskCont">
+						<div class="taskType">
+							<div class="taskComplete taskCompleteState">M789点检任务</div>
+							<div class="taskInfoBtn taskCompleteBtn"><a href="taskInfo.html">详情</a></div>
+						</div>
+					</div>
+				</div>
+			</li>
+			<li><!-- 暂无开发 -->
+				<div class="notask">
+					<div class="notaskimg"><img src="images/notask.png" width="100%"></div>
+					<div class="notaskTxt">暂无权限查看</div>
+				</div>
+			</li>
+		</ul>
 	</div>
-	<!-- cover voice record -->
-	<div class="stopvoicerecord">
-		<div class="voiceRecordCont">
-			<img src="${ctxStatic}/wx/wximages/voicerecordicon.png" alt="正在录音中...">
-			<p class="voiceRecordState">正在录音中...</p>
-			<div id="stopVoiceRecordBtn">完成录音并识别</div>
-		</div>
-	</div>
+	
 </div>
+
 <script type="text/javascript">
 	$(function() {
-		
-		var submitFunc = function(){
-			$(".submitBtn").unbind("click");
-			//检测快递单号
-			var expressId = $.trim($("#expressId").val());
-			if (!CheckExpNum(expressId)) {
-				rzAlert("操作提示","快递单号格式不正确！");
-				$(".submitBtn").bind("click",submitFunc);
-				return false;
-			}
-
-			// 手机号码
-			var phone = $.trim($("#phone").val());
-			if (!CheckPhoneNum(phone)) {
-				rzAlert("操作提示","手机号码格式不对！");
-				$(".submitBtn").bind("click",submitFunc);
-				return false;
-			}
-			
-			//$(".msgcover").fadeIn();
-			//$(".coverMsgCont").fadeIn();
-			var pageContextVal = $("#PageContext").val();
-			var company = $("#company").val();
-			var wxCode = $("#wxCode").val();
-			var pickUpCode = $("#pickUpCode").val();
-			$.ajax({
-			    type:'POST',
-			    url:pageContextVal+'/ul/saveExpress',
-			    data:{'expressId':expressId,'phone':phone,'company':company,'pickUpCode':pickUpCode,'code':wxCode},
-			    dataType: "json",
-			    success:function(data){
-			    	var prompt = "操作提示";
-			    	var code = data.code;
-			    	var message = data.message;
-			    	if(code == "0"){
-			    		rzAlert(prompt,message);
-			    		$("#expressId").val("");
-			    		$("#phone").val("");
-			    	}else{
-			    		rzAlert(prompt,message);
-			    	}
-			    	$(".submitBtn").bind("click",submitFunc);
-		    	},
-			    error:function(){
-			    	$(".submitBtn").bind("click",submitFunc);  
-			    }
-			});
-		};
-		
-		$(".submitBtn").bind("click",submitFunc);
-		
-		var initFun = function(){
-			var windowW = $(window).width();
-			var windowH = $(window).height();
-			$(".content").css({"height": windowH + "px"});
-			
-		};
-
-		initFun();
-
-		$(window).resize(function(){
-			initFun();
+		$(".verifyBtn").click(function(){
+			window.location.href = "checkSubmit.html";
 		});
+
+		$(".taskPubBtn").click(function(){
+			window.location.href = "taskPub.html";
+		})
+
+		// task show
+		$(".showtaskBtn").click(function(){
+			if ($(this).parent().siblings(".taskCont").css('display') == 'none') {
+				$(this).text("收起");
+			} else {
+				$(this).text("展开");
+			}
+			$(this).parent().siblings(".taskCont").slideToggle('fast');
+		});
+
+		// func solider 
+		$(".userFunc ul li").click(function(){
+			var contW = $(".sliderCont").width();
+			var clickIndex = $(this).index();
+			var $funclis = $(".userFunc ul li");
+
+			switch(clickIndex){
+				case 0 : 
+					$funclis.eq(0).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskexefocus.png)'
+					});
+					$funclis.eq(1).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskpubunfocus.png)'
+					});
+					$funclis.eq(2).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskanalunfocus.png)'
+					});
+					$funclis.eq(3).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskwaitunfocus.png)'
+					});
+					$(".sliderCont ul").animate({"margin-left": 0+'px'});
+					break;
+				case 1 :
+					// $('.userInfo .userFunc ul li:nth-child(1) .funcIcon').css({
+					// 	'background-image' : 'url(./images/taskexenufocus.png)'
+					// });
+					$funclis.eq(0).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskexenufocus.png)'
+					});
+					$funclis.eq(1).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskpubfocus.png)'
+					});
+					$funclis.eq(2).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskanalunfocus.png)'
+					});
+					$funclis.eq(3).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskwaitunfocus.png)'
+					});
+					$(".sliderCont ul").animate({"margin-left": -contW+'px'});
+					break;
+				case 2 :
+					$funclis.eq(0).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskexenufocus.png)'
+					});
+					$funclis.eq(1).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskpubunfocus.png)'
+					});
+					$funclis.eq(2).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskanalfocus.png)'
+					});
+					$funclis.eq(3).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskwaitunfocus.png)'
+					});
+					$(".sliderCont ul").animate({"margin-left": -2*contW+'px'});
+					break;
+				case 3 :
+					$funclis.eq(0).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskexenufocus.png)'
+					});
+					$funclis.eq(1).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskpubunfocus.png)'
+					});
+					$funclis.eq(2).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskanalunfocus.png)'
+					});
+					$funclis.eq(3).children('.funcIcon').css({
+						'background-image' : 'url(./images/taskwaitfocus.png)'
+					});
+					$(".sliderCont ul").animate({"margin-left": -3*contW+'px'});
+					break;
+				default :
+					break;
+			};
+		});
+
+		// calendar
+		var nowDate = new Date();
+		var dateString = nowDate.getFullYear()+"-" + nowDate.getMonth()+"-" + nowDate.getDay();
+		$("#dateInput").val(dateString);
 		
-		// JSSDK
-		var timestamp = $("#timestamp").val();//时间戳
-        var nonceStr = $("#noncestr").val();//随机串
-        var signature = $("#signature").val();//签名
-        var appId = $("#appId").val();//签名
-        wx.config({
-            debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-            appId : appId, // 必填，公众号的唯一标识
-            timestamp : timestamp, // 必填，生成签名的时间戳
-            nonceStr : nonceStr, // 必填，生成签名的随机串
-            signature : signature,// 必填，签名，见附录1
-            jsApiList : [
-            	'checkJsApi',
-                'onMenuShareTimeline',
-                'onMenuShareAppMessage',
-                'onMenuShareQQ',
-                'onMenuShareWeibo',
-                'hideMenuItems',
-                'showMenuItems',
-                'hideAllNonBaseMenuItem',
-                'showAllNonBaseMenuItem',
-                'translateVoice',
-                'startRecord',
-                'stopRecord',
-                'onRecordEnd',
-                'playVoice',
-                'pauseVoice',
-                'stopVoice',
-                'uploadVoice',
-                'downloadVoice',
-                'chooseImage',
-                'previewImage',
-                'uploadImage',
-                'downloadImage',
-                'getNetworkType',
-                'openLocation',
-                'getLocation',
-                'hideOptionMenu',
-                'showOptionMenu',
-                'closeWindow',
-                'scanQRCode',
-                'chooseWXPay',
-                'openProductSpecificView',
-                'addCard',
-                'chooseCard',
-                'openCard'
-            ]
-        // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-        });
+	    var calendar = new datePicker();
+		calendar.init({
+			'trigger': '#dateInput', /*按钮选择器，用于触发弹出插件*/
+			'type': 'date',/*模式：date日期；datetime日期时间；time时间；ym年月；*/
+			'minDate':'1900-1-1',/*最小日期*/
+			'maxDate':dateString,/*最大日期*/
+			'onSubmit':function(){/*确认时触发事件*/
+				var theSelectData=calendar.value;
+			},
+			'onClose':function(){/*取消时触发事件*/
+			}
+		});
 
-        wx.ready(function() {  
-	        wx.checkJsApi({  
-	            jsApiList : ['scanQRCode'],  
-	            success : function(res) {  
+		var u = navigator.userAgent;
+	    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+	    if (isAndroid == true) {
+	    	$(".workTaskCont .taskType .taskTypeTxt").css({
+	    		"padding-top": '21px',
+	    		"padding-bottom": '17px'
+	    	});
 
-	            }  
-	        });  
+	    	$(".workTaskCont .taskType .taskBtn").css({
+	    		"padding": "7px 15px 4px"
+	    	});
 
-	        //扫描二维码  
-	        document.querySelector('#scanQRCodeBtn').onclick = function() {  
-	            wx.scanQRCode({  
-	                needResult : 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，  
-	                scanType : [ "qrCode", "barCode" ], // 可以指定扫二维码还是一维码，默认二者都有  
-	                success : function(res) {  
-	                    //扫码后获取结果参数赋值给Input
-	                    var url = res.resultStr;
-	                    var qrCodenum = url.split(",");
-	                    $("#expressId").val(qrCodenum[1]);
-	                }  
-	            });  
-	        };//end_document_scanQRCode  
-
-	     // 语音识别
-	        document.querySelector('#voiceRecordBtn').onclick = function(){
-	        	wx.startRecord();
-	        	$(".stopvoicerecord").show();
-	        };
-
-	        $("#stopVoiceRecordBtn").click(function(){
-	        	wx.stopRecord({
-					success: function (res) {
-						$(".stopvoicerecord").hide();
-						var localId = res.localId;
-						wx.translateVoice({
-							localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
-							isShowProgressTips: 1, // 默认为1，显示进度提示
-							success: function (res) {
-								var result = res.translateResult.replace(/[^0-9]/ig,"");
-								$("#phone").val(result);
-							}
-						});
-					},
-					cancel: function() {
-						alert("拒绝了就不能录音了哦！");
-					}
-				});
-	        });
-	        
-	          
-	    });//end_ready 
-	})
+	    	$(".taskCont ul li p").css({
+	    		"padding-top": '21px',
+	    		"padding-bottom": '17px'
+	    	});
+	    }
+	});
 </script>
 </body>
 </html>
