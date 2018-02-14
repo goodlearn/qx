@@ -70,7 +70,7 @@
 					${workPerson.no}
 				</td>
 				<td>
-					${workPerson.workClass.workKind.workDepartment.name}
+					${workPerson.wd.name}
 				</td>
 				<td>
 					${workPerson.workClass.name}

@@ -13,11 +13,14 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		k.id AS "workKind.id",
-		k.name AS "workKind.name"
+		k.name AS "workKind.name",
+		wd.id AS "wd.id",
+		wd.name AS "wd.name"
 	</sql>
 	
 	<sql id="workClassJoins">
 		LEFT JOIN work_kind k ON k.id = a.work_kind_id
+		LEFT JOIN work_department wd ON wd.id = k.work_department_id
 	</sql>
     
 	<select id="get" resultType="WorkClass">

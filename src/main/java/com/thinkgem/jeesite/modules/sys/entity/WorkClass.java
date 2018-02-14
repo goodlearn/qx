@@ -18,7 +18,16 @@ public class WorkClass extends DataEntity<WorkClass> {
 	private String name;		// 班组名称
 	private String workKindId;		// work_kind_id
 	private WorkKind workKind;
+	private WorkDepartment wd;
 	
+	public WorkDepartment getWd() {
+		return wd;
+	}
+
+	public void setWd(WorkDepartment wd) {
+		this.wd = wd;
+	}
+
 	public WorkClass() {
 		super();
 	}

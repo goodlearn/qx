@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
@@ -20,6 +17,15 @@ public class WorkPerson extends DataEntity<WorkPerson> {
 	private String workClassId;		// 所属班组
 	private String level;		// 级别
 	private WorkClass workClass; //班组
+	private WorkKind wk;		//工种
+	private WorkShop ws;		// 车间号
+	private WorkDepartment wd;		// 部门号
+	
+	
+	//获取车间部门工种班级名称
+	public String getFullName() {
+		return ws.getName() + wd.getName() + wk.getName() + workClass.getName();
+	}
 	
 	public WorkPerson() {
 		super();
@@ -72,6 +78,30 @@ public class WorkPerson extends DataEntity<WorkPerson> {
 
 	public void setWorkClass(WorkClass workClass) {
 		this.workClass = workClass;
+	}
+
+	public WorkShop getWs() {
+		return ws;
+	}
+
+	public void setWs(WorkShop ws) {
+		this.ws = ws;
+	}
+
+	public WorkDepartment getWd() {
+		return wd;
+	}
+
+	public void setWd(WorkDepartment wd) {
+		this.wd = wd;
+	}
+
+	public WorkKind getWk() {
+		return wk;
+	}
+
+	public void setWk(WorkKind wk) {
+		this.wk = wk;
 	}
 	
 	

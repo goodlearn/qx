@@ -63,7 +63,7 @@
 					${workClass.name}
 				</a></td>
 				<td>
-					${workClass.workKind.workDepartment.name}
+					${workClass.wd.name}
 				</td>
 				<td>
 					${workClass.workKind.name}

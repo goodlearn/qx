@@ -15,11 +15,20 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		c.id AS "workClass.id",
-		c.name AS "workClass.name"
+		c.name AS "workClass.name",
+		k.id AS "wk.id",
+		k.name AS "wk.name",
+		wd.id AS "wd.id",
+		wd.name AS "wd.name",
+		ws.id AS "ws.id",
+		ws.name AS "ws.name"
 	</sql>
 	
 	<sql id="workPersonJoins">
 		LEFT JOIN work_class c ON c.id = a.work_class_id
+		LEFT JOIN work_kind k ON k.id = c.work_kind_id
+		LEFT JOIN work_department wd ON wd.id = k.work_department_id
+		LEFT JOIN work_shop ws ON ws.id = wd.work_shop_id
 	</sql>
     
     <!-- 根据员工编号查询用户 -->

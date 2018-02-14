@@ -42,6 +42,7 @@ public class MdControl {
 	public final static String ERROR_URL_PC = "modules/sys/sysError";
 	public final static String MOTOR_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/mcsi1Form";//模板表1 发动机点检单一
 	public final static String FITTER_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/fcsi1Form";//汽修车间220T卡车钳工周检点检卡
+	public final static String SF31904C_CS_ITEM = "modules/maskdispatch/sf31904ccsForm";//SF31904C卡车点检卡
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -83,7 +84,17 @@ public class MdControl {
 			setMotorCheckSpotItem1Data();//设置数据
 		}else if(type.equals(DictUtils.getDictValue(Global.FITTER_CHECK_SPOT_ITEM_1, "bussinessType", "1"))) {
 			setFitterCheckSpotItem1Data();
+		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
+			setSF31904CItemData();
 		}
+	}
+	
+	//模板表 SF31904C卡车点检卡
+	private void setSF31904CItemData() {
+		model.addAttribute("sfccs", DictUtils.getDictList("sf31904cCsItem"));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		setValue(MOTOR_CHECK_SPOT_ITEM_1);
 	}
 
 	//模板表 发动机点检单一

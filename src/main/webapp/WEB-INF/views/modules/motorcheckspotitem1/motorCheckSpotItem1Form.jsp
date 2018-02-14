@@ -80,7 +80,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">所属业务集：</label>
+			<label class="control-label">表格名称：</label>
 			<div class="controls">
 				<form:select path="assembleId" class="input-xlarge required">
 					<form:option value="" label=""/>

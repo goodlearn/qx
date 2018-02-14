@@ -23,10 +23,14 @@ public abstract class WxBaseController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	
-	//懒人排行页面
+	//首页
 	protected final String INDEX_INFO = "modules/wxp/scIndex";
-	
-
+	//错误页面
+	protected final String WX_ERROR = "modules/wxp/500";
+	//错误信息
+	protected final String ERR_EMP_NO_NULL = "员工号为空";
+	protected final String ERR_WP_NULL = "不存在该员工";
+	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
 	/**
 	 * 管理基础路径
 	 */

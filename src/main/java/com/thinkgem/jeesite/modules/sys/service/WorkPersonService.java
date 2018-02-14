@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.List;
@@ -42,6 +39,13 @@ public class WorkPersonService extends CrudService<WorkPersonDao, WorkPerson> {
 	@Transactional(readOnly = false)
 	public void delete(WorkPerson workPerson) {
 		super.delete(workPerson);
+	}
+	
+	/**
+	 * 依据员工号查询
+	 */
+	public WorkPerson findByEmpNo(String empNo) {
+		return dao.findByEmpNo(empNo);
 	}
 	
 }

@@ -268,13 +268,13 @@
 </head>
 <body>
 <div class="content">
-	<div class="pageDesc">神华维修110号车间</div>
+	<div class="pageDesc">${fullName}</div>
 	<div class="userInfo">
 		<div class="userInfoCont">
 			<div class="userImgDiv">
 				<img src="../static/wx/wximages/headerimgicon.png" alt="" width="100%">
 			</div>
-			<div class="userName">王宇</div>
+			<div class="userName">${userName}</div>
 		</div>
 		<div class="userFunc">
 			<ul>
@@ -395,35 +395,16 @@
 
 			<li> <!-- 任务发布 -->
 				<div class="funcDesc">当前待发布任务</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M789点检任务</div>
-							<div class="taskBtn taskPubBtn">发布</div>
+				<c:forEach items="${wsmList}" var="wsm" varStatus="status">
+					<div class="taksInfoCont">
+						<div class="workTaskCont">
+							<div class="taskType">
+								<div class="taskTypeTxt">${wsm.name}</div>
+								<div class="taskBtn taskPubBtn">发布</div>
+							</div>
 						</div>
 					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M790点检任务</div>
-							<div class="taskBtn taskPubBtn">发布</div>
-						</div>
-					</div>
-				</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M789保养任务</div>
-							<div class="taskBtn taskPubBtn">发布</div>
-						</div>
-					</div>
-
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M790保养任务</div>
-							<div class="taskBtn taskPubBtn">发布</div>
-						</div>
-					</div>
-				</div>
+				</c:forEach>
 			</li>
 
 			<li><!-- 任务情况 -->
