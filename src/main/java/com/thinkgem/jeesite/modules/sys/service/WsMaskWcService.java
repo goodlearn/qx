@@ -95,8 +95,12 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	}
 	
 	
-	//是否有未提交的数据
-	private boolean isNotSubmit(String empNo) {
+	/**
+	 * 所在班级是否有未提交的数据
+	 * @param empNo
+	 * @return
+	 */
+	public List<WsMaskWc> findUnFinishMaskInClass(String empNo) {
 		WorkPerson person = workPersonDao.findByEmpNo(empNo);
 		String classId = person.getWorkClassId();
 		
@@ -108,7 +112,7 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		if(null == wmsList || wmsList.size() == 0) {
 			//没有发布过任务
 			//没有发布
-			return false;
+			return null;
 		}
 		
 		query.setSubmitState(no);//未提交的
@@ -116,9 +120,9 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		List<WsMaskWc> expired = dao.findList(query);
 		if(null != expired && expired.size() > 0) {
 			//有 没有处理的任务 未过期 未提交
-			return true;
+			return expired;
 		}
-		return false;
+		return null;
 	}
 	
 	//每日发布任务

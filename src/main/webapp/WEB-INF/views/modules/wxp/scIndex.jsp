@@ -301,96 +301,31 @@
 		<ul>
 			<li><!-- 任务执行 -->
 				<div class="funcDesc">当前待完成任务</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M789点检任务</div>
-							<div class="taskBtn showtaskBtn">展开</div>
-							<div class="taskBtn verifyBtn">审核</div>
-						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车前</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车中</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车后</p></li>
-								</a>
-							</ul>
-						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M790点检任务</div>
-							<div class="taskBtn showtaskBtn">展开</div>
-							<div class="taskBtn verifyBtn">审核</div>
-						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车前</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="complete">车中</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车后</p></li>
-								</a>
-							</ul>
+				<c:if test = "${isUfMasks == 'yes'}">
+					<div class="taksInfoCont">
+						<div class="workTaskCont">
+							<c:forEach items="${processMasks}" var="pm" varStatus="status">
+								<div class="taskType">
+									<div class="taskTypeTxt">${pm.workShopMaskName}</div>
+									<div class="taskBtn showtaskBtn">展开</div>
+									<div class="taskBtn verifyBtn">审核</div>
+								</div>
+								<div class="taskCont">
+									<ul>
+										<c:forEach items="${pm.parts}" var="part" varStatus="status">
+											<a href="userTask.html">
+												<li><p class="uncomplete">${part.label}</p></li>
+											</a>
+										</c:forEach>
+									</ul>
+								</div>
+							</c:forEach>
 						</div>
 					</div>
-				</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M789保养任务</div>
-							<div class="taskBtn showtaskBtn">展开</div>
-							<div class="taskBtn verifyBtn">审核</div>
-						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车前</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车中</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车后</p></li>
-								</a>
-							</ul>
-						</div>
-					</div>
-
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">M790保养任务</div>
-							<div class="taskBtn showtaskBtn">展开</div>
-							<div class="taskBtn verifyBtn">审核</div>
-						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车前</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="complete">车中</p></li>
-								</a>
-								<a href="userTask.html">
-									<li><p class="uncomplete">车后</p></li>
-								</a>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</li>
+				</c:if>
+				<c:if test = "${isUfMasks == 'no'}">
+					<div class="funcDesc">无任务</div>
+				</c:if>
 
 			<li> <!-- 任务发布 -->
 				<div class="funcDesc">当前待发布任务</div>

@@ -11,11 +11,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.Dict;
+import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
+import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
+import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
+import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
+import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
+import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
+import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 
 import org.springframework.ui.Model;
 
@@ -34,6 +45,18 @@ public class WxIndexController extends WxBaseController{
 
 	@Autowired
 	private WorkPersonService workPersonService;
+	
+	@Autowired
+	private WsMaskWcService wsMaskWcService;
+	
+	@Autowired
+	private MaskMainPersonService maskMainPersonService;
+	
+	@Autowired
+	private MaskSinglePersonService maskSinglePersonService;
+	
+	@Autowired
+	private BusinessAssembleService businessAssembleService;
 	
 	//导航
 	private final String NAVIGAION_1 = "任务执行";
@@ -76,6 +99,7 @@ public class WxIndexController extends WxBaseController{
 		
 		//按照级别处理
 		if(DictUtils.getDictValue("班长", "workPersonLevel", "2").equals(level)) {
+			addUnFinishMask(empNo,model);//添加需要处理的任务
 			return monitorProcess(model,loginPerson);
 		}else {
 			model.addAttribute("message",ERR_WP_LEVEL_NULL);
@@ -83,11 +107,118 @@ public class WxIndexController extends WxBaseController{
 		}
 	}
 	
+	
+	//查询未完成的任务列表
+	private void addUnFinishMask(String empNo,Model model){
+		List<WsMaskWc> wmwList = wsMaskWcService.findUnFinishMaskInClass(empNo);
+		if(null == wmwList) {
+			model.addAttribute("isUfMasks","no");//没有未完成的任务
+			return;
+		}
+		
+		List<ViewUnFinishMask> viewUfmList = new ArrayList<ViewUnFinishMask>();
+		
+		for(WsMaskWc wsMaskWc : wmwList) {
+			String wmwId = wsMaskWc.getId();
+			//查询审核人Id
+			if(findMasks(wmwId,empNo)) {
+				ViewUnFinishMask vufm = new ViewUnFinishMask();
+				vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());
+				vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());
+				vufm.setParts(findParts(wsMaskWc));
+				viewUfmList.add(vufm);
+			}
+		}
+		
+		if(viewUfmList.size() > 0) {
+			model.addAttribute("isUfMasks","yes");//有未完成的任务
+			model.addAttribute("processMasks",viewUfmList);
+		}else {
+			model.addAttribute("isUfMasks","no");//没有未完成的任务
+		}
+	}
+	
+	//获取部位信息
+	private List<Dict> findParts(WsMaskWc wsMaskWc){
+		//依据任务号找到车间任务号
+		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
+		//找到车间任务
+		WorkShopMask workShopMask = workShopMaskService.get(workShopMaskId);
+		//找到业务集号
+		String bussinessAssembleId = workShopMask.getBussinessAssembleId();
+		//找到业务集
+		BusinessAssemble businessAssemble = businessAssembleService.get(bussinessAssembleId);
+		//找到类型
+		String type = businessAssemble.getType();
+		
+		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
+			return DictUtils.getDictList("sf31904cCsItem");
+		}	
+		return null;
+	}
+	
+	//是否有任务信息
+	private boolean findMasks(String wmwId,String empNo) {
+		WorkPerson wp = workPersonService.findByEmpNo(empNo);
+		String wpId = wp.getId();
+		
+		//查询审核人
+		MaskMainPerson query = new MaskMainPerson();
+		query.setWorkPersonId(wpId);
+		query.setWsMaskWcId(wmwId);
+		
+		List<MaskMainPerson> mmpList = maskMainPersonService.findList(query);
+		
+		//没有审核任务
+		if(null == mmpList) {
+			return false;//没有审核任务
+		}
+		
+		//看有没有任务
+		for(MaskMainPerson forEntity:mmpList) {
+			String mmpId = forEntity.getId();
+			return findSinglePersons(empNo,mmpId);
+		}
+		
+		return false;//没有审核任务
+	}
+	
+	//查询有审核信息
+	private boolean findMainPersons(String empNo,String wmwId){
+
+		WorkPerson wp = workPersonService.findByEmpNo(empNo);
+		String wpId = wp.getId();
+		
+		//查询审核人
+		MaskMainPerson query = new MaskMainPerson();
+		query.setWorkPersonId(wpId);
+		query.setWsMaskWcId(wmwId);
+		
+		if(null == maskMainPersonService.findList(query)) {
+			return false;//没有审核任务
+		}
+		
+		return true;//有审核任务
+	}
+	
+	private boolean findSinglePersons(String empNo,String mmpId) {
+		WorkPerson wp = workPersonService.findByEmpNo(empNo);
+		String wpId = wp.getId();
+		//查询个人信息
+		MaskSinglePerson query = new MaskSinglePerson();
+		query.setMmpId(mmpId);
+		query.setWorkPersonId(wpId);
+		if(null == maskSinglePersonService.findList(query)) {
+			return false;
+		}
+		return true;
+	}
+	
 	//班长级别信息处理
 	private String monitorProcess(Model model,WorkPerson loginPerson) {
 		model.addAttribute("fullName",loginPerson.getFullName());
 		model.addAttribute("userName",loginPerson.getName());
-		
+		model.addAttribute("isMonitor","yes");
 		/**
 		 * 导航
 		 */
