@@ -28,9 +28,15 @@ public abstract class WxBaseController {
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
+	protected final String ERR_WSM_ID_NULL = "任务号为空";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_WP_NULL = "不存在该员工";
 	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
+	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
+
+	
+	protected final String successCode = "0";//成功码
+	protected final String errCode = "1";//错误码
 	/**
 	 * 管理基础路径
 	 */

@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.wx.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,11 @@ public class WxIndexController extends WxBaseController{
 	@Autowired
 	private WorkPersonService workPersonService;
 	
+	//导航
+	private final String NAVIGAION_1 = "任务执行";
+	private final String NAVIGAION_2 = "任务发布";
+	private final String NAVIGAION_3 = "任务情况";
+	private final String NAVIGAION_4 = "暂未开发";
 	/**
 	 * 页面跳转 -- 获取首页
 	 * @param request
@@ -76,6 +82,19 @@ public class WxIndexController extends WxBaseController{
 		model.addAttribute("fullName",loginPerson.getFullName());
 		model.addAttribute("userName",loginPerson.getName());
 		
+		/**
+		 * 导航
+		 */
+		List<String> navigaionList = new ArrayList<String>();
+		navigaionList.add(NAVIGAION_1);
+		navigaionList.add(NAVIGAION_2);
+		navigaionList.add(NAVIGAION_3);
+		navigaionList.add(NAVIGAION_4);
+		model.addAttribute("navigaionList",navigaionList);
+		
+		/**
+		 * 任务发布列表
+		 */
 		//查询对象
 		WorkShopMask queryWsm = new WorkShopMask();
 		//发布状态

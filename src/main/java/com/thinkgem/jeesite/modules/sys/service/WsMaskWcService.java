@@ -76,7 +76,7 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		List<WsMaskWc> expired = dao.findList(query);
 		if(null != expired && expired.size() > 0) {
 			//有 没有处理的任务 未过期 未提交
-			return "该任务还为结束或者没有提交";
+			return "该任务还未结束";
 		}
 		return null ;
 	}

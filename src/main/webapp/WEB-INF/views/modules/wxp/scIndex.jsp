@@ -260,7 +260,7 @@
 			padding: 5px 0px;
 			border: none;
 			outline: none;
-			background: url(/static/wx/images/dateicon.png) no-repeat right center;
+			background: url(../static/wx/wximages/dateicon.png) no-repeat right center;
 			background-size: 30px;
 		}
 
@@ -268,6 +268,7 @@
 </head>
 <body>
 <div class="content">
+	<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 	<div class="pageDesc">${fullName}</div>
 	<div class="userInfo">
 		<div class="userInfoCont">
@@ -278,22 +279,20 @@
 		</div>
 		<div class="userFunc">
 			<ul>
-				<li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务执行</p>
-				</li>
-				<li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务发布</p>
-				</li>
-				<li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务情况</p>
-				</li>
-				<li>
-					<p class="funcIcon"></p>
-					<p class="funcTxt">暂未开发</p>
-				</li>
+				<c:forEach items="${navigaionList}" var="navigaion" varStatus="status">
+					<c:if test = "${status.count < 4 }">
+						<li class="leftborder">
+							<p class="funcIcon"></p>
+							<p class="funcTxt">${navigaion}</p>
+						</li>
+					</c:if>
+					<c:if test = "${status.count == 4 }">
+						<li>
+							<p class="funcIcon"></p>
+							<p class="funcTxt">${navigaion}</p>
+						</li>
+					</c:if>
+				</c:forEach>
 			</ul>
 		</div>
 	</div>
@@ -400,7 +399,7 @@
 						<div class="workTaskCont">
 							<div class="taskType">
 								<div class="taskTypeTxt">${wsm.name}</div>
-								<div class="taskBtn taskPubBtn">发布</div>
+								<div id="${wsm.id}" class="taskBtn taskPubBtn">发布</div>
 							</div>
 						</div>
 					</div>
@@ -445,7 +444,7 @@
 			</li>
 			<li><!-- 暂无开发 -->
 				<div class="notask">
-					<div class="notaskimg"><img src="images/notask.png" width="100%"></div>
+					<div class="notaskimg"><img src="../static/wx/wximages/notask.png" width="100%"></div>
 					<div class="notaskTxt">暂无权限查看</div>
 				</div>
 			</li>
@@ -455,15 +454,31 @@
 </div>
 
 <script type="text/javascript">
+	var pageContextVal = $("#PageContext").val();
 	$(function() {
 		$(".verifyBtn").click(function(){
 			window.location.href = "checkSubmit.html";
 		});
-
+		
 		$(".taskPubBtn").click(function(){
-			window.location.href = "taskPub.html";
-		})
-
+			var maskId = $(".taskPubBtn").attr("id");
+			 $.ajax({
+			     type:'GET',
+			     url:pageContextVal+'/wmw/releasePd',
+			     data:{'maskId':maskId},
+				 dataType: "json",
+			     success:function(data){
+						switch(data.code) {
+							case "0" : window.location.href = "taskPub.html"; break;
+							case "1" : alert(data.message); break;
+						}
+			     },
+			     error:function(){
+			      	alert("未知错误");
+			     }
+			 });
+		});
+		
 		// task show
 		$(".showtaskBtn").click(function(){
 			if ($(this).parent().siblings(".taskCont").css('display') == 'none') {
@@ -483,16 +498,16 @@
 			switch(clickIndex){
 				case 0 : 
 					$funclis.eq(0).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskexefocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskexefocus.png)'
 					});
 					$funclis.eq(1).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskpubunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskpubunfocus.png)'
 					});
 					$funclis.eq(2).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskanalunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskanalunfocus.png)'
 					});
 					$funclis.eq(3).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskwaitunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskwaitunfocus.png)'
 					});
 					$(".sliderCont ul").animate({"margin-left": 0+'px'});
 					break;
@@ -501,46 +516,46 @@
 					// 	'background-image' : 'url(./images/taskexenufocus.png)'
 					// });
 					$funclis.eq(0).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskexenufocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskexenufocus.png)'
 					});
 					$funclis.eq(1).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskpubfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskpubfocus.png)'
 					});
 					$funclis.eq(2).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskanalunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskanalunfocus.png)'
 					});
 					$funclis.eq(3).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskwaitunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskwaitunfocus.png)'
 					});
 					$(".sliderCont ul").animate({"margin-left": -contW+'px'});
 					break;
 				case 2 :
 					$funclis.eq(0).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskexenufocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskexenufocus.png)'
 					});
 					$funclis.eq(1).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskpubunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskpubunfocus.png)'
 					});
 					$funclis.eq(2).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskanalfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskanalfocus.png)'
 					});
 					$funclis.eq(3).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskwaitunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskwaitunfocus.png)'
 					});
 					$(".sliderCont ul").animate({"margin-left": -2*contW+'px'});
 					break;
 				case 3 :
 					$funclis.eq(0).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskexenufocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskexenufocus.png)'
 					});
 					$funclis.eq(1).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskpubunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskpubunfocus.png)'
 					});
 					$funclis.eq(2).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskanalunfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskanalunfocus.png)'
 					});
 					$funclis.eq(3).children('.funcIcon').css({
-						'background-image' : 'url(./images/taskwaitfocus.png)'
+						'background-image' : 'url(../static/wx/wximages/taskwaitfocus.png)'
 					});
 					$(".sliderCont ul").animate({"margin-left": -3*contW+'px'});
 					break;
