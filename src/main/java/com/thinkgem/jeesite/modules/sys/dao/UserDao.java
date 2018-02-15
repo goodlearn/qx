@@ -25,7 +25,7 @@ public interface UserDao extends CrudDao<User> {
 	public User getByLoginName(User user);
 	
 	/**
-	 * 根据身份证查询
+	 * 根据员工号查询
 	 * @param loginName
 	 * @return
 	 */

@@ -1,3 +1,5 @@
+待办:JS提醒
+
 https://www.cnblogs.com/jokerjason/p/5740917.html
 
 ALTER TABLE sys_wx_user ADD CONSTRAINT wxuser_idcard UNIQUE(id_card)

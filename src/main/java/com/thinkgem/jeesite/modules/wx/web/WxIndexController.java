@@ -53,11 +53,17 @@ public class WxIndexController extends WxBaseController{
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */
-		String empNo = request.getParameter("empNo");
+		String empNo = findEmpNo();
 		if(null == empNo) {
 			model.addAttribute("message",ERR_EMP_NO_NULL);
 			return WX_ERROR;
 		}
+		
+		if(null == workPersonService.findByEmpNo(empNo)) {
+			model.addAttribute("message",ERR_WP_NULL);
+			return WX_ERROR;
+		}
+		
 		//查询员工
 		WorkPerson loginPerson = workPersonService.findByEmpNo(empNo);
 		if(null == loginPerson) {

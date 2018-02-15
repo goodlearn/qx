@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904cCsItem;
 import com.thinkgem.jeesite.modules.sys.service.Sf31904cCsItemService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 
 /**
@@ -57,7 +58,7 @@ public class Sf31904cCsItemController extends BaseController {
 	@RequestMapping(value = "allocation",method= {RequestMethod.POST})
 	@ResponseBody
 	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s) {
-		sf31904cCsItemService.createMask(viewMcsi1s);
+		sf31904cCsItemService.createMask(viewMcsi1s,UserUtils.getUser());
 		return backJsonWithCode(SUC_CODE,MSG_ALLOCATION_SUCCESS);
 	}
 	

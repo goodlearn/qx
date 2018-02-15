@@ -96,7 +96,7 @@
 			<include refid="userColumns"/>
 		FROM sys_user a
 		<include refid="userJoins"/>
-		WHERE a.emp_no = #{0}
+		WHERE a.emp_no = #{empNo}
 	</select>
 	
 	<!-- 根据登录名查询用户 -->

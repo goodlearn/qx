@@ -54,10 +54,12 @@ public class MaskDispatchService extends BaseService {
 	}
 	
 	//PC任务分配调度
-	public MdControl pcMaskDispatch(String maskId,Model model) {
+	public MdControl pcMaskDispatch(String maskId,Model model,boolean isWx,String empNo) {
 		MdControl param = setMdControl();
 		param.setMaskId(maskId);
 		param.setModel(model);
+		param.setWx(isWx);
+		param.setEmpNo(empNo);
 		param.pageDispatch();//数据分发
 		return param;
 	}

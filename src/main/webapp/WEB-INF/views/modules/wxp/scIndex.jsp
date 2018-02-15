@@ -461,15 +461,15 @@
 		});
 		
 		$(".taskPubBtn").click(function(){
-			var maskId = $(".taskPubBtn").attr("id");
+			var wsmId = $(".taskPubBtn").attr("id");
 			 $.ajax({
 			     type:'GET',
 			     url:pageContextVal+'/wmw/releasePd',
-			     data:{'maskId':maskId},
+			     data:{'wsmId':wsmId},
 				 dataType: "json",
 			     success:function(data){
 						switch(data.code) {
-							case "0" : window.location.href = "taskPub.html"; break;
+							case "0" : window.location.href = pageContextVal+'/wmw/pallocation?maskId='+data.message; break;
 							case "1" : alert(data.message); break;
 						}
 			     },

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
 import com.thinkgem.jeesite.modules.sys.service.MaskDispatchService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 任务调度Controller
@@ -30,7 +31,7 @@ public class MaskDispatchController extends BaseController {
 	@RequestMapping(value = {"maskDispatch"})
 	public String maskDispatch(HttpServletRequest request, HttpServletResponse response, Model model) {
 		String maskId = request.getParameter("maskId");
-		MdControl stateParam = maskDispatchService.pcMaskDispatch(maskId,model);
+		MdControl stateParam = maskDispatchService.pcMaskDispatch(maskId,model,false,UserUtils.getUser().getEmpNo());
 		return stateParam.getValue();
 	}
 	

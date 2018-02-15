@@ -84,7 +84,7 @@ public class Sf31904cCsItemService extends CrudService<Sf31904cCsItemDao, Sf3190
 	 * @param ViewMcsi1
 	 */
 	@Transactional(readOnly = false)
-	public void createMask(ViewMcsi1[] viewMcsi1s) {
+	public void createMask(ViewMcsi1[] viewMcsi1s,User user) {
 		//获取总任务号
 		String maskId = viewMcsi1s[0].getMaskId();
 		WsMaskWc wsMaskWc = wsMaskWcDao.get(maskId);
@@ -104,7 +104,6 @@ public class Sf31904cCsItemService extends CrudService<Sf31904cCsItemDao, Sf3190
 			return;
 		}
 		 
-		User user = UserUtils.getUser();
 		String empNo = user.getEmpNo();
 		WorkPerson wp = workPersonDao.findByEmpNo(empNo);//员工
 		//提交状态

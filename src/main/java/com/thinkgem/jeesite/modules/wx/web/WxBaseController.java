@@ -23,16 +23,23 @@ public abstract class WxBaseController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	
-	//首页
-	protected final String INDEX_INFO = "modules/wxp/scIndex";
+	//页面
+	protected final String INDEX_INFO = "modules/wxp/scIndex";//首页
+	protected final String TASK_PUB = "modules/wxp/taskPub";//任务分配
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
 	protected final String ERR_WSM_ID_NULL = "任务号为空";
+	protected final String ERR_WSM_NULL = "不存在该任务";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_WP_NULL = "不存在该员工";
 	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
 	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
+	protected final String ERR_NOT_MASK_SERVICE = "没有任务处理对象";
+	
+	
+	//信息
+	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
 
 	
 	protected final String successCode = "0";//成功码
@@ -97,5 +104,13 @@ public abstract class WxBaseController {
 		map.put("message", message);
 		String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
 		return jsonResult;
+	}
+	
+	
+	/**
+	 * 根据微信获取员工号
+	 */
+	protected String findEmpNo() {
+		return "11614090";
 	}
 }

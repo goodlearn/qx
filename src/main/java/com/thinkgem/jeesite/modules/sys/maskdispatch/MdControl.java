@@ -40,9 +40,14 @@ public class MdControl {
 	private MotorCheckSpotItem1Dao motorCheckSpotItem1Daol;
 	
 	public final static String ERROR_URL_PC = "modules/sys/sysError";
+	//错误页面
+	public final static String WX_ERROR = "modules/wxp/500";
 	public final static String MOTOR_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/mcsi1Form";//模板表1 发动机点检单一
 	public final static String FITTER_CHECK_SPOT_ITEM_1 = "modules/maskdispatch/fcsi1Form";//汽修车间220T卡车钳工周检点检卡
+	
 	public final static String SF31904C_CS_ITEM = "modules/maskdispatch/sf31904ccsForm";//SF31904C卡车点检卡
+	public final static String WX_SF31904C_CS_ITEM = "modules/wxp/sf31904ccstp";//SF31904C卡车点检卡
+
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -52,12 +57,24 @@ public class MdControl {
 	
 	private String maskId;//调度的任务Id
 	
+	private String empNo;//员工号
+	
+	private boolean isWx = false;//默认不是微信
+	
 	public void pageDispatch() {
+		
 		//先看看是不是班长
 		if(!isMonitor()) {
-			model.addAttribute("message",NO_MONITOR);
-			setValue(ERROR_URL_PC);
+			if(isWx()) {
+				model.addAttribute("message",NO_MONITOR);
+				setValue(WX_ERROR);
+			}else {
+				model.addAttribute("message",NO_MONITOR);
+				setValue(ERROR_URL_PC);
+			}
 		}
+		
+		
 		
 		//根据任务号 找到分配页面
 		setMaskAllocation();
@@ -94,7 +111,11 @@ public class MdControl {
 		model.addAttribute("sfccs", DictUtils.getDictList("sf31904cCsItem"));
 		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
-		setValue(MOTOR_CHECK_SPOT_ITEM_1);
+		if(isWx()) {
+			setValue(WX_SF31904C_CS_ITEM);
+		}else {
+			setValue(SF31904C_CS_ITEM);
+		}
 	}
 
 	//模板表 发动机点检单一
@@ -115,7 +136,12 @@ public class MdControl {
 	
 	//先看看是不是班长
 	private boolean isMonitor() {
-		User user = UserUtils.getUser();
+		User user = null;
+		if(isWx()) {
+			user = UserUtils.findByEmpNo(empNo);
+		}else {
+			user = UserUtils.getUser();
+		}
 		if(user.isAdmin()) {
 			return true;//如果是管理员直接跳过
 		}
@@ -194,7 +220,22 @@ public class MdControl {
 	public void setMotorCheckSpotItem1Daol(MotorCheckSpotItem1Dao motorCheckSpotItem1Daol) {
 		this.motorCheckSpotItem1Daol = motorCheckSpotItem1Daol;
 	}
-	
+
+	public boolean isWx() {
+		return isWx;
+	}
+
+	public void setWx(boolean isWx) {
+		this.isWx = isWx;
+	}
+
+	public String getEmpNo() {
+		return empNo;
+	}
+
+	public void setEmpNo(String empNo) {
+		this.empNo = empNo;
+	}
 	
 	
 }

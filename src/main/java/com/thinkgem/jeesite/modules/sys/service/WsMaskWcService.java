@@ -81,6 +81,20 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		return null ;
 	}
 	
+	/**
+	 * 任务是否为空
+	 */
+	public List<WsMaskWc> validateWsmId(String wsmId) {
+		WsMaskWc query = new WsMaskWc();
+		query.setWorkShopMaskId(wsmId);
+		List<WsMaskWc> entities = dao.findList(query);
+		if(null == entities) {
+			return null;
+		}
+		return entities ;
+	}
+	
+	
 	//是否有未提交的数据
 	private boolean isNotSubmit(String empNo) {
 		WorkPerson person = workPersonDao.findByEmpNo(empNo);
@@ -109,25 +123,26 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	
 	//每日发布任务
 	@Transactional(readOnly = false)
-	public void releasePd(String wsmId) {
+	public WsMaskWc releasePd(String wsmId,User user) {
 		WorkShopMask workShopMask = workShopMaskDao.get(wsmId);
 		if(null == workShopMask) {
-			return;
+			return null;
 		}
 		//班级任务生成
-		User user = UserUtils.getUser();
 		WsMaskWc wsMaskWc = new WsMaskWc();
 		String no = DictUtils.getDictValue("否", "yes_no", "0");
 		wsMaskWc.setId(IdGen.uuid());
 		wsMaskWc.setWorkClassId(workShopMask.getWorkClassId());
 		wsMaskWc.setWorkShopMaskId(workShopMask.getId());
 		wsMaskWc.setSubmitState(no);//未提交的
+		wsMaskWc.setRunTime("0");
 		wsMaskWc.setCreateBy(user);
 		wsMaskWc.setCreateDate(new Date());
 		wsMaskWc.setUpdateBy(user);
 		wsMaskWc.setUpdateDate(new Date());
 		wsMaskWc.setEndDate(Date2Utils.getEndDayOfTomorrow());
 		dao.insert(wsMaskWc);
+		return wsMaskWc;
 	}
 	
 	//未提交数据列表

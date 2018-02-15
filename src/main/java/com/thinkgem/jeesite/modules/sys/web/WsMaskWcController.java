@@ -22,6 +22,7 @@ import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 车间任务班级关联Controller
@@ -115,7 +116,7 @@ public class WsMaskWcController extends BaseController {
 			addMessage(redirectAttributes, validateMsg);
 			return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/wsmlist/?repage";
 		}
-		wsMaskWcService.releasePd(wsmId);
+		wsMaskWcService.releasePd(wsmId,UserUtils.getUser());
 		addMessage(redirectAttributes, "今日任务发布成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";
 	}
