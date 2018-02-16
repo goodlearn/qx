@@ -64,8 +64,8 @@
 		<c:forEach items="${page.list}" var="workPerson">
 			<tr>
 				<td><a href="${ctx}/sys/workPerson/form?id=${workPerson.id}">
-					${workPerson.name}
-				</td></a>
+					${workPerson.name}</a>
+				</td>
 				<td>
 					${workPerson.no}
 				</td>

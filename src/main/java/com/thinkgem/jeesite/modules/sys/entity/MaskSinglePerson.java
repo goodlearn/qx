@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -19,6 +21,25 @@ public class MaskSinglePerson extends DataEntity<MaskSinglePerson> {
 	private MaskMainPerson mmp; //所属任务
 	private WorkPerson wp;
 	
+	private String partName;//部位名称
+	private List<MaskContent> mcList;//所属任务
+	
+	public List<MaskContent> getMcList() {
+		return mcList;
+	}
+
+	public void setMcList(List<MaskContent> mcList) {
+		this.mcList = mcList;
+	}
+
+	public String getPartName() {
+		return partName;
+	}
+
+	public void setPartName(String partName) {
+		this.partName = partName;
+	}
+
 	public MaskSinglePerson() {
 		super();
 	}

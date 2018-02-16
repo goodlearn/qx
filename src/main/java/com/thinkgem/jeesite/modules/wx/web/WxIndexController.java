@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.wx.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,9 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.Dict;
+import com.thinkgem.jeesite.common.utils.CasUtils;
+import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
@@ -58,6 +58,7 @@ public class WxIndexController extends WxBaseController{
 	@Autowired
 	private BusinessAssembleService businessAssembleService;
 	
+	
 	//导航
 	private final String NAVIGAION_1 = "任务执行";
 	private final String NAVIGAION_2 = "任务发布";
@@ -100,6 +101,7 @@ public class WxIndexController extends WxBaseController{
 		//按照级别处理
 		if(DictUtils.getDictValue("班长", "workPersonLevel", "2").equals(level)) {
 			addUnFinishMask(empNo,model);//添加需要处理的任务
+			addFindDateMask(model,empNo,request);//任务列表
 			return monitorProcess(model,loginPerson);
 		}else {
 			model.addAttribute("message",ERR_WP_LEVEL_NULL);
@@ -107,111 +109,110 @@ public class WxIndexController extends WxBaseController{
 		}
 	}
 	
+	//查找时间范围内的任务
+	private void addFindDateMask(Model model,String empNo,HttpServletRequest request) {
+		try {
+			String dateParam = request.getParameter("dateQuery");
+			if(null == dateParam) {
+				dateParam = CasUtils.convertDate2YMDString(new Date());
+			}
+			Date date = CasUtils.convertString2YMDDate(dateParam);
+			String beginDate = CasUtils.convertDate2HMSString(Date2Utils.getDayStartTime(date));
+			String endDate = CasUtils.convertDate2HMSString(Date2Utils.getDayEndTime(date));
+			List<WsMaskWc> wmwList = wsMaskWcService.findMaskInClass(empNo, beginDate, endDate);
+			if(null == wmwList || wmwList.size() == 0) {
+				model.addAttribute("dateWmw","no");
+			}else {
+				model.addAttribute("dateWmw","yes");
+				model.addAttribute("dateWmwList",wmwList);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	//查询未完成的任务列表
 	private void addUnFinishMask(String empNo,Model model){
+		
+		//查看人员所在班组是否有任务
 		List<WsMaskWc> wmwList = wsMaskWcService.findUnFinishMaskInClass(empNo);
 		if(null == wmwList) {
 			model.addAttribute("isUfMasks","no");//没有未完成的任务
 			return;
 		}
 		
+		/**
+		 * 有任务的话，需要查看班组任务是否分配到个人
+		 * 查询是否有MaskSinglePerson
+		 */
 		List<ViewUnFinishMask> viewUfmList = new ArrayList<ViewUnFinishMask>();
-		
+ 		
+		//遍历任务列表 找到个人任务列表
 		for(WsMaskWc wsMaskWc : wmwList) {
 			String wmwId = wsMaskWc.getId();
-			//查询审核人Id
-			if(findMasks(wmwId,empNo)) {
+			List<MaskSinglePerson> tempMspList = findSinglePersonMasks(wmwId,empNo);//该员工分配的任务列表
+			if(null!=tempMspList) {
+				//如果有任务添加到列表中
 				ViewUnFinishMask vufm = new ViewUnFinishMask();
-				vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());
-				vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());
-				vufm.setParts(findParts(wsMaskWc));
+				vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());//车间任务ID
+				vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());//车间任务名称
+				vufm.setWsMaskWcId(wmwId);//班组发布任务
+				vufm.setMspList(tempMspList);//存放个人列表
+				maskSinglePersonService.setPartNameForList(tempMspList, wmwId);
 				viewUfmList.add(vufm);
 			}
 		}
 		
+		//是否有任务 返回到界面中
 		if(viewUfmList.size() > 0) {
 			model.addAttribute("isUfMasks","yes");//有未完成的任务
-			model.addAttribute("processMasks",viewUfmList);
+			model.addAttribute("processMasks",viewUfmList);//任务列表
 		}else {
 			model.addAttribute("isUfMasks","no");//没有未完成的任务
 		}
 	}
 	
-	//获取部位信息
-	private List<Dict> findParts(WsMaskWc wsMaskWc){
-		//依据任务号找到车间任务号
-		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
-		//找到车间任务
-		WorkShopMask workShopMask = workShopMaskService.get(workShopMaskId);
-		//找到业务集号
-		String bussinessAssembleId = workShopMask.getBussinessAssembleId();
-		//找到业务集
-		BusinessAssemble businessAssemble = businessAssembleService.get(bussinessAssembleId);
-		//找到类型
-		String type = businessAssemble.getType();
-		
-		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
-			return DictUtils.getDictList("sf31904cCsItem");
-		}	
-		return null;
-	}
 	
 	//是否有任务信息
-	private boolean findMasks(String wmwId,String empNo) {
-		WorkPerson wp = workPersonService.findByEmpNo(empNo);
-		String wpId = wp.getId();
+	private List<MaskSinglePerson> findSinglePersonMasks(String wmwId,String empNo) {
+		
+		List<MaskSinglePerson> retList = new ArrayList<MaskSinglePerson>();
 		
 		//查询审核人
 		MaskMainPerson query = new MaskMainPerson();
-		query.setWorkPersonId(wpId);
-		query.setWsMaskWcId(wmwId);
+		query.setWsMaskWcId(wmwId);//该任务中审核人任务列表条件
 		
 		List<MaskMainPerson> mmpList = maskMainPersonService.findList(query);
 		
 		//没有审核任务
 		if(null == mmpList) {
-			return false;//没有审核任务
+			return null;//返回空值
 		}
 		
 		//看有没有任务
 		for(MaskMainPerson forEntity:mmpList) {
 			String mmpId = forEntity.getId();
-			return findSinglePersons(empNo,mmpId);
+			retList.addAll(findSinglePersons(empNo,mmpId));//添加该员工在改审核任务下的任务列表
 		}
 		
-		return false;//没有审核任务
+		return retList;//没有审核任务
 	}
 	
-	//查询有审核信息
-	private boolean findMainPersons(String empNo,String wmwId){
-
-		WorkPerson wp = workPersonService.findByEmpNo(empNo);
-		String wpId = wp.getId();
-		
-		//查询审核人
-		MaskMainPerson query = new MaskMainPerson();
-		query.setWorkPersonId(wpId);
-		query.setWsMaskWcId(wmwId);
-		
-		if(null == maskMainPersonService.findList(query)) {
-			return false;//没有审核任务
-		}
-		
-		return true;//有审核任务
-	}
 	
-	private boolean findSinglePersons(String empNo,String mmpId) {
+	/**
+	 * 该员工是否有分配任务，返回分配的任务列表
+	 * @param empNo
+	 * @param mmpId
+	 * @return
+	 */
+	private List<MaskSinglePerson> findSinglePersons(String empNo,String mmpId) {
 		WorkPerson wp = workPersonService.findByEmpNo(empNo);
 		String wpId = wp.getId();
 		//查询个人信息
 		MaskSinglePerson query = new MaskSinglePerson();
 		query.setMmpId(mmpId);
 		query.setWorkPersonId(wpId);
-		if(null == maskSinglePersonService.findList(query)) {
-			return false;
-		}
-		return true;
+		return maskSinglePersonService.findList(query);
 	}
 	
 	//班长级别信息处理

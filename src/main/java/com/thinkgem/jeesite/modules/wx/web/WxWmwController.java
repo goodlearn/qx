@@ -1,5 +1,8 @@
 package com.thinkgem.jeesite.modules.wx.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,11 +21,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
+import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
+import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
+import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
 import com.thinkgem.jeesite.modules.sys.service.MaskDispatchService;
+import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
+import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 import com.thinkgem.jeesite.modules.sys.service.Sf31904cCsItemService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
@@ -30,6 +40,7 @@ import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
+import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 @Controller
 @RequestMapping(value = "wmw")
 public class WxWmwController extends WxBaseController{
@@ -50,8 +61,110 @@ public class WxWmwController extends WxBaseController{
 	private BusinessAssembleService businessAssembleService;
 	
 	@Autowired
-	private Sf31904cCsItemService sf31904cCsItemService;
+	private MaskContentService maskContentService;
 	
+	@Autowired
+	private MaskMainPersonService maskMainPersonService;
+	
+	@Autowired
+	private MaskSinglePersonService maskSinglePersonService;
+	
+	
+	@Autowired
+	private Sf31904cCsItemService sf31904cCsItemService;
+
+	//提交任务
+	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
+	public String utSubmit(HttpServletRequest request, HttpServletResponse response,Model model) {
+		return null;
+	}
+	
+	//查询任务
+	@RequestMapping(value = "wmwMask",method = RequestMethod.GET)
+	public String wmwMask(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String wmwId = request.getParameter("wmwId");
+		if(null == wmwId) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		WsMaskWc wsMaskWc = wsMaskWcService.get(wmwId);
+		if(null == wsMaskWc) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
+		MaskMainPerson query = new MaskMainPerson();
+		query.setWsMaskWcId(wmwId);//该任务中审核人任务列表条件
+		
+		List<MaskMainPerson> mmpList = maskMainPersonService.findList(query);
+		//没有审核任务
+		if(null == mmpList) {
+			model.addAttribute("message",ERR_MSP_LIST_NULL);
+			return WX_ERROR;
+		}
+		List<MaskSinglePerson> retList = new ArrayList<MaskSinglePerson>();
+		//看有没有任务
+		for(MaskMainPerson forEntity:mmpList) {
+			String mmpId = forEntity.getId();
+			MaskSinglePerson queryMsp = new MaskSinglePerson();
+			queryMsp.setMmpId(mmpId);
+			List<MaskSinglePerson> mspList = maskSinglePersonService.findList(queryMsp);
+			if(null != mspList) {
+				for(MaskSinglePerson msp : mspList) {
+					String mspId = msp.getId();
+					MaskContent mcQuery = new MaskContent();
+					mcQuery.setMspId(mspId);
+					msp.setMcList(maskContentService.findList(mcQuery));
+				}
+				retList.addAll(mspList);//添加该员工在改审核任务下的任务列表
+			}
+		}
+		
+		if(retList.size() == 0) {
+			model.addAttribute("message",ERR_NOT_MASK_LIST);
+			return WX_ERROR;
+		}
+		
+		ViewUnFinishMask vufm = new ViewUnFinishMask();
+		vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());//车间任务ID
+		vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());//车间任务名称
+		vufm.setWsMaskWcId(wmwId);//班组发布任务
+		vufm.setMspList(retList);//存放个人列表
+		maskSinglePersonService.setPartNameForList(retList, wmwId);
+		model.addAttribute("maskInfo",vufm);//任务列表
+		return TASK_INFO;
+	}
+	
+	//查询任务
+	@RequestMapping(value = "mcList",method = RequestMethod.GET)
+	public String mcList(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String mspId = request.getParameter("mspId");
+		if(null == mspId) {
+			//任务不存在
+			model.addAttribute("message",ERR_MSP_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		List<MaskContent> mcList = maskContentService.findMsListByMspId(mspId);
+		if(null == mcList || mcList.size() == 0) {
+			model.addAttribute("message",ERR_MSP_LIST_NULL);
+			return WX_ERROR;
+		}
+		
+		MaskSinglePerson msp = maskSinglePersonService.get(mspId);
+		MaskMainPerson mmp = maskMainPersonService.get(msp.getMmpId());
+		WsMaskWc wmw = wsMaskWcService.get(mmp.getWsMaskWcId());
+		WorkShopMask wsm = workShopMaskService.get(wmw.getWorkShopMaskId());
+		maskSinglePersonService.setPartName(msp, wmw.getId());
+
+		model.addAttribute("maskName",wsm.getName());
+		model.addAttribute("msp",msp);
+		model.addAttribute("mcList",mcList);
+		return USER_TASK;
+	}
 	//获取任务分配数据
 	@RequestMapping(value = "allocation",method= RequestMethod.POST)
 	@ResponseBody

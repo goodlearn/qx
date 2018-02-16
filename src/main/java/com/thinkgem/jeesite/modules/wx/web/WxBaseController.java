@@ -26,16 +26,21 @@ public abstract class WxBaseController {
 	//页面
 	protected final String INDEX_INFO = "modules/wxp/scIndex";//首页
 	protected final String TASK_PUB = "modules/wxp/taskPub";//任务分配
+	protected final String USER_TASK = "modules/wxp/userTask";///用户任务
+	protected final String TASK_INFO = "modules/wxp/taskInfo";//任务信息
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
 	protected final String ERR_WSM_ID_NULL = "任务号为空";
 	protected final String ERR_WSM_NULL = "不存在该任务";
+	protected final String ERR_MSP_ID_NULL = "人员未分配任务号";
+	protected final String ERR_MSP_LIST_NULL = "人员未分配任务";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_WP_NULL = "不存在该员工";
 	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
 	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
 	protected final String ERR_NOT_MASK_SERVICE = "没有任务处理对象";
+	protected final String ERR_NOT_MASK_LIST = "没有任务信息";
 	
 	
 	//信息

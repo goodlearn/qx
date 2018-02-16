@@ -33,6 +33,24 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findDateList" resultType="WsMaskWc">
+		SELECT 
+			<include refid="wsMaskWcColumns"/>
+		FROM ws_mask_wc a
+		<include refid="wsMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="workClassId != null and workClassId != ''">
+				AND a.work_class_id = #{workClassId}
+			</if>
+			<if test="beginQueryDate != null and endQueryDate != null and beginQueryDate != '' and endQueryDate != ''">
+				AND a.updateDate BETWEEN #{beginQueryDate} AND #{endQueryDate}
+			</if>
+		</where>
+		
+		
+	</select>
+	
 	<select id="findList" resultType="WsMaskWc">
 		SELECT 
 			<include refid="wsMaskWcColumns"/>

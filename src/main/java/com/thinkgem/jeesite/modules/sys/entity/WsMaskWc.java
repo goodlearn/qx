@@ -24,7 +24,25 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private String submitState;//是否提交
 	private WorkShopMask wsm; //任务
 	private WorkClass wc; //班级
+	private String beginQueryDate;
+	private String endQueryDate;
 	
+	public String getBeginQueryDate() {
+		return beginQueryDate;
+	}
+
+	public void setBeginQueryDate(String beginQueryDate) {
+		this.beginQueryDate = beginQueryDate;
+	}
+
+	public String getEndQueryDate() {
+		return endQueryDate;
+	}
+
+	public void setEndQueryDate(String endQueryDate) {
+		this.endQueryDate = endQueryDate;
+	}
+
 	public WsMaskWc() {
 		super();
 	}

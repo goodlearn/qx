@@ -94,6 +94,26 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		return entities ;
 	}
 	
+	/**
+	 * 特定时间范围内的数据
+	 */
+	public List<WsMaskWc> findMaskInClass(String empNo,String beginDate,String endDate){
+		WorkPerson person = workPersonDao.findByEmpNo(empNo);
+		String classId = person.getWorkClassId();
+		
+		//依据班级号查询任务
+		WsMaskWc query = new WsMaskWc();
+		query.setWorkClassId(classId);
+		query.setBeginQueryDate(beginDate);
+		query.setEndQueryDate(endDate);
+		List<WsMaskWc> wmsList = dao.findList(query);
+		if(null == wmsList || wmsList.size() == 0) {
+			//没有发布过任务
+			//没有发布
+			return null;
+		}
+		return wmsList;
+	}
 	
 	/**
 	 * 所在班级是否有未提交的数据

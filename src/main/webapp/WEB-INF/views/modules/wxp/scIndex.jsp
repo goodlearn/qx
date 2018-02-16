@@ -308,13 +308,15 @@
 								<div class="taskType">
 									<div class="taskTypeTxt">${pm.workShopMaskName}</div>
 									<div class="taskBtn showtaskBtn">展开</div>
-									<div class="taskBtn verifyBtn">审核</div>
+									<c:if test = "${not empty isMonitor}">
+										<div class="taskBtn verifyBtn">审核</div>
+									</c:if>
 								</div>
 								<div class="taskCont">
 									<ul>
-										<c:forEach items="${pm.parts}" var="part" varStatus="status">
-											<a href="userTask.html">
-												<li><p class="uncomplete">${part.label}</p></li>
+										<c:forEach items="${pm.mspList}" var="msp" varStatus="status">
+											<a href="${pageContext.request.contextPath}/wmw/mcList?mspId=${msp.id}">
+												<li><p class="uncomplete">${msp.partName}</p></li>
 											</a>
 										</c:forEach>
 									</ul>
@@ -346,36 +348,27 @@
 				<div class="dateSelector">
 					<input id="dateInput" readonly="true" value="2018-02-12">
 				</div>
-
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskComplete taskUnCompleteState">M789点检任务</div>
-							<div class="taskInfoBtn taskUnCompleteBtn"><a href="#">详情</a></div>
+				<c:if test = "${dateWmw == 'yes'}">
+					<c:forEach items="${dateWmwList}" var="datewmw" varStatus="status">
+						<div class="taksInfoCont">
+							<div class="workTaskCont">
+								<div class="taskType">
+									<c:if test = "${datewmw.submitState == '0'}">
+										<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
+										<div class="taskInfoBtn taskUnCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
+									</c:if>
+									<c:if test = "${datewmw.submitState == '1'}">
+										<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
+										<div class="taskInfoBtn taskCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
+									</c:if>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskComplete taskCompleteState">M789点检任务</div>
-							<div class="taskInfoBtn taskCompleteBtn"><a href="taskInfo.html">详情</a></div>
-						</div>
-					</div>
-				</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskComplete taskUnCompleteState">M789点检任务</div>
-							<div class="taskInfoBtn taskUnCompleteBtn"><a href="#">详情</a></div>
-						</div>
-					</div>
-
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskComplete taskCompleteState">M789点检任务</div>
-							<div class="taskInfoBtn taskCompleteBtn"><a href="taskInfo.html">详情</a></div>
-						</div>
-					</div>
-				</div>
+					</c:forEach>
+				</c:if>
+				<c:if test = "${dateWmw == 'no'}">
+					暂无任务
+				</c:if>
 			</li>
 			<li><!-- 暂无开发 -->
 				<div class="notask">

@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.List;
@@ -43,5 +40,11 @@ public class MaskContentService extends CrudService<MaskContentDao, MaskContent>
 	public void delete(MaskContent maskContent) {
 		super.delete(maskContent);
 	}
-	
+
+	//依据maskSinglePersonId查询任务
+	public List<MaskContent> findMsListByMspId(String mspId){
+		MaskContent query = new MaskContent();
+		query.setMspId(mspId);
+		return findList(query);
+	}
 }

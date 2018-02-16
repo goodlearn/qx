@@ -108,7 +108,7 @@ public class MdControl {
 	
 	//模板表 SF31904C卡车点检卡
 	private void setSF31904CItemData() {
-		model.addAttribute("sfccs", DictUtils.getDictList("sf31904cCsItem"));
+		model.addAttribute("sfccs", DictUtils.getDictList(Global.SF31904_CS_DICT));
 		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {

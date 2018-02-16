@@ -60,7 +60,7 @@
 				<ul>
 					<li class="borderButtom">
 						<p id="${var.value}" class="taskProject">
-							<input id="${var.label}" type="hidden" />
+							<input id="${var.value}" type="hidden" />
 						</p>
 					</li>
 					<li>
