@@ -47,7 +47,6 @@
 			<tr>
 				<th>所属任务</th>
 				<th>个人名字</th>
-				<th>负责部位</th>
 				<th>提交状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -62,9 +61,6 @@
 				</a></td>
 				<td>
 					${maskSinglePerson.wp.name}
-				</td>
-				<td>
-					${fns:getPartDictValue(maskSinglePerson.part, maskSinglePerson.id, '')}
 				</td>
 				<td>
 					${fns:getDictLabel(maskSinglePerson.submitState, 'yes_no', '')}

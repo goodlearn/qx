@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.sys.entity;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.sys.view.TemplateContent;
 
 /**
  * 任务内容表Entity
@@ -17,8 +18,17 @@ public class MaskContent extends DataEntity<MaskContent> {
 	private String problem;		// 有无问题
 	private MaskSinglePerson msp;
 	
+	private TemplateContent tc;
 	
 	
+	public TemplateContent getTc() {
+		return tc;
+	}
+
+	public void setTc(TemplateContent tc) {
+		this.tc = tc;
+	}
+
 	public MaskContent() {
 		super();
 	}

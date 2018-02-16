@@ -100,8 +100,8 @@
 				<c:forEach items="${msp.mcList}" var="mc" varStatus="mcstatus">
 					<li class="borderButtom">
 						<input type="text" value="fdsafd" name="" readonly="true">
-						<p class="checkTxt">${mc.id}</p>
-						<textarea readonly="true">${mc.remark}</textarea>
+						<p class="checkTxt">${mc.tc.item}</p>
+						<textarea readonly="true">${mc.remarks}</textarea>
 					</li>
 				</c:forEach>
 			</ul>

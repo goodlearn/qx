@@ -180,22 +180,12 @@
 	<form id="checkForm" action="${pageContext.request.contextPath}/wmw/utSubmit" method="post">
 		<div class="checkCont">
 			<ul>
-				<li class="borderButtom">
-					<input type="checkbox" id="check1" value="1" name="chb">
-					<label class="unselect" for="check1">解放路的撒娇解放路的撒娇解放路的撒娇解放路的撒娇解放路的撒娇</label>
-				</li>
-				<li class="borderButtom">
-					<input type="checkbox" id="check2" value="1" name="chb">
-					<label class="unselect"  for="check2">解放路的撒娇</label>
-				</li>
-				<li class="borderButtom">
-					<input type="checkbox" id="check3" value="1" name="chb">
-					<label class="unselect"  for="check3">解放路的撒娇</label>
-				</li>
-				<li>
-					<input type="checkbox" id="check4" value="1" name="chb">
-					<label class="unselect" for="check4">解放路的撒娇</label>
-				</li>
+				<c:forEach items="${mcList}" var="mc" varStatus="status">
+					<li class="borderButtom">
+						<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb">
+						<label class="unselect" for="check${status.count}">${mc.tc.item}</label>
+					</li>
+				</c:forEach>
 			</ul>
 			
 		</div>

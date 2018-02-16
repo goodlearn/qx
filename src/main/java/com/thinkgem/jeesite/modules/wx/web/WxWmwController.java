@@ -21,14 +21,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.Item220tZxBy;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.Sf31904cCsItem;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
+import com.thinkgem.jeesite.modules.sys.service.Item220tZxByService;
 import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
 import com.thinkgem.jeesite.modules.sys.service.MaskDispatchService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
@@ -39,6 +42,7 @@ import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.sys.view.TemplateContent;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 @Controller
@@ -72,7 +76,9 @@ public class WxWmwController extends WxBaseController{
 	
 	@Autowired
 	private Sf31904cCsItemService sf31904cCsItemService;
-
+	@Autowired
+	private Item220tZxByService item220tZxByService;
+	
 	//提交任务
 	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
 	public String utSubmit(HttpServletRequest request, HttpServletResponse response,Model model) {
@@ -117,7 +123,11 @@ public class WxWmwController extends WxBaseController{
 					String mspId = msp.getId();
 					MaskContent mcQuery = new MaskContent();
 					mcQuery.setMspId(mspId);
-					msp.setMcList(maskContentService.findList(mcQuery));
+					List<MaskContent> mcList = maskContentService.findList(mcQuery);
+					for(MaskContent mc : mcList) {
+						setTemplateContent(wmwId,mc);
+					}
+					msp.setMcList(mcList);
 				}
 				retList.addAll(mspList);//添加该员工在改审核任务下的任务列表
 			}
@@ -138,6 +148,31 @@ public class WxWmwController extends WxBaseController{
 		return TASK_INFO;
 	}
 	
+	/**
+	 * 根据任务号填充模板信息
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	private void setTemplateContent(String wsMaskWcId,MaskContent maskContent) {
+		String type = businessAssembleService.findBaType(wsMaskWcId);
+		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
+			String templateId = maskContent.getTemplateId();
+			Sf31904cCsItem sf31904cCsItem = sf31904cCsItemService.get(templateId);
+			TemplateContent templateContent = new TemplateContent();
+			templateContent.setItem(sf31904cCsItem.getItem());
+			maskContent.setTc(templateContent);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
+			String templateId = maskContent.getTemplateId();
+			Item220tZxBy item220tZxBy = item220tZxByService.get(templateId);
+			TemplateContent templateContent = new TemplateContent();
+			templateContent.setItem(item220tZxBy.getItem());
+			maskContent.setTc(templateContent);
+		}
+		
+	}
+	
 	//查询任务
 	@RequestMapping(value = "mcList",method = RequestMethod.GET)
 	public String mcList(HttpServletRequest request, HttpServletResponse response,Model model) {
@@ -154,12 +189,15 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
+		
 		MaskSinglePerson msp = maskSinglePersonService.get(mspId);
 		MaskMainPerson mmp = maskMainPersonService.get(msp.getMmpId());
 		WsMaskWc wmw = wsMaskWcService.get(mmp.getWsMaskWcId());
 		WorkShopMask wsm = workShopMaskService.get(wmw.getWorkShopMaskId());
 		maskSinglePersonService.setPartName(msp, wmw.getId());
-
+		for(MaskContent mc : mcList) {
+			setTemplateContent(wmw.getId(),mc);
+		}
 		model.addAttribute("maskName",wsm.getName());
 		model.addAttribute("msp",msp);
 		model.addAttribute("mcList",mcList);
@@ -196,6 +234,10 @@ public class WxWmwController extends WxBaseController{
 		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
 			//SF31904C卡车点检卡
 			sf31904cCsItemService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
+			//220T自卸卡车保养单（电气部分）
+			item220tZxByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
 			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
 		}
 		return backJsonWithCode(errCode,ERR_NOT_MASK_SERVICE);

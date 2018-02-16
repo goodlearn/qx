@@ -5,11 +5,11 @@ import org.hibernate.validator.constraints.Length;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
- * SF31904C卡车点检卡Entity
+ * 220T自卸卡车保养单（电气部分）Entity
  * @author wzy
- * @version 2018-02-14
+ * @version 2018-02-16
  */
-public class Sf31904cCsItem extends DataEntity<Sf31904cCsItem> {
+public class Item220tZxBy extends DataEntity<Item220tZxBy> {
 	
 	private static final long serialVersionUID = 1L;
 	private String part;		// 部位
@@ -29,11 +29,11 @@ public class Sf31904cCsItem extends DataEntity<Sf31904cCsItem> {
 		this.ba = ba;
 	}
 
-	public Sf31904cCsItem() {
+	public Item220tZxBy() {
 		super();
 	}
 
-	public Sf31904cCsItem(String id){
+	public Item220tZxBy(String id){
 		super(id);
 	}
 

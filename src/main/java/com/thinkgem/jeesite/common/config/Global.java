@@ -42,8 +42,11 @@ public class Global {
 	public static final String MOTOR_CHECK_SPOT_ITEM_1 = "发动机点检单一";
 	public static final String FITTER_CHECK_SPOT_ITEM_1 = "汽修车间220T卡车钳工周检点检卡";
 	public static final String SF31904C_CS_ITEM = "汽修车间SF31904C卡车点检卡";
+	public static final String ITEM_220T_ZX_BY = "220T自卸卡车保养单（电气部分）";
+
 	
 	public static final String SF31904_CS_DICT = "sf31904cCsItem";
+	public static final String ZX_BY_220T_DICT = "item220tZxBy";
 	
 	/**
 	 * 显示/隐藏
