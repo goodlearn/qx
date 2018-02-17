@@ -25,6 +25,7 @@ import com.thinkgem.jeesite.modules.sys.entity.Item220tZxBy;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.Sf31904ByItem;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904cCsItem;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -36,6 +37,7 @@ import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
 import com.thinkgem.jeesite.modules.sys.service.MaskDispatchService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
+import com.thinkgem.jeesite.modules.sys.service.Sf31904ByItemService;
 import com.thinkgem.jeesite.modules.sys.service.Sf31904cCsItemService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
@@ -78,7 +80,8 @@ public class WxWmwController extends WxBaseController{
 	private Sf31904cCsItemService sf31904cCsItemService;
 	@Autowired
 	private Item220tZxByService item220tZxByService;
-	
+	@Autowired
+	private Sf31904ByItemService sf31904ByItemService;
 	//提交任务
 	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
 	public String utSubmit(HttpServletRequest request, HttpServletResponse response,Model model) {
@@ -169,6 +172,12 @@ public class WxWmwController extends WxBaseController{
 			TemplateContent templateContent = new TemplateContent();
 			templateContent.setItem(item220tZxBy.getItem());
 			maskContent.setTc(templateContent);
+		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
+			String templateId = maskContent.getTemplateId();
+			Sf31904ByItem sf31904ByItem = sf31904ByItemService.get(templateId);
+			TemplateContent templateContent = new TemplateContent();
+			templateContent.setItem(sf31904ByItem.getItem());
+			maskContent.setTc(templateContent);
 		}
 		
 	}
@@ -238,6 +247,10 @@ public class WxWmwController extends WxBaseController{
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
 			//220T自卸卡车保养单（电气部分）
 			item220tZxByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
+			//SF31904卡车保养单（电气部分）
+			sf31904ByItemService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
 			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
 		}
 		return backJsonWithCode(errCode,ERR_NOT_MASK_SERVICE);

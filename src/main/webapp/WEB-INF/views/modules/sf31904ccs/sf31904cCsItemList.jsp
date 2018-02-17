@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/sys/sf31904cCsItem/">SF31904C卡车点检卡列表</a></li>
 		<shiro:hasPermission name="sys:sf31904cCsItem:edit"><li><a href="${ctx}/sys/sf31904cCsItem/form">SF31904C卡车点检卡添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="item220tZxBy" action="${ctx}/sys/sf31904cCsItem/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="sf31904cCsItem" action="${ctx}/sys/sf31904cCsItem/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 	</form:form>

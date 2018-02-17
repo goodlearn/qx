@@ -86,6 +86,11 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ZX_BY_220T_DICT, "");
 				msp.setPartName(partName);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.SF31904_BY_DICT, "");
+				msp.setPartName(partName);
+			}
 		}
 	}
 	

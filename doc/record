@@ -1,12 +1,23 @@
 待办:JS提醒
-添加字典新部位
+
+CREATE TABLE `sf31904_by_item`
+生成代码
+添加导航
+添加代码(
+参考之前例子，补充相应方法
+	Entity ba
+	EntityDao ba和left Join
+	EntityService createMask
+	EntityControl jsp文件夹和allocation
+	EntityList.jsp
+	EntityForm.jsp
+)
+添加字典新部位 参考 Sf31904ByItem
 添加字典bussinessType 
 添加表格数据
-班组任务 分配 maskDispatch MdControl 
+添加分配页面maskDispatch maskDispatch MdControl
 添加case 
 分配页面
-control
-service createmask
 
 微信页面
 WxIndexController

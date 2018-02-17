@@ -51,6 +51,9 @@ public class MdControl {
 	public final static String ITEM_220T_ZX_BY = "modules/maskdispatch/zxby220tForm";//  220T自卸卡车保养单（电气部分）
 	public final static String WX_ITEM_220T_ZX_BY = "modules/wxp/zxby220p";//  220T自卸卡车保养单（电气部分）
 	
+	public final static String SF31904C_BY_ITEM = "modules/maskdispatch/sf31904ByForm";// SF31904卡车保养单（电气部分）
+	public final static String WX_SF31904C_BY_ITEM = "modules/wxp/sf31904Byp";//  SF31904卡车保养单（电气部分）
+	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
 	private String value = null;//返回值
@@ -107,6 +110,20 @@ public class MdControl {
 			setSF31904CItemData();
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
 			set22TZxbyItemData();
+		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
+			setSF31904ByItemData();
+		}
+	}
+	
+	//SF31904卡车保养单（电气部分）
+	private void setSF31904ByItemData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.SF31904_BY_DICT));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_SF31904C_BY_ITEM);
+		}else {
+			setValue(SF31904C_BY_ITEM);
 		}
 	}
 	

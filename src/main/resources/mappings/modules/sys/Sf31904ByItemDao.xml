@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.Sf31904ByItemDao">
+    
+	<sql id="sf31904ByItemColumns">
+		a.id AS "id",
+		a.part AS "part",
+		a.number AS "number",
+		a.item AS "item",
+		a.check_result AS "checkResult",
+		a.process_result AS "processResult",
+		a.assemble_id AS "assembleId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		ba.id AS "ba.id",
+		ba.name AS "ba.name"
+	</sql>
+	
+	<sql id="sf31904ByItemJoins">
+			LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
+	</sql>
+    
+	<select id="get" resultType="Sf31904ByItem">
+		SELECT 
+			<include refid="sf31904ByItemColumns"/>
+		FROM sf31904_by_item a
+		<include refid="sf31904ByItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Sf31904ByItem">
+		SELECT 
+			<include refid="sf31904ByItemColumns"/>
+		FROM sf31904_by_item a
+		<include refid="sf31904ByItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="part != null and part != ''">
+				AND a.part = #{part}
+			</if>
+			<if test="number != null and number != ''">
+				AND a.number = #{number}
+			</if>
+			<if test="item != null and item != ''">
+				AND a.item = #{item}
+			</if>
+			<if test="checkResult != null and checkResult != ''">
+				AND a.check_result = #{checkResult}
+			</if>
+			<if test="assembleId != null and assembleId != ''">
+				AND a.assemble_id = #{assembleId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Sf31904ByItem">
+		SELECT 
+			<include refid="sf31904ByItemColumns"/>
+		FROM sf31904_by_item a
+		<include refid="sf31904ByItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sf31904_by_item(
+			id,
+			part,
+			number,
+			item,
+			check_result,
+			process_result,
+			assemble_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{part},
+			#{number},
+			#{item},
+			#{checkResult},
+			#{processResult},
+			#{assembleId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sf31904_by_item SET 	
+			part = #{part},
+			number = #{number},
+			item = #{item},
+			check_result = #{checkResult},
+			process_result = #{processResult},
+			assemble_id = #{assembleId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sf31904_by_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
