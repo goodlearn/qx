@@ -41,7 +41,7 @@ public abstract class WxBaseController {
 	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
 	protected final String ERR_NOT_MASK_SERVICE = "没有任务处理对象";
 	protected final String ERR_NOT_MASK_LIST = "没有任务信息";
-	
+	protected final String ERR_NOT_PART = "无部位信息";
 	
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";

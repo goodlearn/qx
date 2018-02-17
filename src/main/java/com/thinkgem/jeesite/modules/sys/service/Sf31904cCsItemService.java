@@ -134,7 +134,7 @@ public class Sf31904cCsItemService extends CrudService<Sf31904cCsItemDao, Sf3190
 			Sf31904cCsItem queryMcsi1 = new Sf31904cCsItem();
 			queryMcsi1.setPart(part);
 			queryMcsi1.setAssembleId(bussinessAssembleId);
-			List<Sf31904cCsItem> mcsi1List = dao.findAllList(queryMcsi1);
+			List<Sf31904cCsItem> mcsi1List = dao.findList(queryMcsi1);
 			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();

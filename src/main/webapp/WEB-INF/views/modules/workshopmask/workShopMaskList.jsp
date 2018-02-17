@@ -46,7 +46,7 @@
 					<form:options items="${fns:getAllClassList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>业务集：</label>
+			<li><label>使用表格：</label>
 				<form:select path="bussinessAssembleId" class="input-medium">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getBaList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>

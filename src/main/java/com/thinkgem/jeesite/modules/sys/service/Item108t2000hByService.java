@@ -12,10 +12,10 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.Item108t2000hBy;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
-import com.thinkgem.jeesite.modules.sys.entity.Sf31904ByItem;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -23,22 +23,22 @@ import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
+import com.thinkgem.jeesite.modules.sys.dao.Item108t2000hByDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.Sf31904ByItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 
 /**
- * SF31904卡车保养单（电气部分）Service
+ * 108T卡车2000H及以上级别保养单(机械部分)Service
  * @author wzy
- * @version 2018-02-17
+ * @version 2018-02-18
  */
 @Service
 @Transactional(readOnly = true)
-public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904ByItem> {
+public class Item108t2000hByService extends CrudService<Item108t2000hByDao, Item108t2000hBy> {
 
 	@Autowired
 	private WorkPersonDao workPersonDao;
@@ -54,28 +54,6 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 	private MaskSinglePersonDao maskSinglePersonDao;
 	@Autowired
 	private MaskContentDao maskContentDao;
-	
-	public Sf31904ByItem get(String id) {
-		return super.get(id);
-	}
-	
-	public List<Sf31904ByItem> findList(Sf31904ByItem sf31904ByItem) {
-		return super.findList(sf31904ByItem);
-	}
-	
-	public Page<Sf31904ByItem> findPage(Page<Sf31904ByItem> page, Sf31904ByItem sf31904ByItem) {
-		return super.findPage(page, sf31904ByItem);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Sf31904ByItem sf31904ByItem) {
-		super.save(sf31904ByItem);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Sf31904ByItem sf31904ByItem) {
-		super.delete(sf31904ByItem);
-	}
 	
 	/**
 	 * 生成任务
@@ -97,8 +75,8 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 		String type = businessAssemble.getType();
 		
 		//字典数据检验
-		if(!type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
-			//SF31904卡车保养单（电气部分）
+		if(!type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
+			//108T卡车2000H及以上级别保养单(机械部分)
 			return;
 		}
 		 
@@ -130,10 +108,10 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			String part = viewMsci1.getName();//部位
 			
 			//依据任务集和部位号 查询个人需要操作的行项
-			Sf31904ByItem queryMcsi1 = new Sf31904ByItem();
+			Item108t2000hBy queryMcsi1 = new Item108t2000hBy();
 			queryMcsi1.setPart(part);
 			queryMcsi1.setAssembleId(bussinessAssembleId);
-			List<Sf31904ByItem> mcsi1List = dao.findList(queryMcsi1);
+			List<Item108t2000hBy> mcsi1List = dao.findList(queryMcsi1);
 			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();
@@ -150,7 +128,7 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			maskSinglePerson.setUpdateDate(new Date());
 			maskSinglePersonDao.insert(maskSinglePerson);
 			
-			for(Sf31904ByItem forEntity :mcsi1List) {
+			for(Item108t2000hBy forEntity :mcsi1List) {
 				//每个人关联的任务保存
 				MaskContent mcEntity= new MaskContent();
 				String mcEntityId = IdGen.uuid();
@@ -166,4 +144,28 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			}
 		}
 	}
+	
+	
+	public Item108t2000hBy get(String id) {
+		return super.get(id);
+	}
+	
+	public List<Item108t2000hBy> findList(Item108t2000hBy item108t2000hBy) {
+		return super.findList(item108t2000hBy);
+	}
+	
+	public Page<Item108t2000hBy> findPage(Page<Item108t2000hBy> page, Item108t2000hBy item108t2000hBy) {
+		return super.findPage(page, item108t2000hBy);
+	}
+	
+	@Transactional(readOnly = false)
+	public void save(Item108t2000hBy item108t2000hBy) {
+		super.save(item108t2000hBy);
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(Item108t2000hBy item108t2000hBy) {
+		super.delete(item108t2000hBy);
+	}
+	
 }

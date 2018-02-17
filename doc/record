@@ -21,6 +21,7 @@ CREATE TABLE `sf31904_by_item`
 
 微信页面
 WxIndexController
+WxWmwController
 pallocation
 MaskSinglePersonService
 setPartNameForList

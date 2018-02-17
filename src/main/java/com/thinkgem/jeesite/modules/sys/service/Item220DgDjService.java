@@ -12,10 +12,10 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.Item220DgDj;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
-import com.thinkgem.jeesite.modules.sys.entity.Sf31904ByItem;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -23,22 +23,22 @@ import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
+import com.thinkgem.jeesite.modules.sys.dao.Item220DgDjDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
-import com.thinkgem.jeesite.modules.sys.dao.Sf31904ByItemDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 
 /**
- * SF31904卡车保养单（电气部分）Service
+ * 220T卡车电工周点检卡（电气部分）Service
  * @author wzy
  * @version 2018-02-17
  */
 @Service
 @Transactional(readOnly = true)
-public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904ByItem> {
+public class Item220DgDjService extends CrudService<Item220DgDjDao, Item220DgDj> {
 
 	@Autowired
 	private WorkPersonDao workPersonDao;
@@ -55,27 +55,6 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 	@Autowired
 	private MaskContentDao maskContentDao;
 	
-	public Sf31904ByItem get(String id) {
-		return super.get(id);
-	}
-	
-	public List<Sf31904ByItem> findList(Sf31904ByItem sf31904ByItem) {
-		return super.findList(sf31904ByItem);
-	}
-	
-	public Page<Sf31904ByItem> findPage(Page<Sf31904ByItem> page, Sf31904ByItem sf31904ByItem) {
-		return super.findPage(page, sf31904ByItem);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Sf31904ByItem sf31904ByItem) {
-		super.save(sf31904ByItem);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Sf31904ByItem sf31904ByItem) {
-		super.delete(sf31904ByItem);
-	}
 	
 	/**
 	 * 生成任务
@@ -97,8 +76,8 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 		String type = businessAssemble.getType();
 		
 		//字典数据检验
-		if(!type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
-			//SF31904卡车保养单（电气部分）
+		if(!type.equals(DictUtils.getDictValue(Global.ITEM_220T_DG_DJ_BY, "bussinessType", "1"))) {
+			//220T卡车电工周点检卡（电气部分）
 			return;
 		}
 		 
@@ -130,10 +109,10 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			String part = viewMsci1.getName();//部位
 			
 			//依据任务集和部位号 查询个人需要操作的行项
-			Sf31904ByItem queryMcsi1 = new Sf31904ByItem();
+			Item220DgDj queryMcsi1 = new Item220DgDj();
 			queryMcsi1.setPart(part);
 			queryMcsi1.setAssembleId(bussinessAssembleId);
-			List<Sf31904ByItem> mcsi1List = dao.findList(queryMcsi1);
+			List<Item220DgDj> mcsi1List = dao.findList(queryMcsi1);
 			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();
@@ -150,7 +129,7 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			maskSinglePerson.setUpdateDate(new Date());
 			maskSinglePersonDao.insert(maskSinglePerson);
 			
-			for(Sf31904ByItem forEntity :mcsi1List) {
+			for(Item220DgDj forEntity :mcsi1List) {
 				//每个人关联的任务保存
 				MaskContent mcEntity= new MaskContent();
 				String mcEntityId = IdGen.uuid();
@@ -166,4 +145,27 @@ public class Sf31904ByItemService extends CrudService<Sf31904ByItemDao, Sf31904B
 			}
 		}
 	}
+	
+	public Item220DgDj get(String id) {
+		return super.get(id);
+	}
+	
+	public List<Item220DgDj> findList(Item220DgDj item220DgDj) {
+		return super.findList(item220DgDj);
+	}
+	
+	public Page<Item220DgDj> findPage(Page<Item220DgDj> page, Item220DgDj item220DgDj) {
+		return super.findPage(page, item220DgDj);
+	}
+	
+	@Transactional(readOnly = false)
+	public void save(Item220DgDj item220DgDj) {
+		super.save(item220DgDj);
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(Item220DgDj item220DgDj) {
+		super.delete(item220DgDj);
+	}
+	
 }

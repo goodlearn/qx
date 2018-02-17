@@ -133,7 +133,7 @@ public class Item220tZxByService extends CrudService<Item220tZxByDao, Item220tZx
 			Item220tZxBy queryMcsi1 = new Item220tZxBy();
 			queryMcsi1.setPart(part);
 			queryMcsi1.setAssembleId(bussinessAssembleId);
-			List<Item220tZxBy> mcsi1List = dao.findAllList(queryMcsi1);
+			List<Item220tZxBy> mcsi1List = dao.findList(queryMcsi1);
 			
 			WorkPerson swp = workPersonDao.findByEmpNo(singleEmpNo);//员工
 			String singlePersonId = IdGen.uuid();

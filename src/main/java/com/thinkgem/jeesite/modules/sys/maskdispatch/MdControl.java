@@ -1,7 +1,5 @@
 package com.thinkgem.jeesite.modules.sys.maskdispatch;
 
-import java.util.List;
-
 import org.springframework.ui.Model;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -11,7 +9,6 @@ import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.MotorCheckSpotItem1;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -53,6 +50,16 @@ public class MdControl {
 	
 	public final static String SF31904C_BY_ITEM = "modules/maskdispatch/sf31904ByForm";// SF31904卡车保养单（电气部分）
 	public final static String WX_SF31904C_BY_ITEM = "modules/wxp/sf31904Byp";//  SF31904卡车保养单（电气部分）
+	
+	public final static String ITEM_220T_DG_DJ = "modules/maskdispatch/item220DgDjForm";// 220T卡车电工周点检卡（电气部分）
+	public final static String WX_ITEM_220T_DG_DJ = "modules/wxp/item220DgDjp";//  220T卡车电工周点检卡（电气部分）
+	
+	public final static String ITEM_SF31904_KC_DG_DJ = "modules/maskdispatch/itemsf31904kcDgDjForm";// 220T卡车电工周点检卡（电气部分）
+	public final static String WX_ITEM_SF31904_KC_DG_DJ = "modules/wxp/itemsf31904kcDgDjp";//  220T卡车电工周点检卡（电气部分）
+	
+	public final static String ITEM_108T_2000H_BY = "modules/maskdispatch/item108t2000hByForm";// 220T卡车电工周点检卡（电气部分）
+	public final static String WX_ITEM_108T_2000H_BY = "modules/wxp/item108t2000hByp";//  220T卡车电工周点检卡（电气部分）
+	
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -112,6 +119,48 @@ public class MdControl {
 			set22TZxbyItemData();
 		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
 			setSF31904ByItemData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_DG_DJ_BY, "bussinessType", "1"))) {
+			setItem220TDgDjData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_SF31904_KC_DG_DJ, "bussinessType", "1"))) {
+			setItemSf31904KcDgDjData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
+			setItem108t2000hByData();
+		}
+	}
+	
+	// 108T卡车2000H及以上级别保养单(机械部分)
+	private void setItem108t2000hByData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_108T_2000H_BY_DICT));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_108T_2000H_BY);
+		}else {
+			setValue(ITEM_108T_2000H_BY);
+		}
+	}
+	
+	// SF31904卡车电工周点检卡（电气部分）
+	private void setItemSf31904KcDgDjData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.SF31904_KC_DG_DJ));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_SF31904_KC_DG_DJ);
+		}else {
+			setValue(ITEM_SF31904_KC_DG_DJ);
+		}
+	}
+	
+	//220T卡车电工周点检卡（电气部分）
+	private void setItem220TDgDjData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.DG_DJ_220T_DICT));
+		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_220T_DG_DJ);
+		}else {
+			setValue(ITEM_220T_DG_DJ);
 		}
 	}
 	

@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.common.config;
 
 import java.io.File;
@@ -44,10 +41,17 @@ public class Global {
 	public static final String SF31904C_CS_ITEM = "汽修车间SF31904C卡车点检卡";
 	public static final String ITEM_220T_ZX_BY = "220T自卸卡车保养单（电气部分）";
 	public static final String SF31904C_BY_ITEM = "SF31904卡车保养单（电气部分）";
+	public static final String ITEM_220T_DG_DJ_BY = "220T卡车电工周点检卡（电气部分）";
+	public static final String ITEM_SF31904_KC_DG_DJ = "SF31904卡车电工周点检卡（电气部分）";
+	public static final String ITEM_108T_2000H_BY = "108T卡车2000H及以上级别保养单(机械部分)";
 	
 	public static final String SF31904_CS_DICT = "sf31904cCsItem";
 	public static final String ZX_BY_220T_DICT = "item220tZxBy";
 	public static final String SF31904_BY_DICT = "sf31904ByItem";
+	public static final String DG_DJ_220T_DICT = "item220DgDj";
+	public static final String SF31904_KC_DG_DJ = "itemSf31904KcDgDj";
+	public static final String ITEM_108T_2000H_BY_DICT = "item108t2000hBy";
+
 	/**
 	 * 显示/隐藏
 	 */
