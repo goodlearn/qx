@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.web;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +18,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
+import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 
 /**
  * 总负责人任务表Controller
@@ -33,6 +31,8 @@ public class MaskMainPersonController extends BaseController {
 
 	@Autowired
 	private MaskMainPersonService maskMainPersonService;
+	@Autowired
+	private MaskSinglePersonService maskSinglePersonService;
 	
 	@ModelAttribute
 	public MaskMainPerson get(@RequestParam(required=false) String id) {
@@ -44,6 +44,15 @@ public class MaskMainPersonController extends BaseController {
 			entity = new MaskMainPerson();
 		}
 		return entity;
+	}
+	
+	@RequiresPermissions("sys:maskMainPerson:view")
+	@RequestMapping(value = "details")
+	public String details(MaskMainPerson maskMainPerson, Model model) {
+		MaskMainPerson result = maskMainPersonService.findDetails(maskMainPerson.getId());
+		maskSinglePersonService.setPartNameForList(result.getMspList(), result.getWsMaskWcId());
+		model.addAttribute("result", result);
+		return "modules/mask/maskDetails";
 	}
 	
 	@RequiresPermissions("sys:maskMainPerson:view")

@@ -56,7 +56,7 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="maskMainPerson">
 			<tr>
-				<td><a href="${ctx}/sys/maskMainPerson/form?id=${maskMainPerson.id}">
+				<td><a href="${ctx}/sys/maskMainPerson/details?id=${maskMainPerson.id}">
 					${maskMainPerson.wmw.id}
 				</a></td>
 				<td>
