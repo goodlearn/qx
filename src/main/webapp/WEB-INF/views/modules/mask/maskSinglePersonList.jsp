@@ -25,11 +25,8 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>个人号：</label>
-				<form:select path="workPersonId" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllPersonList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
+			<li><label>任务编号：</label>
+				<form:input path="id" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>提交状态：</label>
 				<form:select path="submitState" class="input-medium">
@@ -45,7 +42,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>所属任务</th>
+				<th>任务编号</th>
 				<th>个人名字</th>
 				<th>提交状态</th>
 				<th>更新时间</th>
@@ -57,7 +54,7 @@
 		<c:forEach items="${page.list}" var="maskSinglePerson">
 			<tr>
 				<td><a href="${ctx}/sys/maskSinglePerson/form?id=${maskSinglePerson.id}">
-					${maskSinglePerson.mmp.id}
+					${maskSinglePerson.id}
 				</a></td>
 				<td>
 					${maskSinglePerson.wp.name}

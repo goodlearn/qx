@@ -17,20 +17,28 @@
 			<legend>内容信息</legend>
 			<table class="table-form">
 				<tr>
+					<td class="tit">表信息ID</td>
+					<td colspan="15">总表内容</td>
+				</tr>
+				<tr>
 					<td class="tit">ID</td>
 					<td colspan="2">${result.id}</td>
 					<td class="tit">提交状态</td>
-					<td colspan="2">${fns:getDictLabel(result.submitState, 'yes_no', '')}</td>
+					<td colspan="1">${fns:getDictLabel(result.submitState, 'yes_no', '')}</td>
 					<td class="tit">总负责人</td>
 					<td colspan="2">${result.wp.name}</td>
 					<td class="tit">运行时间数</td>
 					<td colspan="2">${result.wmw.runTime}</td>
 					<td class="tit">结束时间</td>
-					<td colspan="2">${result.wmw.endDate}</td>
+					<td colspan="2"><fmt:formatDate value="${result.wmw.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 					<td class="tit">班组任务提交状态</td>
 					<td colspan="2">${fns:getDictLabel(result.wmw.submitState, 'yes_no', '')}</td>
 				</tr>
 				<c:forEach items="${result.mspList}" var="msp" varStatus="status">
+					<tr>
+						<td class="tit">单项信息ID</td>
+						<td colspan="15">单项负责人内容</td>
+					</tr>
 					<tr>
 						<td class="tit">ID</td>
 						<td colspan="2">${msp.id}</td>
@@ -39,6 +47,10 @@
 						<td class="tit">处理部位</td>
 						<td colspan="2">${msp.partName}</td>
 					</tr>
+					<tr>
+							<td class="tit">具体信息ID</td>
+							<td colspan="15">具体负责人内容</td>
+					</tr>
 					<c:forEach items="${msp.mcList}" var="mc" varStatus="mcstatus">
 						<tr>
 							<td class="tit">ID</td>
@@ -46,7 +58,7 @@
 							<td class="tit">模板号</td>
 							<td colspan="2">${mc.templateId}</td>
 							<td class="tit">问题状态</td>
-							<td colspan="2">${mc.problem}</td>
+							<td colspan="2">${fns:getDictLabel(mc.problem, 'have_no', '')}</td>
 							<td class="tit">描述</td>
 							<td colspan="2">${mc.remarks}</td>
 						</tr>

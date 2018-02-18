@@ -41,6 +41,9 @@
 		<include refid="maskMainPersonJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
 			<if test="wsMaskWcId != null and wsMaskWcId != ''">
 				AND a.ws_mask_wc_id = #{wsMaskWcId}
 			</if>

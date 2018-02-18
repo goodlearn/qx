@@ -35,6 +35,9 @@
 		<include refid="maskContentJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
 			<if test="mspId != null and mspId != ''">
 				AND a.msp_id = #{mspId}
 			</if>

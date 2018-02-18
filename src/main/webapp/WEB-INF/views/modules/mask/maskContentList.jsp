@@ -25,11 +25,8 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>父任务号：</label>
-				<form:select path="mspId" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllmspList()}" itemLabel="id" itemValue="id" htmlEscape="false"/>
-				</form:select>
+			<li><label>任务编号：</label>
+				<form:input path="id" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>有无问题：</label>
 				<form:select path="problem" class="input-medium">
@@ -45,7 +42,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>父任务号</th>
+				<th>任务编号</th>
 				<th>有无问题</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -56,7 +53,7 @@
 		<c:forEach items="${page.list}" var="maskContent">
 			<tr>
 				<td><a href="${ctx}/sys/maskContent/form?id=${maskContent.id}">
-					${maskContent.msp.id}
+					${maskContent.id}
 				</a></td>
 				<td>
 					${fns:getDictLabel(maskContent.problem, 'have_no', '')}

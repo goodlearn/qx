@@ -47,7 +47,7 @@ public class MaskMainPersonService extends CrudService<MaskMainPersonDao, MaskMa
 			mmp.setMspList(mspList);
 			for(MaskSinglePerson msp :mspList) {
 				MaskContent mcQuery = new MaskContent();
-				mcQuery.setMspId(mcQuery.getId());
+				mcQuery.setMspId(msp.getId());
 				List<MaskContent> mcList = maskContentDao.findList(mcQuery);
 				msp.setMcList(mcList);
 			}
