@@ -326,7 +326,7 @@ public class WxWmwController extends WxBaseController{
 		String validateMsg = wsMaskWcService.validateReleasePd(wsmId);
 		if(null != validateMsg) {
 			//任务还未结束
-			return backJsonWithCode(errCode,ERR_MASK_NOT_EXPIRED);
+			return backJsonWithCode(errCode,validateMsg);
 		}
 		//发布任务
 		WsMaskWc wsMaskWc = wsMaskWcService.releasePd(wsmId,UserUtils.findByEmpNo(empNo));

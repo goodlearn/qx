@@ -116,6 +116,6 @@ public abstract class WxBaseController {
 	 * 根据微信获取员工号
 	 */
 	protected String findEmpNo() {
-		return "11614090";
+		return "11614091";
 	}
 }

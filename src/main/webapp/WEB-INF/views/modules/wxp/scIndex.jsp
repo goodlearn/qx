@@ -328,48 +328,49 @@
 				<c:if test = "${isUfMasks == 'no'}">
 					<div class="funcDesc">无任务</div>
 				</c:if>
-
-			<li> <!-- 任务发布 -->
-				<div class="funcDesc">当前待发布任务</div>
-				<c:forEach items="${wsmList}" var="wsm" varStatus="status">
-					<div class="taksInfoCont">
-						<div class="workTaskCont">
-							<div class="taskType">
-								<div class="taskTypeTxt">${wsm.name}</div>
-								<div id="${wsm.id}" class="taskBtn taskPubBtn">发布</div>
-							</div>
-						</div>
-					</div>
-				</c:forEach>
-			</li>
-
-			<li><!-- 任务情况 -->
-				<div class="funcDesc">任务情况查看</div>
-				<div class="dateSelector">
-					<input id="dateInput" readonly="true" value="2018-02-12">
-				</div>
-				<c:if test = "${dateWmw == 'yes'}">
-					<c:forEach items="${dateWmwList}" var="datewmw" varStatus="status">
+			<c:if test = "${isMonitor == 'yes'}">
+				<li> <!-- 任务发布 -->
+					<div class="funcDesc">当前待发布任务</div>
+					<c:forEach items="${wsmList}" var="wsm" varStatus="status">
 						<div class="taksInfoCont">
 							<div class="workTaskCont">
 								<div class="taskType">
-									<c:if test = "${datewmw.submitState == '0'}">
-										<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
-										<div class="taskInfoBtn taskUnCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
-									</c:if>
-									<c:if test = "${datewmw.submitState == '1'}">
-										<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
-										<div class="taskInfoBtn taskCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
-									</c:if>
+									<div class="taskTypeTxt">${wsm.name}</div>
+									<div id="${wsm.id}" class="taskBtn taskPubBtn">发布</div>
 								</div>
 							</div>
 						</div>
 					</c:forEach>
-				</c:if>
-				<c:if test = "${dateWmw == 'no'}">
-					暂无任务
-				</c:if>
-			</li>
+				</li>
+				<li><!-- 任务情况 -->
+					<div class="funcDesc">任务情况查看</div>
+					<div class="dateSelector">
+						<input id="dateInput" readonly="true" value="2018-02-12">
+					</div>
+					<c:if test = "${dateWmw == 'yes'}">
+						<c:forEach items="${dateWmwList}" var="datewmw" varStatus="status">
+							<div class="taksInfoCont">
+								<div class="workTaskCont">
+									<div class="taskType">
+										<c:if test = "${datewmw.submitState == '0'}">
+											<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
+											<div class="taskInfoBtn taskUnCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
+										</c:if>
+										<c:if test = "${datewmw.submitState == '1'}">
+											<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
+											<div class="taskInfoBtn taskCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
+										</c:if>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+					</c:if>
+					<c:if test = "${dateWmw == 'no'}">
+						<div class="funcDesc">暂无任务</div>
+					</c:if>
+				</li>
+			</c:if>
+
 			<li><!-- 暂无开发 -->
 				<div class="notask">
 					<div class="notaskimg"><img src="../static/wx/wximages/notask.png" width="100%"></div>

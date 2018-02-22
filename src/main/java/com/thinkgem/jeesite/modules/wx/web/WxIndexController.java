@@ -103,6 +103,10 @@ public class WxIndexController extends WxBaseController{
 			addUnFinishMask(empNo,model);//添加需要处理的任务
 			addFindDateMask(model,empNo,request);//任务列表
 			return monitorProcess(model,loginPerson);
+		}else if(DictUtils.getDictValue("工作人员", "workPersonLevel", "0").equals(level)) {
+			addUnFinishMask(empNo,model);//添加需要处理的任务
+			addFindDateMask(model,empNo,request);//任务列表
+			return workPersonLevelProcess(model,loginPerson);
 		}else {
 			model.addAttribute("message",ERR_WP_LEVEL_NULL);
 			return WX_ERROR;
@@ -214,7 +218,22 @@ public class WxIndexController extends WxBaseController{
 		query.setWorkPersonId(wpId);
 		return maskSinglePersonService.findList(query);
 	}
-	
+	//工作人员级别信息处理
+	private String workPersonLevelProcess(Model model,WorkPerson loginPerson) {
+		model.addAttribute("fullName",loginPerson.getFullName());
+		model.addAttribute("userName",loginPerson.getName());
+		model.addAttribute("isMonitor","no");
+		/**
+		 * 导航
+		 */
+		List<String> navigaionList = new ArrayList<String>();
+		navigaionList.add(NAVIGAION_1);
+		navigaionList.add(NAVIGAION_4);
+		model.addAttribute("navigaionList",navigaionList);
+		
+		return INDEX_INFO;
+	}
+		
 	//班长级别信息处理
 	private String monitorProcess(Model model,WorkPerson loginPerson) {
 		model.addAttribute("fullName",loginPerson.getFullName());

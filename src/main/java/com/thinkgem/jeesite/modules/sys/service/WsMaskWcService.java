@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -68,15 +69,30 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	 * @return
 	 */
 	public String validateReleasePd(String wsmId) {
-		WsMaskWc query = new WsMaskWc();
-		String no = DictUtils.getDictValue("否", "yes_no", "0");
-		query.setWorkShopMaskId(wsmId);
-		query.setSubmitState(no);//未提交的
-		query.setEndDate(new Date());//当前时间小于结束的时间
-		List<WsMaskWc> expired = dao.findList(query);
-		if(null != expired && expired.size() > 0) {
-			//有 没有处理的任务 未过期 未提交
-			return "该任务还未结束";
+		try {
+			WsMaskWc query = new WsMaskWc();
+			query.setWorkShopMaskId(wsmId);
+			String no = DictUtils.getDictValue("否", "yes_no", "0");
+			String dateParam = CasUtils.convertDate2YMDString(new Date());
+			query.setSubmitState(no);//未提交的
+			Date date = null;
+			date = CasUtils.convertString2YMDDate(dateParam);
+			String beginDate = CasUtils.convertDate2HMSString(Date2Utils.getDayStartTime(date));
+			String endDate = CasUtils.convertDate2HMSString(Date2Utils.getDayEndTime(date));
+			query.setBeginQueryDate(beginDate);
+			query.setEndQueryDate(endDate);
+			List<WsMaskWc> exitList = dao.findList(query);
+			if(null!=exitList && exitList.size() > 0) {
+				return "今天已经发布过任务";
+			}
+			query.setEndDate(new Date());//当前时间小于结束的时间
+			List<WsMaskWc> expired = dao.findList(query);
+			if(null != expired && expired.size() > 0) {
+				//有 没有处理的任务 未过期 未提交
+				return "该任务还未结束";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null ;
 	}
@@ -164,7 +180,7 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		wsMaskWc.setCreateDate(new Date());
 		wsMaskWc.setUpdateBy(user);
 		wsMaskWc.setUpdateDate(new Date());
-		wsMaskWc.setEndDate(Date2Utils.getEndDayOfTomorrow());
+		wsMaskWc.setEndDate(Date2Utils.getBeginDayOfTomorrow());
 		dao.insert(wsMaskWc);
 		return wsMaskWc;
 	}

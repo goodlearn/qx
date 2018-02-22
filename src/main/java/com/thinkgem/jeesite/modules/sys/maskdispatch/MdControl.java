@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.maskdispatch;
 
+import java.util.List;
+
 import org.springframework.ui.Model;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -126,12 +128,12 @@ public class MdControl {
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
 			setItem108t2000hByData();
 		}
+		setWps();//设置人员
 	}
 	
 	// 108T卡车2000H及以上级别保养单(机械部分)
 	private void setItem108t2000hByData() {
 		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_108T_2000H_BY_DICT));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_ITEM_108T_2000H_BY);
@@ -143,7 +145,6 @@ public class MdControl {
 	// SF31904卡车电工周点检卡（电气部分）
 	private void setItemSf31904KcDgDjData() {
 		model.addAttribute("parts", DictUtils.getDictList(Global.SF31904_KC_DG_DJ));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_ITEM_SF31904_KC_DG_DJ);
@@ -155,7 +156,6 @@ public class MdControl {
 	//220T卡车电工周点检卡（电气部分）
 	private void setItem220TDgDjData() {
 		model.addAttribute("parts", DictUtils.getDictList(Global.DG_DJ_220T_DICT));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_ITEM_220T_DG_DJ);
@@ -167,7 +167,6 @@ public class MdControl {
 	//SF31904卡车保养单（电气部分）
 	private void setSF31904ByItemData() {
 		model.addAttribute("parts", DictUtils.getDictList(Global.SF31904_BY_DICT));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_SF31904C_BY_ITEM);
@@ -179,7 +178,6 @@ public class MdControl {
 	//220T自卸卡车保养单（电气部分）
 	private void set22TZxbyItemData() {
 		model.addAttribute("parts", DictUtils.getDictList(Global.ZX_BY_220T_DICT));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_ITEM_220T_ZX_BY);
@@ -191,7 +189,6 @@ public class MdControl {
 	//模板表 SF31904C卡车点检卡
 	private void setSF31904CItemData() {
 		model.addAttribute("sfccs", DictUtils.getDictList(Global.SF31904_CS_DICT));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
 			setValue(WX_SF31904C_CS_ITEM);
@@ -203,7 +200,6 @@ public class MdControl {
 	//模板表 发动机点检单一
 	private void setMotorCheckSpotItem1Data() {
 		model.addAttribute("mcsis", DictUtils.getDictList("motorCsItem1"));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		setValue(MOTOR_CHECK_SPOT_ITEM_1);
 	}
@@ -211,9 +207,29 @@ public class MdControl {
 	//模板表 汽修车间220T卡车钳工周检点检卡
 	private void setFitterCheckSpotItem1Data() {
 		model.addAttribute("fcsis", DictUtils.getDictList("fitterCsItem1"));
-		model.addAttribute("wp", BaseInfoUtils.getAllPersonList());
 		model.addAttribute("maskId",maskId);
 		setValue(FITTER_CHECK_SPOT_ITEM_1);
+	}
+	
+	//设置人员
+	private void setWps() {
+		User user = UserUtils.findByEmpNo(empNo);
+		if(user.isAdmin()) {
+			model.addAttribute("wp",BaseInfoUtils.getAllPersonList());
+		}else {
+			model.addAttribute("wp", findWpByCid());
+		}
+	}
+	
+	//查询本班级人员
+	private List<WorkPerson> findWpByCid() {
+		WorkPerson queryClass = new WorkPerson();
+		queryClass.setNo(empNo);
+		WorkPerson wp = workPersonDao.findByEmpNo(empNo);
+		String classId = wp.getWorkClassId();
+		WorkPerson queryWp = new WorkPerson();
+		queryWp.setWorkClassId(classId);
+		return workPersonDao.findList(queryWp);
 	}
 	
 	//先看看是不是班长
@@ -318,6 +334,4 @@ public class MdControl {
 	public void setEmpNo(String empNo) {
 		this.empNo = empNo;
 	}
-	
-	
 }

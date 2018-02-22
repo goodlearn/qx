@@ -73,6 +73,9 @@
 			<if test="endDate != null and endDate != ''">
 				AND a.end_date &gt; #{endDate}
 			</if>
+			<if test="beginQueryDate != null and endQueryDate != null and beginQueryDate != '' and endQueryDate != ''">
+				AND a.createDate BETWEEN #{beginQueryDate} AND #{endQueryDate}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
