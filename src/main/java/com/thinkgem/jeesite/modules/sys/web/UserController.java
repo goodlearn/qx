@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.web;
 
 import java.util.ArrayList;
@@ -103,7 +100,19 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "modifyForm")
 	public String modifyForm(User user, Model model) {
 		model.addAttribute("user", user);
-		model.addAttribute("allRoles", systemService.findAllRole());
+		if(user.isAdmin()) {
+			model.addAttribute("allRoles", systemService.findAllRole());
+		}else {
+			List<Role> roles = systemService.findAllRole();
+			List<Role> allRoles  = new ArrayList<Role>();
+			for(Role role:roles) {
+				String id = role.getId();
+				if(!id.equals("1")) {
+					allRoles.add(role);
+				}
+			}
+			model.addAttribute("allRoles", allRoles);
+		}
 		return "modules/sys/userModifyForm";
 	}
 	
