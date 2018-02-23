@@ -17,7 +17,7 @@ public class TestControl {
 	
 	@RequestMapping(value = "ce")
 	public String ce(HttpServletResponse response) {
-		item108t2000hByExcel.createExcel(response);
+		item108t2000hByExcel.createExcel(response,null);
 		return null;
 	}
 	

@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.Date;
@@ -59,6 +56,15 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	@Transactional(readOnly = false)
 	public void delete(WsMaskWc wsMaskWc) {
 		super.delete(wsMaskWc);
+	}
+	
+	/**
+	 * 依据类型查询
+	 */
+	public Page<WsMaskWc> findTypeListPage(Page<WsMaskWc> page, WsMaskWc wsMaskWc) {
+		wsMaskWc.setPage(page);
+		page.setList(dao.findTypeList(wsMaskWc));
+		return page;
 	}
 	
 	/**

@@ -21,10 +21,38 @@
 		wsm.name AS "wsm.name"
 	</sql>
 	
+	<sql id="wsMaskWcTypeColumns">
+		a.id AS "id",
+		a.work_shop_mask_id AS "workShopMaskId",
+		a.work_class_id AS "workClassId",
+		a.run_time AS "runTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.submit_state AS "submitState",
+		a.end_date AS "endDate",
+		wc.id AS "wc.id",
+		wc.name AS "wc.name",
+		wsm.id AS "wsm.id",
+		wsm.name AS "wsm.name",
+		ba.id AS "wsm.ba.id",
+		ba.type AS "wsm.ba.type"
+	</sql>
+	
 	<sql id="wsMaskWcJoins">
 			LEFT JOIN work_class wc ON wc.id = a.work_class_id
 			LEFT JOIN work_shop_mask wsm ON wsm.id = a.work_shop_mask_id
 	</sql>
+	
+	<sql id="wsMaskWcJoinsType">
+			LEFT JOIN work_class wc ON wc.id = a.work_class_id
+			LEFT JOIN work_shop_mask wsm ON wsm.id = a.work_shop_mask_id
+			LEFT JOIN business_assemble ba ON ba.id = wsm.bussiness_assemble_id
+	</sql>
+	
 	<select id="get" resultType="WsMaskWc">
 		SELECT 
 			<include refid="wsMaskWcColumns"/>
@@ -51,6 +79,30 @@
 		
 	</select>
 	
+	<select id="findTypeList" resultType="WsMaskWc">
+		SELECT 
+			<include refid="wsMaskWcTypeColumns"/>
+		FROM ws_mask_wc a
+		<include refid="wsMaskWcJoinsType"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginQueryDate != null and endQueryDate != null and beginQueryDate != '' and endQueryDate != ''">
+				AND a.create_date BETWEEN #{beginQueryDate} AND #{endQueryDate}
+			</if>
+			<if test="wsm !=null and wsm.ba !=null and wsm.ba.type != null and wsm.ba.type != ''">
+				AND ba.type = ${wsm.ba.type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
 	<select id="findList" resultType="WsMaskWc">
 		SELECT 
 			<include refid="wsMaskWcColumns"/>
@@ -74,7 +126,7 @@
 				AND a.end_date &gt; #{endDate}
 			</if>
 			<if test="beginQueryDate != null and endQueryDate != null and beginQueryDate != '' and endQueryDate != ''">
-				AND a.createDate BETWEEN #{beginQueryDate} AND #{endQueryDate}
+				AND a.create_date BETWEEN #{beginQueryDate} AND #{endQueryDate}
 			</if>
 		</where>
 		<choose>

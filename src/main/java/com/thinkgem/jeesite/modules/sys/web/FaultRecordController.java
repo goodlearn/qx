@@ -88,7 +88,7 @@ public class FaultRecordController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-	@RequiresPermissions("sys:user:view")
+	@RequiresPermissions("sys:faultRecord:view")
     @RequestMapping(value = "export", method=RequestMethod.POST)
     public String exportFile(FaultRecord faultRecord, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {

@@ -95,8 +95,8 @@ public class Item108t2000hByExcel {
 		
 	}
 	
-	private List<Item108t2000hByMmp> createMmp() {
-		String wmwId = "755e503ac9ed4d508cab5d7d3f5f9a34";
+	private List<Item108t2000hByMmp> createMmp(WsMaskWc wsMaskWc) {
+		String wmwId = wsMaskWc.getId();
 		WsMaskWc wmw = wsMaskWcDao.get(wmwId);
 		String type = findBaType(wmwId);
 		if(!type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
@@ -411,12 +411,12 @@ public class Item108t2000hByExcel {
 		num++;
 	}
 	
-	public void createExcel(HttpServletResponse response) {
+	public void createExcel(HttpServletResponse response,WsMaskWc wsMaskWc) {
 		try {
 			SXSSFWorkbook wb;
 			Sheet sheet;
             String fileName = DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-			List<Item108t2000hByMmp> data = createMmp();
+			List<Item108t2000hByMmp> data = createMmp(wsMaskWc);
 			wb = new SXSSFWorkbook(500);
 			sheet = wb.createSheet("Export");
 			this.styles = createStyles(wb);

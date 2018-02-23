@@ -16,4 +16,7 @@ public interface WsMaskWcDao extends CrudDao<WsMaskWc> {
 	
 	public List<WsMaskWc> findDateList(WsMaskWc wsMaskWc);
 	
+	//依据任务类型查询
+	public List<WsMaskWc> findTypeList(WsMaskWc wsMaskWc);
+	
 }
