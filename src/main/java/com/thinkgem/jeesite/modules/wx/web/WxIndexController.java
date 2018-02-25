@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
@@ -25,6 +27,7 @@ import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
+import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
@@ -33,6 +36,7 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 
 /**
  * 首页
@@ -65,6 +69,8 @@ public class WxIndexController extends WxBaseController{
 	@Autowired
 	private WxMenuManager wxMenuManager;
 	
+	@Autowired
+	private SysWxInfoService sysWxInfoService;
 	
 	@Autowired
 	private WxService wxService;
@@ -76,6 +82,48 @@ public class WxIndexController extends WxBaseController{
 	private final String NAVIGAION_2 = "任务发布";
 	private final String NAVIGAION_3 = "任务情况";
 	private final String NAVIGAION_4 = "暂未开发";
+	
+	/**
+	 * 用户绑定
+	 */
+	@RequestMapping(value="/tieInfo",method=RequestMethod.POST)
+	@ResponseBody
+	public String tieInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
+		String name = request.getParameter("desc");
+		String no = request.getParameter("no");
+		if(StringUtils.isEmpty(name)) {
+			return backJsonWithCode(errCode,ERR_NAME_NO_NULL);
+		}
+		
+		if(StringUtils.isEmpty(no)) {
+			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
+		}
+		
+		WorkPerson workPerson = workPersonService.findByEmpNo(no);
+		if(null == workPerson) {
+			return backJsonWithCode(errCode,ERR_WP_NULL);
+		}
+		
+		String wpName = workPerson.getName();
+		if(!name.equals(wpName)) {
+			return backJsonWithCode(errCode,ERR_NAME_NO_MATCH_NAME);
+		}
+		
+		SysWxInfo sysWxInfo = sysWxInfoService.findWxInfoByNo(no);
+		if(null != sysWxInfo) {
+			return backJsonWithCode(errCode,ERR_EXIST_WX_INFO);
+		}
+		
+		String openId = (String)model.asMap().get("openId");
+		if(null == openId) {
+			return backJsonWithCode(errCode,ERR_OPEN_ID_NOT_GET);
+		}
+		
+		//保存用户
+		sysWxInfoService.tieInfo(openId, no);
+		return backJsonWithCode(successCode,null);
+	}
+	
 	/**
 	 * 页面跳转 -- 获取首页
 	 * @param request

@@ -62,6 +62,26 @@ public class SysWxInfoService extends CrudService<SysWxInfoDao, SysWxInfo> {
 		return dao.findByOpenId(openId);
 	}
 	
+	//保存用户信息
+	@Transactional(readOnly = false)
+	public void tieInfo(String openId,String no) {
+		SysWxInfo sysWxInfo = findWxInfoByNo(no);
+		sysWxInfo.setNo(no);
+		sysWxInfo.setTieEndDate(CasUtils.plusDay2(Global.TIE_DATE_NUM));
+		User user = UserUtils.get(Global.DEFAULT_ID_SYS_MANAGER);
+		sysWxInfo.setUpdateBy(user);
+		sysWxInfo.setUpdateDate(new Date());
+		dao.update(sysWxInfo);
+	}
+	
+	/**
+	 * 查询用户
+	 * @param param
+	 */
+	public SysWxInfo findWxInfoByNo(String no) {
+		return dao.findByNo(no);
+	}
+	
 	//保存用户信息(头像等)
 	@Transactional(readOnly = false)
 	public void saveWxInfo(Map<String,String> param) {

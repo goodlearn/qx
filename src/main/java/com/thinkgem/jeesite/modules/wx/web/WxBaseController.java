@@ -54,6 +54,7 @@ public abstract class WxBaseController {
 	protected final String ERR_MSP_ID_NULL = "人员未分配任务号";
 	protected final String ERR_MSP_LIST_NULL = "人员未分配任务";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
+	protected final String ERR_NAME_NO_NULL = "姓名不能为空";
 	protected final String ERR_WP_NULL = "不存在该员工";
 	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
 	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
@@ -64,6 +65,8 @@ public abstract class WxBaseController {
 	protected final String ERR_CLIENT_MECHINE = "请在微信客户端打开";
 	protected final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	protected final String ERR_USER_NO_AUTH = "用户未授权";
+	protected final String ERR_NAME_NO_MATCH_NAME = "工号和姓名不匹配";
+	protected final String ERR_EXIST_WX_INFO = "该工会已绑定";
 	
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";

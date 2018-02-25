@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.excel.item108t2000hBy.Item108t2000hByExcel;
+import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 
 @Controller
 @RequestMapping(value = "test")
@@ -26,6 +28,9 @@ public class TestControl {
 	
 	@Autowired
 	private Item108t2000hByExcel item108t2000hByExcel;
+	
+	@Autowired
+	private WorkPersonService workPersonService;
 	
 	@RequestMapping(value = "ce")
 	public String ce(HttpServletResponse response) {
@@ -50,6 +55,17 @@ public class TestControl {
 		if(StringUtils.isEmpty(no)) {
 			return backJsonWithCode(errCode,"工号不能为空");
 		}
+		
+		WorkPerson workPerson = workPersonService.findByEmpNo(no);
+		if(null == workPerson) {
+			return backJsonWithCode(errCode,"员工不存在");
+		}
+		
+		String wpName = workPerson.getName();
+		if(!name.equals(wpName)) {
+			return backJsonWithCode(errCode,"工号名称不匹配");
+		}
+		
 		return backJsonWithCode(successCode,null);
 	}
 	

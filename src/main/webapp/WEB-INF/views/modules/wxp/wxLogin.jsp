@@ -92,7 +92,7 @@
     <div class="logoimg">
         <img src="../static/wx/wximages/logo1.png" alt="图片加载中..." width="100%">
     </div>
-    
+    <input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
     <img src="../static/wx/wximages/topimg1.jpg" class="bannerimg" alt="图片加载中..." width="100%">
     
     <div class="inputinfo">
@@ -111,7 +111,7 @@
 <script type="text/javascript">
     $(function() {
         $(".submitBtn").click(function(){
-        	
+        	var pageContextVal = $("#PageContext").val();
         	var desc = $.trim($("#desc").val());
 			if (desc.length == '' || desc == null) {
 				alert("请输入姓名");
@@ -126,7 +126,7 @@
         	
         	 $.ajax({
 			     type:'POST',
-			     url:pageContextVal+'/test/tieInfo',
+			     url:pageContextVal+'/wi/tieInfo',
 			     data:{'desc':desc,'no':no},
 			     dataType: "json",
 			     success:function(data){
@@ -142,8 +142,8 @@
 			     }
 			    
 			 });
-        })
-    });
+        });
+    })
 </script>
 
 </body>

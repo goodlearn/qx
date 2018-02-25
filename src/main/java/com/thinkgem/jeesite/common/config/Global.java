@@ -54,6 +54,7 @@ public class Global {
 
 	
 	public static final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID
+	public static final int TIE_DATE_NUM = 30;//微信绑定时间
 	
 	/**
 	 * 显示/隐藏

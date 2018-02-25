@@ -44,8 +44,6 @@ import net.sf.json.JSONObject;
 @Service
 public class WxService extends BaseService implements InitializingBean {
 	
-	private final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID
-	
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
