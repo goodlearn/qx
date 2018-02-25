@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.wx.web;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,12 +20,15 @@ import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
+import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
+import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
+import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 
@@ -58,6 +62,14 @@ public class WxIndexController extends WxBaseController{
 	@Autowired
 	private BusinessAssembleService businessAssembleService;
 	
+	@Autowired
+	private WxMenuManager wxMenuManager;
+	
+	
+	@Autowired
+	private WxService wxService;
+	
+	
 	
 	//导航
 	private final String NAVIGAION_1 = "任务执行";
@@ -73,7 +85,19 @@ public class WxIndexController extends WxBaseController{
 	 */
 	@RequestMapping(value="/indexInfo",method=RequestMethod.GET)
 	public String indexInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
-		
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String regUrl = validateRegByOpenId(openId,model);
+		if(null!=regUrl) {
+			//有错误信息
+			String errUrl = (String)model.asMap().get("errUrl");
+			if(null != errUrl) {
+				//看是否有错误也爱你
+				return errUrl;
+			}else {
+				return regUrl;
+			}
+		}
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */
@@ -265,6 +289,94 @@ public class WxIndexController extends WxBaseController{
 		model.addAttribute("wsmList",wsmList);
 		
 		return INDEX_INFO;
+	}
+	
+
+	
+	/**
+	 * 微信接口测试-创建菜单
+	 * @param model
+	 * @return
+	 */
+	//创建菜单
+	@RequestMapping(value = {"createMenu"})
+	public String wxCreateMenu(Model model) {
+		wxMenuManager.createMenu();
+		return null;
+	}
+	
+	/**
+	 * 生成access_token
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = {"getAt"})
+	public String wxAccessToken(Model model) {
+		WxAccessTokenManager wtUtils = WxAccessTokenManager.getInstance();
+		wtUtils.getAccessToken();
+		return null;
+	}
+	
+	/**
+	 * 接收微信消息
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="/doGet",method=RequestMethod.POST)
+	public void wxAcceptMsg(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("微信消息进入");
+	    try {
+        	// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
+        	request.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            //解析微信返回的xml  
+            String retMsg = wxService.WxPostMsgProcess(request);//返回消息
+            PrintWriter out = response.getWriter();
+            out.print(retMsg);
+            out.close();
+        }catch(Exception ex) {
+        	System.out.println("接收微信消息出错");
+        	ex.printStackTrace();
+        }
+	    System.out.println("微信消息处理完成");
+	}
+	
+	/**
+	 * 认证微信服务器
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="/doGet",method=RequestMethod.GET)
+	public void wxServerCertification(HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("开始签名校验");
+		try {
+			//提取参数			
+			String signature = request.getParameter("signature");
+			String timestamp = request.getParameter("timestamp");
+			String nonce = request.getParameter("nonce");
+			String echostr = request.getParameter("echostr");
+			 
+			ArrayList<String> array = new ArrayList<String>();
+			array.add(signature);
+			array.add(timestamp);
+			array.add(nonce);
+			//排序
+			String sortString = wxService.sort(timestamp, nonce);
+			//加密
+			String mytoken = wxService.sha1(sortString);
+			//比对
+			//校验签名
+		    if (mytoken != null && mytoken != "" && mytoken.equals(signature)) {
+		        System.out.println("签名校验通过。");
+		        response.getWriter().println(echostr); //如果检验成功输出echostr，微信服务器接收到此输出，才会确认检验完成。
+		    } else {
+		        System.out.println("签名校验失败。");
+		    }
+		}catch(Exception ex) {
+			System.out.println("签名校验失败，出现异常。");
+			ex.printStackTrace();
+		}
+		System.out.println("签名校验结束");
 	}
 	
 }

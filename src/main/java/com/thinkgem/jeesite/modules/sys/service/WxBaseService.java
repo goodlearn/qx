@@ -1,7 +1,5 @@
 package com.thinkgem.jeesite.modules.sys.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +15,6 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkDepartment;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShop;
-import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
-import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 
 /**
  * 微信基础数据

@@ -5,15 +5,32 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.config.WxGlobal;
+import com.thinkgem.jeesite.common.entity.WxCodeCache;
+import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.DeviceUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.WxUrlUtils;
+import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
+import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
+import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
 
 public abstract class WxBaseController {
 
@@ -25,6 +42,7 @@ public abstract class WxBaseController {
 	
 	//页面
 	protected final String INDEX_INFO = "modules/wxp/scIndex";//首页
+	protected final String REG_INFO = "modules/wxp/wxLogin";//首页
 	protected final String TASK_PUB = "modules/wxp/taskPub";//任务分配
 	protected final String USER_TASK = "modules/wxp/userTask";///用户任务
 	protected final String TASK_INFO = "modules/wxp/taskInfo";//任务信息
@@ -42,6 +60,10 @@ public abstract class WxBaseController {
 	protected final String ERR_NOT_MASK_SERVICE = "没有任务处理对象";
 	protected final String ERR_NOT_MASK_LIST = "没有任务信息";
 	protected final String ERR_NOT_PART = "无部位信息";
+	protected final String ERR_NO_WX_REQUEST = "不是微信浏览器访问";
+	protected final String ERR_CLIENT_MECHINE = "请在微信客户端打开";
+	protected final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
+	protected final String ERR_USER_NO_AUTH = "用户未授权";
 	
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
@@ -66,6 +88,9 @@ public abstract class WxBaseController {
 	 */
 	@Value("${urlSuffix}")
 	protected String urlSuffix;
+	
+	@Autowired
+	protected SysWxInfoService sysWxInfoService;
 	
 	/**
 	 * 初始化数据绑定
@@ -98,6 +123,203 @@ public abstract class WxBaseController {
 //				return value != null ? DateUtils.formatDateTime((Date)value) : "";
 //			}
 		});
+	}
+	
+	@ModelAttribute
+	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
+		try {
+			if(!DeviceUtils.isWeChat(request)) {
+				logger.info(ERR_NO_WX_REQUEST);
+				model.addAttribute("message",WX_ERROR);
+				return WX_ERROR;
+			}
+			//获取微信号
+			String openId = getOpenId(request, response);//获取微信号
+			 
+			//String openId = WxGlobal.getTestOpenId();
+			//微信号为空
+			if(StringUtils.isEmpty(openId)) {
+				model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
+				return WX_ERROR;
+			}else {
+				model.addAttribute("openId",openId);
+			}
+		    logger.info("openId is " + openId);
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
+	//获取openId
+	private String getOpenId(HttpServletRequest request, HttpServletResponse response) {
+		 String openId = null;
+		 try {
+			  request.setCharacterEncoding("UTF-8");  
+		      response.setCharacterEncoding("UTF-8"); 
+		      
+		      String code = null;
+		      Cookie[] cookies = request.getCookies();
+		      if(cookies!=null){
+		      		for(Cookie cookie : cookies){
+		      			if(cookie.getName().equals("code")){
+		      				code = cookie.getValue();
+		      				logger.info("初始化获取Code:"+code);
+		      				//如果服务器已经移除code 那么code要重新请求
+		      				 WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
+		      				  if(null == wxCodeCache) {
+		    		    		  //服务器已经移除
+		      					  logger.info("服务器移除了Code:"+code);
+		    		    		  code = null;//置空
+		    		    		  cookie.setMaxAge(0);//移除cookie
+		    		    	  }
+		      			}
+		      		}
+		      }
+		      
+		      
+		      if(null == code) {
+		    	  code = request.getParameter("code");//微信服务器返回了code
+		    	  logger.info("微信服务器返回Code:"+code);
+		      }
+		      
+		      StringBuffer sb = request.getRequestURL();
+		      String redirectUrl = sb.toString();
+		      if(StringUtils.isEmpty(redirectUrl)) {
+		    	  logger.info("初始化跳转页面异常");
+		    	  return null;//异常错误
+		      }
+		      logger.info("Code是:"+code);
+		      //这一句纯属为了打印日志
+		      if(StringUtils.isEmpty(code)) {
+		    	  	logger.info("前往微信服务器获取Code");
+		    	  	String redirectAddress = WxGlobal.getUserClick(redirectUrl,false);
+		    	  	logger.info("前往微信服务器获取Code地址："+redirectAddress);
+		      }
+		      if(StringUtils.isEmpty(code)) {
+		        	response.sendRedirect(WxGlobal.getUserClick(redirectUrl,false));
+		        	return null;
+		      }else {
+		    	  /**
+		    	   * 不为空的情况两种一种是微信服务器返回的新code 一种是用户强制刷新的旧code
+		    	   * 旧code 获取缓存
+		    	   * 新code 添加缓存 
+		    	   */
+		    	  
+		    	  //是否是旧缓存
+		    	  WxCodeCache wxCodeCache = (WxCodeCache)CacheUtils.get(code);
+		    	  if(null == wxCodeCache) {
+		    		  logger.info("No Code Cache,New Code Cache:"+code);
+		    		  //没有缓存过 添加缓存
+		    		  //获取openID
+		    		  Map<String,String> map = getOpenIdInfo(code);
+				      if(null != map) {
+				        	openId = map.get("openId");
+				        	sysWxInfoService.saveWxInfo(map);  //用户数据保存一次
+				      }
+				      if(null !=openId) {
+				    	  logger.info("Add New Code Cache:"+openId);
+				    	  //获取openID之后 缓存数据
+			    		  wxCodeCache = new WxCodeCache(openId);
+			    		  //记录键值 为之后删除
+			    		  CacheUtils.putWxCodeKey(code, openId);  
+			    		  CacheUtils.put(code, wxCodeCache);
+			    		  
+			    		  /**
+			    		   * 存放cookie
+			    		   */
+			    		  Cookie userCookie=new Cookie("code",code);
+			    		  userCookie.setMaxAge(Global.WX_CODE_TIME_OUT_INT());
+			    		  userCookie.setPath("/");
+			    		  response.addCookie(userCookie);
+				      }
+		    	  }else {
+		    		  logger.info("Code Cache:"+code);
+		    		  //缓存过
+		    		  //查看过期时间
+		    		  long timeOut = wxCodeCache.getTimeOut();
+		    		  if(System.currentTimeMillis() > timeOut) {
+		    			   //移除缓存 过时了
+		    			  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
+		    			  CacheUtils.remove(code);
+		    			  logger.info("缓存过时，前往微信服务器获取Code");
+				          response.sendRedirect(WxGlobal.getUserClick(redirectUrl,true));
+		    		  }else {
+			    		  openId = wxCodeCache.getOpenId();//缓存的openId
+			    		  logger.info("Cahce OpenId Is " + openId);
+			    		  logger.info("没过时");
+		    		  }
+		    		 
+		    	  }
+		    	  CacheUtils.clearWxCodeCacheKeies();//清除过期的微信code
+		    	  logger.info("code is " + code);
+		      }
+		 }catch(Exception e) {
+			 e.printStackTrace();
+		 }
+		 return openId;
+	}
+	
+	/**
+	 * 获取access_token和openId
+	 * @param code
+	 * @return
+	 */
+	public Map<String,String> getOpenIdInfo(String code) {
+		Map<String,String> ret = new HashMap<String,String>();
+		String url = String.format(WxGlobal.getUserInfoTokenUrl(),WxGlobal.getAppId(),WxGlobal.getAppSecret(),code);
+		logger.info("request accessToken from url: {}", url);
+		net.sf.json.JSONObject jsonObject = WxUrlUtils.httpRequest(url, Global.GET_METHOD, null);
+		logger.info("返回的JSON是："+jsonObject);
+		if(null != jsonObject) {
+  		  	String accessToken = jsonObject.getString("access_token");
+  		  	String openId = jsonObject.getString("openid");
+  		  	logger.info(" access_token is " + accessToken + " openId is "+openId);
+  		  	ret.put("access_toke", accessToken);
+  		    ret.put("openId", openId);
+		}else {
+			logger.info("get accessToken by code is error");
+		}
+		return ret;
+	}
+	
+	/**
+	 * 依据微信号查询是否已经注册并且激活
+	 * 用户是新用户，需要跳转到注册页面
+	 * 用户已经注册，需要查看是否激活，没有激活跳转到审核页面，激活后跳转到对应页面
+	 * @param openId 查询微信号
+	 * @return
+	 * 如果微信号查询不到，返回注册页面
+	 * 如果微信号查询到，但是没有激活，返回未审核页面
+	 * 如果用户已注册，也已经激活，返回空值
+	 */
+	protected String validateRegByOpenId(String openId,Model model) {
+		if(null == openId) {
+			model.addAttribute("message",ERR_OPEN_ID_NOT_GET);
+			return WX_ERROR;//微信号为空
+		}
+		
+		SysWxInfo sysWxInfo = sysWxInfoService.findWxInfoByOpenId(openId);
+		//判断
+		if(null == sysWxInfo) {
+			model.addAttribute("message",ERR_USER_NO_AUTH);
+			return WX_ERROR;//微信用户未授权
+		}
+		
+		String no = sysWxInfo.getNo();
+		if(StringUtils.isEmpty(no)) {
+			//没有绑定数据 跳转到绑定页面
+			model.addAttribute("errUrl",REG_INFO);
+			return WX_ERROR;//没有绑定数据 返回非空数据
+		}
+		
+		Date endDate = sysWxInfo.getTieEndDate();//结束绑定日期 如果结束 需要重新绑定
+		if(endDate.before(new Date())) {
+			//没有绑定数据 跳转到绑定页面
+			model.addAttribute("errUrl",REG_INFO);
+			return WX_ERROR;//没有绑定数据 返回非空数据
+		}
+		return null;//用户已注册，也已经绑定，返回空值
 	}
 	
 	/**

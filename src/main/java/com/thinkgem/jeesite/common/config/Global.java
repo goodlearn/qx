@@ -52,6 +52,9 @@ public class Global {
 	public static final String SF31904_KC_DG_DJ = "itemSf31904KcDgDj";
 	public static final String ITEM_108T_2000H_BY_DICT = "item108t2000hBy";
 
+	
+	public static final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID
+	
 	/**
 	 * 显示/隐藏
 	 */

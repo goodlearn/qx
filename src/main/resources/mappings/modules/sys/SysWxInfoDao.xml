@@ -5,12 +5,12 @@
 	<sql id="sysWxInfoColumns">
 		a.id AS "id",
 		a.open_id AS "openId",
-		a.id_card AS "idCard",
+		a.no AS "no",
 		a.nickname AS "nickname",
 		a.sex AS "sex",
 		a.headimgurl AS "headimgurl",
-		a.express_num AS "expressNum",
 		a.create_by AS "createBy.id",
+		a.tie_end_date AS "tieEndDate",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
@@ -21,11 +21,12 @@
 	<sql id="sysWxInfoColumnsManager">
 		a.id AS "id",
 		a.open_id AS "openId",
-		a.id_card AS "idCard",
+		a.no AS "no",
 		a.nickname AS "nickname",
 		a.sex AS "sex",
 		a.headimgurl AS "headimgurl",
-		a.express_num AS "expressNum",
+		a.create_by AS "createBy.id",
+		a.tie_end_date AS "tieEndDate",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -55,12 +56,12 @@
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findByIdCard" resultType="SysWxInfo">
+	<select id="findByNo" resultType="SysWxInfo">
 		SELECT 
 			<include refid="sysWxInfoColumns"/>
 		FROM sys_wx_info a
 		<include refid="sysWxInfoJoins"/>
-		WHERE a.id_card = #{idCard}
+		WHERE a.no = #{no}
 	</select>
 	
 	
@@ -82,8 +83,8 @@
 			<if test="openId != null and openId != ''">
 				AND a.open_id = #{openId}
 			</if>
-			<if test="idCard != null and idCard != ''">
-				AND a.id_card = #{idCard}
+			<if test="no != null and no != ''">
+				AND a.no = #{no}
 			</if>
 		</where>
 		<choose>
@@ -122,7 +123,7 @@
 		<where>
 			a.del_flag = 0
 		</where>		
-		ORDER BY a.express_num DESC LIMIT 50
+		ORDER BY a.update_date  DESC LIMIT 50
 	</select>
 	
 	<select id="findByTime" resultType="SysWxInfo">
@@ -133,18 +134,18 @@
 		<where>
 			a.del_flag = 0 AND a.update_date between #{0} and #{1}
 		</where>		
-		ORDER BY a.express_num DESC LIMIT 50
+		ORDER BY a.update_date DESC LIMIT 50
 	</select>
 	
 	<insert id="insert">
 		INSERT INTO sys_wx_info(
 			id,
 			open_id,
-			id_card,
+			no,
 			nickname,
 			sex,
 			headimgurl,
-			express_num,
+			tie_end_date,
 			create_by,
 			create_date,
 			update_by,
@@ -154,11 +155,11 @@
 		) VALUES (
 			#{id},
 			#{openId},
-			#{idCard},
+			#{no},
 			#{nickname},
 			#{sex},
 			#{headimgurl},
-			#{expressNum},
+			#{tieEndDate},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -171,11 +172,11 @@
 	<update id="update">
 		UPDATE sys_wx_info SET 	
 			open_id = #{openId},
-			id_card = #{idCard},
+			no = #{no},
 			nickname = #{nickname},
 			sex = #{sex},
 			headimgurl = #{headimgurl},
-			express_num = #{expressNum},
+			tie_end_date = #{tieEndDate},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

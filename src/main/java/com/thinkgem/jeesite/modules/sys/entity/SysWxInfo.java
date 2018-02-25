@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.entity;
 
+import java.util.Date;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -17,8 +19,8 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 	private String nickname;		// 用户昵称
 	private String sex;		// 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
 	private String headimgurl;		// 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
-	private String idCard;		// 身份证号
-	private String expressNum;		// 快递数量
+	private String no;		// 工号
+	private Date tieEndDate;	// 绑定结束日期
 	private User user;//关联的管理员
 	
 	public SysWxInfo() {
@@ -49,12 +51,12 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 	}
 	
 	@Length(min=1, max=100, message="身份证号长度必须介于 1 和 100 之间")
-	public String getIdCard() {
-		return idCard;
+	public String getNo() {
+		return no;
 	}
 
-	public void setIdCard(String idCard) {
-		this.idCard = idCard;
+	public void setNo(String no) {
+		this.no = no;
 	}
 
 	public String getNickname() {
@@ -81,13 +83,12 @@ public class SysWxInfo extends DataEntity<SysWxInfo> {
 		this.headimgurl = headimgurl;
 	}
 
-	public String getExpressNum() {
-		return expressNum;
+	public Date getTieEndDate() {
+		return tieEndDate;
 	}
 
-	public void setExpressNum(String expressNum) {
-		this.expressNum = expressNum;
+	public void setTieEndDate(Date tieEndDate) {
+		this.tieEndDate = tieEndDate;
 	}
-	
 	
 }
