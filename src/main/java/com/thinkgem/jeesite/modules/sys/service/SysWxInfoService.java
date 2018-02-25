@@ -65,7 +65,7 @@ public class SysWxInfoService extends CrudService<SysWxInfoDao, SysWxInfo> {
 	//保存用户信息
 	@Transactional(readOnly = false)
 	public void tieInfo(String openId,String no) {
-		SysWxInfo sysWxInfo = findWxInfoByNo(no);
+		SysWxInfo sysWxInfo = findWxInfoByOpenId(openId);
 		sysWxInfo.setNo(no);
 		sysWxInfo.setTieEndDate(CasUtils.plusDay2(Global.TIE_DATE_NUM));
 		User user = UserUtils.get(Global.DEFAULT_ID_SYS_MANAGER);

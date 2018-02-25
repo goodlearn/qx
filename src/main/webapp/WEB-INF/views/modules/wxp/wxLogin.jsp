@@ -133,7 +133,7 @@
 			    	switch(data.code){
 				    	case "1" : alert(data.message); break;
 						case "0" : 
-					     	alert("绑定成功");
+							window.location.href= pageContextVal+"/wi/indexInfo"; 
 							break;
 			    	}
 			     },

@@ -63,7 +63,7 @@ public class TestControl {
 		
 		String wpName = workPerson.getName();
 		if(!name.equals(wpName)) {
-			return backJsonWithCode(errCode,"工号名称不匹配");
+			return backJsonWithCode(errCode,"工号和姓名不匹配");
 		}
 		
 		return backJsonWithCode(successCode,null);
