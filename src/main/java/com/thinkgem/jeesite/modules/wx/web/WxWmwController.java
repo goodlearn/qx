@@ -108,7 +108,7 @@ public class WxWmwController extends WxBaseController{
 		JSONArray jsonCheck = JSONArray.fromObject(viewMaskSubmit.getCheckdata());
 		List<ViewMaskDesc> checkData = (List<ViewMaskDesc>)JSONArray.toCollection(jsonCheck, ViewMaskDesc.class);
 		System.out.println(checkData.size());
-		maskSinglePersonService.submitSingleMask(user, viewMaskSubmit.getSubmitMspId(), jsonCheck, otherData);
+		maskSinglePersonService.submitSingleMask(user, viewMaskSubmit.getSubmitMspId(), checkData, otherData);
 		return backJsonWithCode(successCode,"");
 	}
 	
@@ -273,42 +273,50 @@ public class WxWmwController extends WxBaseController{
 	 */
 	private void setTemplateContent(String wsMaskWcId,MaskContent maskContent) {
 		String type = businessAssembleService.findBaType(wsMaskWcId);
+		String templateId = maskContent.getTemplateId();
 		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			Sf31904cCsItem sf31904cCsItem = sf31904cCsItemService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(sf31904cCsItem.getItem());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				Sf31904cCsItem sf31904cCsItem = sf31904cCsItemService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(sf31904cCsItem.getItem());
+				maskContent.setTc(templateContent);
+			}
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			Item220tZxBy item220tZxBy = item220tZxByService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(item220tZxBy.getItem());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				Item220tZxBy item220tZxBy = item220tZxByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item220tZxBy.getItem());
+				maskContent.setTc(templateContent);
+			}
 		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			Sf31904ByItem sf31904ByItem = sf31904ByItemService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(sf31904ByItem.getItem());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				Sf31904ByItem sf31904ByItem = sf31904ByItemService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(sf31904ByItem.getItem());
+				maskContent.setTc(templateContent);
+			}
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_DG_DJ_BY, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			Item220DgDj item220DgDj = item220DgDjService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(item220DgDj.getCheckStandard());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				Item220DgDj item220DgDj = item220DgDjService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item220DgDj.getCheckStandard());
+				maskContent.setTc(templateContent);
+			}
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_SF31904_KC_DG_DJ, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			ItemSf31904KcDgDj itemSf31904KcDgDj = itemSf31904KcDgDjService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(itemSf31904KcDgDj.getCheckStandard());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				ItemSf31904KcDgDj itemSf31904KcDgDj = itemSf31904KcDgDjService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(itemSf31904KcDgDj.getCheckStandard());
+				maskContent.setTc(templateContent);
+			}
+			
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
-			String templateId = maskContent.getTemplateId();
-			Item108t2000hBy item108t2000hBy = item108t2000hByService.get(templateId);
-			TemplateContent templateContent = new TemplateContent();
-			templateContent.setItem(item108t2000hBy.getByItem());
-			maskContent.setTc(templateContent);
+			if(null!=templateId) {
+				Item108t2000hBy item108t2000hBy = item108t2000hByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item108t2000hBy.getByItem());
+				maskContent.setTc(templateContent);
+			}
 		}
 		
 	}
@@ -317,7 +325,7 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "mcList",method = RequestMethod.GET)
 	public String mcList(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	   /* String openId = (String)model.asMap().get("openId");
+	    String openId = (String)model.asMap().get("openId");
 		String regUrl = validateRegByOpenId(openId,model);
 		if(null!=regUrl) {
 			//有错误信息
@@ -328,7 +336,7 @@ public class WxWmwController extends WxBaseController{
 			}else {
 				return regUrl;
 			}
-		}*/
+		}
 		String mspId = request.getParameter("mspId");
 		if(null == mspId) {
 			//任务不存在

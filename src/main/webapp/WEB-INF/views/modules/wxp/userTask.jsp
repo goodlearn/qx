@@ -184,10 +184,12 @@
 		<div class="checkCont">
 			<ul>
 				<c:forEach items="${mcList}" var="mc" varStatus="status">
-					<li class="borderButtom">
-						<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb">
-						<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
-					</li>
+					<c:if test = "${not empty mc.tc}">
+						<li class="borderButtom">
+							<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb">
+							<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
+						</li>
+					</c:if>
 				</c:forEach>
 			</ul>
 			
@@ -213,7 +215,6 @@
 
 <script type="text/javascript">
 $(function() {
-	submitPersonId
 		var submitMspId = $("#submitMspId").val();
 		var pageContextVal = $("#PageContext").val();
 		var u = navigator.userAgent;
@@ -374,9 +375,7 @@ $(function() {
 				dataJson.otherdata.push(tmpProb);
 			}
 	
-			dataJson.username = submitPersonId;
 	
-		
 			var transfData = {
 					"checkdata" : "",
 					"otherdata" : "",
@@ -392,7 +391,8 @@ $(function() {
 				 dataType: "json",
 				 contentType:"application/json",
 			     success:function(data){
-			    	 alert(data.message);
+			    	 alert("提交成功");
+			    	 window.location.href= pageContextVal+"/wi/indexInfo";
 			     },
 			     error:function(){
 			    	 alert("未知失败");

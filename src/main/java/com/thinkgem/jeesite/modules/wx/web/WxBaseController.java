@@ -132,7 +132,7 @@ public abstract class WxBaseController {
 	
 	@ModelAttribute
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
-/*		try {
+		try {
 			if(!DeviceUtils.isWeChat(request)) {
 				logger.info(ERR_NO_WX_REQUEST);
 				model.addAttribute("message",WX_ERROR);
@@ -152,7 +152,7 @@ public abstract class WxBaseController {
 		    logger.info("openId is " + openId);
 		}catch(Exception ex) {
 			ex.printStackTrace();
-		}*/
+		}
 		return null;
 	}
 	

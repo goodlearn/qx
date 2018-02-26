@@ -267,10 +267,14 @@ public class Item108t2000hByExcel {
 			,List<Item108t2000hByMc> i108mspList,Cell cell0) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("存在问题及处理结果:" + "\n");
+		String haveProblem = DictUtils.getDictValue("有", "have_no", "1");
 		int count = 1;
 		for(Item108t2000hByMc forI108Bm : i108mspList) {
 			MaskContent mc = forI108Bm.getMc();
-			sb.append(count+"、" + " " + mc.getRemarks() + "\n");
+			if(haveProblem.equals(mc.getProblem())) {
+				sb.append(count+"、" + " " + mc.getRemarks() + "\n");
+				count++;
+			}
 		}
 		cell0.setCellValue(sb.toString());
 	}

@@ -98,11 +98,13 @@
 		<div class="checkCont">
 			<ul>
 				<c:forEach items="${msp.mcList}" var="mc" varStatus="mcstatus">
-					<li class="borderButtom">
+					<c:if test = "${not empty mc.tc}">
+						<li class="borderButtom">
 						<input type="text" value="fdsafd" name="" readonly="true">
 						<p class="checkTxt">${mc.tc.item}</p>
 						<textarea readonly="true">${mc.remarks}</textarea>
 					</li>
+					</c:if>
 				</c:forEach>
 			</ul>
 		</div>
