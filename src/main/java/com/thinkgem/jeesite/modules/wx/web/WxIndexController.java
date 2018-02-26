@@ -1,6 +1,5 @@
 package com.thinkgem.jeesite.modules.wx.web;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,6 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
-import com.thinkgem.jeesite.modules.sys.manager.WxMenuManager;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
@@ -31,7 +29,6 @@ import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
-import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
 
@@ -105,7 +102,10 @@ public class WxIndexController extends WxBaseController{
 		
 		SysWxInfo sysWxInfo = sysWxInfoService.findWxInfoByNo(no);
 		if(null != sysWxInfo) {
-			return backJsonWithCode(errCode,ERR_EXIST_WX_INFO);
+			Date endDate = sysWxInfo.getTieEndDate();//结束绑定日期 如果结束 需要重新绑定
+			if(endDate.after(new Date())) {
+				return backJsonWithCode(errCode,ERR_EXIST_WX_INFO);
+			}
 		}
 		
 		String openId = (String)model.asMap().get("openId");
@@ -143,7 +143,7 @@ public class WxIndexController extends WxBaseController{
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */
-		String empNo = findEmpNo();
+		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			model.addAttribute("message",ERR_EMP_NO_NULL);
 			return WX_ERROR;

@@ -110,7 +110,7 @@ public class WxWmwController extends WxBaseController{
 			//有错误信息
 			String errUrl = (String)model.asMap().get("errUrl");
 			if(null != errUrl) {
-				//看是否有错误也爱你
+				//看是否有错误
 				return errUrl;
 			}else {
 				return regUrl;
@@ -174,6 +174,82 @@ public class WxWmwController extends WxBaseController{
 		maskSinglePersonService.setPartNameForList(retList, wmwId);
 		model.addAttribute("maskInfo",vufm);//任务列表
 		return TASK_INFO;
+	}
+	
+	//查询任务
+	@RequestMapping(value = "csp",method = RequestMethod.GET)
+	public String csp(HttpServletRequest request, HttpServletResponse response,Model model) {
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String regUrl = validateRegByOpenId(openId,model);
+		if(null!=regUrl) {
+			//有错误信息
+			String errUrl = (String)model.asMap().get("errUrl");
+			if(null != errUrl) {
+				//看是否有错误
+				return errUrl;
+			}else {
+				return regUrl;
+			}
+		}
+		String wmwId = request.getParameter("wmwId");
+		if(null == wmwId) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		WsMaskWc wsMaskWc = wsMaskWcService.get(wmwId);
+		if(null == wsMaskWc) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
+		MaskMainPerson query = new MaskMainPerson();
+		query.setWsMaskWcId(wmwId);//该任务中审核人任务列表条件
+		
+		List<MaskMainPerson> mmpList = maskMainPersonService.findList(query);
+		//没有审核任务
+		if(null == mmpList) {
+			model.addAttribute("message",ERR_MSP_LIST_NULL);
+			return WX_ERROR;
+		}
+		List<MaskSinglePerson> retList = new ArrayList<MaskSinglePerson>();
+		//看有没有任务
+		for(MaskMainPerson forEntity:mmpList) {
+			String mmpId = forEntity.getId();
+			MaskSinglePerson queryMsp = new MaskSinglePerson();
+			queryMsp.setMmpId(mmpId);
+			List<MaskSinglePerson> mspList = maskSinglePersonService.findList(queryMsp);
+			if(null != mspList) {
+				for(MaskSinglePerson msp : mspList) {
+					String mspId = msp.getId();
+					MaskContent mcQuery = new MaskContent();
+					mcQuery.setMspId(mspId);
+					List<MaskContent> mcList = maskContentService.findList(mcQuery);
+					for(MaskContent mc : mcList) {
+						setTemplateContent(wmwId,mc);
+					}
+					msp.setMcList(mcList);
+				}
+				retList.addAll(mspList);//添加该员工在改审核任务下的任务列表
+			}
+		}
+		
+		if(retList.size() == 0) {
+			model.addAttribute("message",ERR_NOT_MASK_LIST);
+			return WX_ERROR;
+		}
+		
+		ViewUnFinishMask vufm = new ViewUnFinishMask();
+		vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());//车间任务ID
+		vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());//车间任务名称
+		vufm.setWsMaskWcId(wmwId);//班组发布任务
+		vufm.setMspList(retList);//存放个人列表
+		maskSinglePersonService.setPartNameForList(retList, wmwId);
+		model.addAttribute("maskInfo",vufm);//任务列表
+		return CHECK_SUBMIT;
 	}
 	
 	/**
@@ -269,9 +345,9 @@ public class WxWmwController extends WxBaseController{
 	//获取任务分配数据
 	@RequestMapping(value = "allocation",method= RequestMethod.POST)
 	@ResponseBody
-	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s) {
-		
-		String empNo = findEmpNo();
+	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s,Model model) {
+		String openId = (String)model.asMap().get("openId");
+		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
 		}
@@ -353,7 +429,7 @@ public class WxWmwController extends WxBaseController{
 			return backJsonWithCode(errCode,ERR_WSM_NULL);
 		}
 		
-		String empNo = findEmpNo();
+		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
 		}
@@ -372,6 +448,58 @@ public class WxWmwController extends WxBaseController{
 		
 		return backJsonWithCode(successCode,wsMaskWc.getId());
 	}
+	
+	/**
+	 * 任务发布
+	 */
+	@RequestMapping(value="/submitMask",method=RequestMethod.POST)
+	@ResponseBody
+	public String submitMask(HttpServletRequest request, HttpServletResponse response,Model model) {
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+		String regUrl = validateRegByOpenId(openId,model);
+		if(null!=regUrl) {
+			//有错误信息
+			String errUrl = (String)model.asMap().get("errUrl");
+			if(null != errUrl) {
+				//看是否有错误也爱你
+				return errUrl;
+			}else {
+				return regUrl;
+			}
+		}
+		//验证任务是否结束
+		String wmwId = request.getParameter("wmwId");
+		if(null == wmwId) {
+			//任务号不存在
+			return backJsonWithCode(errCode,ERR_WSM_ID_NULL);
+		}
+		
+		if(null == wsMaskWcService.validateWsmId(wmwId)) {
+			//任务不存在
+			return backJsonWithCode(errCode,ERR_WSM_NULL);
+		}
+		
+		String empNo = findEmpNo(openId);
+		if(null == empNo) {
+			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
+		}
+		
+		if(null == workPersonService.findByEmpNo(empNo)) {
+			return backJsonWithCode(errCode,ERR_WP_NULL);
+		}
+		
+		String validateMsg = wsMaskWcService.validateSubmitState(wmwId);
+		if(null == validateMsg) {
+			//任务还未结束
+			return backJsonWithCode(errCode,ERR_MASK_SUBMIT_NULL);
+		}
+		//发布任务
+		WsMaskWc dealWmw = wsMaskWcService.get(wmwId);
+		wsMaskWcService.submitMask(dealWmw,UserUtils.findByEmpNo(empNo));
+		return backJsonWithCode(successCode,wmwId);
+	}
+	
 	
 	/**
 	 * 页面跳转-分配页面
@@ -406,7 +534,7 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
-		String empNo = findEmpNo();
+		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			model.addAttribute("message",ERR_EMP_NO_NULL);
 			return WX_ERROR;

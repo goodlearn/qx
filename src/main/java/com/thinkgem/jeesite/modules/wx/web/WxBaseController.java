@@ -46,6 +46,7 @@ public abstract class WxBaseController {
 	protected final String TASK_PUB = "modules/wxp/taskPub";//任务分配
 	protected final String USER_TASK = "modules/wxp/userTask";///用户任务
 	protected final String TASK_INFO = "modules/wxp/taskInfo";//任务信息
+	protected final String CHECK_SUBMIT = "modules/wxp/checkSubmit";//任务信息
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
@@ -56,6 +57,7 @@ public abstract class WxBaseController {
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_NAME_NO_NULL = "姓名不能为空";
 	protected final String ERR_WP_NULL = "不存在该员工";
+	protected final String ERR_MASK_SUBMIT_NULL = "任务已经提交过了";
 	protected final String ERR_WP_LEVEL_NULL = "不存在该级别员工";
 	protected final String ERR_MASK_NOT_EXPIRED = "任务还未结束";
 	protected final String ERR_NOT_MASK_SERVICE = "没有任务处理对象";
@@ -66,7 +68,7 @@ public abstract class WxBaseController {
 	protected final String ERR_OPEN_ID_NOT_GET = "微信号未获取";
 	protected final String ERR_USER_NO_AUTH = "用户未授权";
 	protected final String ERR_NAME_NO_MATCH_NAME = "工号和姓名不匹配";
-	protected final String ERR_EXIST_WX_INFO = "该工会已绑定";
+	protected final String ERR_EXIST_WX_INFO = "该工号已绑定";
 	
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
@@ -340,7 +342,8 @@ public abstract class WxBaseController {
 	/**
 	 * 根据微信获取员工号
 	 */
-	protected String findEmpNo() {
-		return "11614091";
+	protected String findEmpNo(String openId) {
+		SysWxInfo sysWxInfo =  sysWxInfoService.findWxInfoByOpenId(openId);
+		return sysWxInfo.getNo();
 	}
 }

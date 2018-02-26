@@ -307,7 +307,9 @@
 							<c:forEach items="${processMasks}" var="pm" varStatus="status">
 								<div class="taskType">
 									<div class="taskTypeTxt">${pm.workShopMaskName}</div>
-									<div class="taskBtn showtaskBtn">展开</div>
+									<c:if test = "${empty isMonitor}">
+										<div class="taskBtn showtaskBtn">展开</div>
+									</c:if>
 									<c:if test = "${not empty isMonitor}">
 										<div class="taskBtn verifyBtn">审核</div>
 									</c:if>
@@ -386,7 +388,7 @@
 	var pageContextVal = $("#PageContext").val();
 	$(function() {
 		$(".verifyBtn").click(function(){
-			window.location.href = "checkSubmit.html";
+			window.location.href =pageContextVal+'/wmw/csp';
 		});
 		
 		$(".taskPubBtn").click(function(){

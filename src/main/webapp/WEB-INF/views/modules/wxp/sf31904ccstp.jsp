@@ -136,6 +136,7 @@
 				 contentType:"application/json",
 				 success:function(data){
 					 alert(data.message);
+					 window.location.href= pageContextVal+"/wi/indexInfo"; 
 			     },
 			     error:function(){
 			      	alert("未知错误");

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.CasUtils;
@@ -65,6 +66,18 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		wsMaskWc.setPage(page);
 		page.setList(dao.findTypeList(wsMaskWc));
 		return page;
+	}
+	
+	public String validateSubmitState(String wmwId) {
+		WsMaskWc query = new WsMaskWc();
+		query.setId(wmwId);
+		String no = DictUtils.getDictValue("否", "yes_no", "0");
+		query.setSubmitState(no);//未提交的
+		List<WsMaskWc> exitList = dao.findList(query);
+		if(null!=exitList && exitList.size() > 0) {
+			return wmwId;
+		}
+		return null;
 	}
 	
 	/**
@@ -212,6 +225,17 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		User user = UserUtils.getUser();
 		String yes = DictUtils.getDictValue("是", "yes_no", "1");
 		wsMaskWc.setSubmitState(yes);//未提交的
+		wsMaskWc.setUpdateBy(user);
+		wsMaskWc.setUpdateDate(new Date());
+		dao.update(wsMaskWc);
+		return wsMaskWc;
+	}
+	
+	//提交任务
+	@Transactional(readOnly = false)
+	public WsMaskWc submitMask(WsMaskWc wsMaskWc,User user) {
+		String yes = DictUtils.getDictValue("是", "yes_no", "1");
+		wsMaskWc.setSubmitState(yes);//提交
 		wsMaskWc.setUpdateBy(user);
 		wsMaskWc.setUpdateDate(new Date());
 		dao.update(wsMaskWc);
