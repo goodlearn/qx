@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
+import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.view.ViewMaskDesc;
 import com.thinkgem.jeesite.modules.sys.dao.BusinessAssembleDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
 import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
@@ -37,6 +43,9 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 	
 	@Autowired
 	private BusinessAssembleDao businessAssembleDao;
+	
+	@Autowired
+	private MaskContentDao maskContentDao;
 	
 	public MaskSinglePerson get(String id) {
 		return super.get(id);
@@ -143,6 +152,59 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
 			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_2000H_BY_DICT, "");
 			msp.setPartName(partName);
+		}
+	}
+	
+	//单个人提交任务
+	@Transactional(readOnly = false)
+	public void submitSingleMask(User user,String submitMspId,List<ViewMaskDesc> params,List<String> remarks) {
+		MaskSinglePerson msp = dao.get(submitMspId);
+		MaskContent queryMc = new MaskContent();
+		queryMc.setMspId(submitMspId);
+		List<MaskContent> mcList = maskContentDao.findList(queryMc);
+		if(null!=params && params.size() > 0) {
+			submitContentUpdate(user,params,mcList);//循环更新
+		}
+		
+		//有无问题
+		String haveProblem = DictUtils.getDictValue("有", "have_no", "1");
+		//看是否有新的内容
+		if(null !=remarks && remarks.size() > 0) {
+			//记录新内容
+			for(String remark :remarks) {
+				MaskContent mcEntity= new MaskContent();
+				String mcEntityId = IdGen.uuid();
+				mcEntity.setId(mcEntityId);
+				mcEntity.setMspId(msp.getWorkPersonId());
+				mcEntity.setTemplateId(null);
+				mcEntity.setProblem(haveProblem);
+				mcEntity.setCreateBy(user);
+				mcEntity.setCreateDate(new Date());
+				mcEntity.setUpdateBy(user);
+				mcEntity.setUpdateDate(new Date());
+				mcEntity.setRemarks(remark);
+				maskContentDao.insert(mcEntity);
+			}
+		}
+	}
+	
+	//循环更新
+	@Transactional(readOnly = false)
+	private void submitContentUpdate(User user,List<ViewMaskDesc> params,List<MaskContent> mcList) {
+		String haveProblem = DictUtils.getDictValue("有", "have_no", "1");
+		for(ViewMaskDesc forVmd : params) {
+			String mcId = forVmd.getProbTxt();
+			String mcRemarks = forVmd.getProbDesc();
+			for(MaskContent forMc : mcList) {
+				String queryMcId = forMc.getId();
+				if(queryMcId.equals(mcId)) {
+					forMc.setProblem(haveProblem);
+					forMc.setRemarks(mcRemarks);
+					forMc.setUpdateBy(user);
+					forMc.setUpdateDate(new Date());
+					maskContentDao.update(forMc);
+				}
+			}
 		}
 	}
 	

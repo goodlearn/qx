@@ -11,11 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-/**
- * WsMaskWc 任务处理
- * @author wzy
- *
- */
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,6 +25,7 @@ import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904ByItem;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904cCsItem;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
@@ -51,8 +47,12 @@ import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.TemplateContent;
+import com.thinkgem.jeesite.modules.sys.view.ViewMaskDesc;
+import com.thinkgem.jeesite.modules.sys.view.ViewMaskSubmit;
 import com.thinkgem.jeesite.modules.sys.view.ViewMcsi1;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
+
+import net.sf.json.JSONArray;
 @Controller
 @RequestMapping(value = "wmw")
 public class WxWmwController extends WxBaseController{
@@ -96,8 +96,20 @@ public class WxWmwController extends WxBaseController{
 	private Item108t2000hByService item108t2000hByService;
 	//提交任务
 	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
-	public String utSubmit(HttpServletRequest request, HttpServletResponse response,Model model) {
-		return null;
+	@ResponseBody
+	public String utSubmit(@RequestBody ViewMaskSubmit viewMaskSubmit, HttpServletRequest request, HttpServletResponse response,Model model) {
+		//是否已经注册并且激活
+	    String openId = (String)model.asMap().get("openId");
+	    String empNo = findEmpNo(openId);
+	    User user = UserUtils.findByEmpNo(empNo);
+		JSONArray jsonOther = JSONArray.fromObject(viewMaskSubmit.getOtherdata());
+		List<String> otherData = (List<String>)JSONArray.toCollection(jsonOther, String.class);
+		System.out.println(otherData);
+		JSONArray jsonCheck = JSONArray.fromObject(viewMaskSubmit.getCheckdata());
+		List<ViewMaskDesc> checkData = (List<ViewMaskDesc>)JSONArray.toCollection(jsonCheck, ViewMaskDesc.class);
+		System.out.println(checkData.size());
+		maskSinglePersonService.submitSingleMask(user, viewMaskSubmit.getSubmitMspId(), jsonCheck, otherData);
+		return backJsonWithCode(successCode,"");
 	}
 	
 	//查询任务
@@ -305,7 +317,7 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "mcList",method = RequestMethod.GET)
 	public String mcList(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
+	   /* String openId = (String)model.asMap().get("openId");
 		String regUrl = validateRegByOpenId(openId,model);
 		if(null!=regUrl) {
 			//有错误信息
@@ -316,7 +328,7 @@ public class WxWmwController extends WxBaseController{
 			}else {
 				return regUrl;
 			}
-		}
+		}*/
 		String mspId = request.getParameter("mspId");
 		if(null == mspId) {
 			//任务不存在

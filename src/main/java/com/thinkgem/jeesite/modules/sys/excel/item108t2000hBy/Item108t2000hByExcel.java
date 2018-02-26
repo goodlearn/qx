@@ -128,11 +128,18 @@ public class Item108t2000hByExcel {
 				mspItem.setMsp(forMsp);
 				for(MaskContent forMc : mcList) {
 					String templateId = forMc.getTemplateId();
-					Item108t2000hBy item108t2000hBy = item108t2000hByDao.get(templateId);
-					Item108t2000hByMc item = new Item108t2000hByMc();
-					item.setItem108t2000hBy(item108t2000hBy);
-					item.setMc(forMc);
-					mcItemList.add(item);
+					if(null!=templateId) {
+						Item108t2000hBy item108t2000hBy = item108t2000hByDao.get(templateId);
+						Item108t2000hByMc item = new Item108t2000hByMc();
+						item.setItem108t2000hBy(item108t2000hBy);
+						item.setMc(forMc);
+						mcItemList.add(item);
+					}else {
+						Item108t2000hByMc item = new Item108t2000hByMc();
+						item.setItem108t2000hBy(null);
+						item.setMc(forMc);
+						mcItemList.add(item);
+					}
 				}
 				itemMspList.add(mspItem);
 			}
@@ -231,7 +238,7 @@ public class Item108t2000hByExcel {
 	}
 	
 	//第五行
-	private void setRow5(Sheet sheet,SXSSFWorkbook wb) {
+	private void setRow5(Sheet sheet,SXSSFWorkbook wb,List<Item108t2000hByMmp> data) {
 		Row row = sheet.createRow(rownum);
 		rownum = rownum + 10;
 		row.setHeightInPoints(16);
@@ -242,8 +249,30 @@ public class Item108t2000hByExcel {
 		CellStyle cellStyleLast = wb.createCellStyle();
 		cellStyleLast.setAlignment(CellStyle.ALIGN_LEFT);
 		cellStyleLast.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+		cellStyleLast.setWrapText(true);
 		cell0.setCellStyle(cellStyleLast);
-		cell0.setCellValue("存在问题及处理结果:");
+		for(Item108t2000hByMmp forI108bmmp : data) {
+			List<Item108t2000hByMsp> mspList = forI108bmmp.getMsps();
+			for(Item108t2000hByMsp forI108bmsp : mspList) {
+				List<Item108t2000hByMc> i108mspList = forI108bmsp.getMcs();
+				MaskSinglePerson msp = forI108bmsp.getMsp();
+				setRow5Data(wb,sheet,msp,i108mspList,cell0);//设置数据
+				rownum = i108mspList.size() + rownum;
+			}
+		}
+	}
+	
+	//第四行数据
+	private void setRow5Data(SXSSFWorkbook wb,Sheet sheet,MaskSinglePerson msp
+			,List<Item108t2000hByMc> i108mspList,Cell cell0) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("存在问题及处理结果:" + "\n");
+		int count = 1;
+		for(Item108t2000hByMc forI108Bm : i108mspList) {
+			MaskContent mc = forI108Bm.getMc();
+			sb.append(count+"、" + " " + mc.getRemarks() + "\n");
+		}
+		cell0.setCellValue(sb.toString());
 	}
 	
 	//第六行
@@ -433,7 +462,7 @@ public class Item108t2000hByExcel {
 			rownum++;
 			setRow4(wb,sheet,data);
 			//第五行
-			setRow5(sheet,wb);
+			setRow5(sheet,wb,data);
 			//第六行
 			rownum++;
 			setRow6(sheet,wb);

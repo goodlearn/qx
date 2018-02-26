@@ -177,13 +177,16 @@
 		</ul>
 	</div>
 	
+	<input id="submitMspId" type="hidden" value="${msp.id}" />
+	<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+	
 	<form id="checkForm" action="${pageContext.request.contextPath}/wmw/utSubmit" method="post">
 		<div class="checkCont">
 			<ul>
 				<c:forEach items="${mcList}" var="mc" varStatus="status">
 					<li class="borderButtom">
 						<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb">
-						<label class="unselect" for="check${status.count}">${mc.tc.item}</label>
+						<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
 					</li>
 				</c:forEach>
 			</ul>
@@ -204,17 +207,15 @@
 		</div>
 		-->
 	</div>
-
-	<div class="checkName">
-		<p class="checkNameTxt">审核人</p>
-		<input type="text" name="checkName" class ="checkUserName" placeholder="请输入审核人姓名...">
-	</div>
 	</form>
 	<button class="submitBtn">提交审核</button>
 </div>
 
 <script type="text/javascript">
-	$(function() {
+$(function() {
+	submitPersonId
+		var submitMspId = $("#submitMspId").val();
+		var pageContextVal = $("#PageContext").val();
 		var u = navigator.userAgent;
 	    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 	    if (isAndroid == true) {
@@ -233,12 +234,12 @@
 	    	});
 	    	
 	    }
-
+	
 		// backNav
 		$(".backBtn").click(function(){
 			history.back(-1);
 		});
-
+	
 		// addDescrib
 		var addBtnFun = function(){
 			var btnH = $(".taskBtn").outerHeight();
@@ -246,7 +247,7 @@
 			$(".taskBtn").css({'margin-top':(liH - btnH)/2 + "px"});
 		}
 		
-
+	
 		// checkSlect
 		var initCheck = function(){
 			var checkArray = $(".checkCont li input[type=checkbox]:checked");
@@ -277,11 +278,11 @@
 			}
 			
 		};
-
+	
 		initCheck();
-
+	
 		$(".checkCont ul li input[type=checkbox]").change(function(){
-
+	
 			if ($(this).is(":checked")) {
 				$(this).siblings('label').removeClass('unselect').addClass('select');
 				$(this).siblings('label').css({'width':"calc(100% - 30px - 60px)"});
@@ -300,7 +301,7 @@
 					
 				});
 				$(this).parent().append($addBtn);
-
+	
 				var btnH = $addBtn.outerHeight();
 				var liH = $addBtn.siblings('label').outerHeight();
 				$addBtn.css({'margin-top':(liH - btnH)/2 + "px"});
@@ -308,11 +309,12 @@
 			} else {
 				$(this).siblings('label').removeClass('select').addClass('unselect');
 				$(this).siblings('.taskBtn').remove();
+				$(this).siblings('textarea').remove();
 				$(this).siblings('label').css({'width':"calc(100% - 30px)"});
 			}
 			//initCheck();
 		});
-
+	
 		// addOther
 		$(".addOtherBtn").click(function(){
 			var $checkOther = $("<div class='checkOther'></div>");
@@ -327,10 +329,10 @@
 				$checkOther.remove();
 			})
 			$checkOther.append($removeBtn);
-
+	
 			$(".addOtherCont").prepend($checkOther);
 		});
-
+	
 		// submit
 		$(".submitBtn").click(function(){
 			var areaArr = $(".checkOther textarea");
@@ -344,18 +346,58 @@
 					}
 				}
 			}
-
-			var checkNameTxt = $.trim($(".checkUserName").val());
-			if (checkNameTxt == "") {
-				alert("请输入审核人姓名");
-				return false;
-			}
 			
 			var state = confirm("确认提交审核？");
 			if(!state){
 			   return false;
 			}
-			$("#checkForm").submit();
+			//$("#checkForm").submit();
+	
+			var dataJson = {
+				"checkdata" : [],
+				"otherdata" : [],
+				"username" : ""
+			};
+			var checkArray = $(".checkCont li input[type=checkbox]:checked");
+			for (var i = 0; i < checkArray.length; i++) {
+				var tmpData = {"probTxt":"-1","probDesc":"-1"};
+				tmpData.probTxt = checkArray.eq(i).siblings('label').attr("id");
+				if (checkArray.eq(i).siblings('textarea').length > 0 ) {
+					tmpData.probDesc = checkArray.eq(i).siblings('textarea').val();
+				}
+				dataJson.checkdata.push(tmpData);
+			}
+	
+			var otherProbArr = $(".addOtherCont textarea");
+			for (var i = 0; i < otherProbArr.length; i++){
+				var tmpProb = otherProbArr.eq(i).val();
+				dataJson.otherdata.push(tmpProb);
+			}
+	
+			dataJson.username = submitPersonId;
+	
+		
+			var transfData = {
+					"checkdata" : "",
+					"otherdata" : "",
+					"submitMspId" : ""
+			};
+			transfData.checkdata = JSON.stringify(dataJson.checkdata);
+			transfData.otherdata = JSON.stringify(dataJson.otherdata);
+			transfData.submitMspId = submitMspId;
+			 $.ajax({
+			     type:'POST',
+			     url:pageContextVal+'/wmw/utSubmit',
+			     data:JSON.stringify(transfData),
+				 dataType: "json",
+				 contentType:"application/json",
+			     success:function(data){
+			    	 alert(data.message);
+			     },
+			     error:function(){
+			    	 alert("未知失败");
+			     }
+			 });
 		});
 	});	
 </script>
