@@ -166,8 +166,8 @@ public class WxWmwController extends WxBaseController{
 					for(MaskContent mc : mcList) {
 						setTemplateContent(wmwId,mc);
 					}
-					msp.setDesc(msp.addDesc());
 					msp.setMcList(mcList);
+					msp.setDesc(msp.addDesc());
 				}
 				retList.addAll(mspList);//添加该员工在改审核任务下的任务列表
 			}

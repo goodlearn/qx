@@ -86,7 +86,7 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	public WsMaskWc findSubmitMask(String id) {
 		WsMaskWc queryWmw = dao.get(id);
 		String state = queryWmw.getSubmitState();
-		String yes = DictUtils.getDictValue("有", "yes_no", "0");
+		String yes = DictUtils.getDictValue("是", "yes_no", "0");
 		if(yes.equals(state)) {
 			return queryWmw;
 		}

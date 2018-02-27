@@ -77,7 +77,7 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		if(yesSubmit.equals(submitState)) {
 			return queryMsp;
 		}
-		return queryMsp;
+		return null;
 	}
 	
 	/**

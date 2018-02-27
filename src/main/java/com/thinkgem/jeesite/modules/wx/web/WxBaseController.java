@@ -29,7 +29,6 @@ import com.thinkgem.jeesite.common.utils.DeviceUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
-import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
 
 public abstract class WxBaseController {
