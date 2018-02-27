@@ -352,11 +352,11 @@
 							<div class="taksInfoCont">
 								<div class="workTaskCont">
 									<div class="taskType">
-										<c:if test = "${datewmw.submitState == '0'}">
+										<c:if test = "${datewmw.submitState == 0}">
 											<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
 											<div class="taskInfoBtn taskUnCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
 										</c:if>
-										<c:if test = "${datewmw.submitState == '1'}">
+										<c:if test = "${datewmw.submitState == 1}">
 											<div class="taskComplete taskUnCompleteState">${datewmw.wsm.name}</div>
 											<div class="taskInfoBtn taskCompleteBtn"><a href="${pageContext.request.contextPath}/wmw/wmwMask?wmwId=${datewmw.id}">详情</a></div>
 										</c:if>
