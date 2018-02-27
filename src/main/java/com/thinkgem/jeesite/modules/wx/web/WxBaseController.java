@@ -53,6 +53,7 @@ public abstract class WxBaseController {
 	protected final String ERR_WSM_ID_NULL = "任务号为空";
 	protected final String ERR_WSM_NULL = "不存在该任务";
 	protected final String ERR_MSP_ID_NULL = "人员未分配任务号";
+	protected final String ERR_MSP_SUBMIT = "任务已经提交，不得修改";
 	protected final String ERR_MSP_LIST_NULL = "人员未分配任务";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_NAME_NO_NULL = "姓名不能为空";

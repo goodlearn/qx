@@ -59,6 +59,34 @@
 			border-radius: 5px;
 		}
 
+		.otherProb{
+			width: calc(96% - 2px);
+			margin: 15px 2%;
+			background: #fff;
+			border:1px solid #d8d8d8;
+			border-radius: 8px;
+			box-shadow: 0px 5px 5px #d1d1d1; 
+			overflow:hidden;
+		}
+		.otherProb ul li{
+			width: 96%;
+			padding: 10px 2%;
+			font-size: 14px;
+			font-family: "Microsoft YaHei";
+			line-height: 25px;
+			color: #333333;
+		}
+		
+		.checkCont textarea{
+			width: 96%;
+			padding: 10px 2%;
+			font-family: "Microsoft YaHei";
+			font-size: 14px;
+			outline: none;
+			border: none;
+			resize: none;
+		}
+
 		.submitBtn{
 			display: block;
 			width: calc(96% - 2px);
@@ -106,6 +134,14 @@
 					</li>
 					</c:if>
 				</c:forEach>
+			</ul>
+		</div>
+		<!-- 其他问题展示 -->
+		<div class="otherProb">
+			<ul>
+				<li class="borderButtom">
+					${msp.desc}		
+				</li>
 			</ul>
 		</div>
 	</c:forEach>

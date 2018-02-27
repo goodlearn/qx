@@ -69,6 +69,17 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		super.delete(maskSinglePerson);
 	}
 	
+	//查找未提交的
+	public MaskSinglePerson findSubmitById(String id) {
+		MaskSinglePerson queryMsp = dao.get(id);
+		String submitState  = queryMsp.getSubmitState();
+		String yesSubmit = DictUtils.getDictValue("是", "yes_no", "0");
+		if(yesSubmit.equals(submitState)) {
+			return queryMsp;
+		}
+		return queryMsp;
+	}
+	
 	/**
 	 * 根据任务模板和部位序号找到部位名称
 	 */
@@ -159,6 +170,13 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 	@Transactional(readOnly = false)
 	public void submitSingleMask(User user,String submitMspId,List<ViewMaskDesc> params,List<String> remarks) {
 		MaskSinglePerson msp = dao.get(submitMspId);
+		String yesSubmit = DictUtils.getDictValue("是", "yes_no", "0");
+		msp.setSubmitState(yesSubmit);
+		msp.setUpdateBy(user);
+		msp.setUpdateDate(new Date());
+		dao.update(msp);
+		
+		
 		MaskContent queryMc = new MaskContent();
 		queryMc.setMspId(submitMspId);
 		List<MaskContent> mcList = maskContentDao.findList(queryMc);
@@ -175,7 +193,7 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				MaskContent mcEntity= new MaskContent();
 				String mcEntityId = IdGen.uuid();
 				mcEntity.setId(mcEntityId);
-				mcEntity.setMspId(msp.getWorkPersonId());
+				mcEntity.setMspId(submitMspId);
 				mcEntity.setTemplateId(null);
 				mcEntity.setProblem(haveProblem);
 				mcEntity.setCreateBy(user);

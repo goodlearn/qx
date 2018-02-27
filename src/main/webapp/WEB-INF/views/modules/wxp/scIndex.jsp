@@ -303,26 +303,26 @@
 				<div class="funcDesc">当前待完成任务</div>
 				<c:if test = "${isUfMasks == 'yes'}">
 					<div class="taksInfoCont">
-						<div class="workTaskCont">
 							<c:forEach items="${processMasks}" var="pm" varStatus="status">
-								<div class="taskType">
-									<div class="taskTypeTxt">${pm.workShopMaskName}</div>
-									<c:if test = "${not empty isMonitor}">
-										<div class="taskBtn verifyBtn">审核</div>
-									</c:if>
-									<div class="taskBtn showtaskBtn">展开</div>
-								</div>
-								<div class="taskCont">
-									<ul>
-										<c:forEach items="${pm.mspList}" var="msp" varStatus="status">
-											<a href="${pageContext.request.contextPath}/wmw/mcList?mspId=${msp.id}">
-												<li><p class="uncomplete">${msp.partName}</p></li>
-											</a>
-										</c:forEach>
-									</ul>
+								<div class="workTaskCont">
+									<div class="taskType">
+										<div class="taskTypeTxt">${pm.workShopMaskName}</div>
+										<div class="taskBtn showtaskBtn">展开</div>
+										<c:if test = "${not empty isMonitor}">
+											<div id="${pm.wsMaskWcId}" class="taskBtn verifyBtn">审核</div>
+										</c:if>
+									</div>
+									<div class="taskCont">
+										<ul>
+											<c:forEach items="${pm.mspList}" var="msp" varStatus="status">
+												<a href="${pageContext.request.contextPath}/wmw/mcList?mspId=${msp.id}">
+													<li><p class="uncomplete">${msp.partName}</p></li>
+												</a>
+											</c:forEach>
+										</ul>
+									</div>
 								</div>
 							</c:forEach>
-						</div>
 					</div>
 				</c:if>
 				<c:if test = "${isUfMasks == 'no'}">
@@ -386,11 +386,12 @@
 	var pageContextVal = $("#PageContext").val();
 	$(function() {
 		$(".verifyBtn").click(function(){
-			window.location.href =pageContextVal+'/wmw/csp';
+			var  wmwId =  $(this).attr("id");
+			window.location.href =pageContextVal+'/wmw/csp?wmwId='+wmwId;
 		});
 		
 		$(".taskPubBtn").click(function(){
-			var wsmId = $(".taskPubBtn").attr("id");
+			var  wsmId =  $(this).attr("id");
 			 $.ajax({
 			     type:'GET',
 			     url:pageContextVal+'/wmw/releasePd',
@@ -495,7 +496,7 @@
 
 		// calendar
 		var nowDate = new Date();
-		var dateString = nowDate.getFullYear()+"-" + nowDate.getMonth()+"-" + nowDate.getDay();
+		var dateString = nowDate.getFullYear()+"-" + (nowDate.getMonth() + 1 )+"-" + nowDate.getDate();
 		$("#dateInput").val(dateString);
 		
 	    var calendar = new datePicker();
@@ -506,6 +507,7 @@
 			'maxDate':dateString,/*最大日期*/
 			'onSubmit':function(){/*确认时触发事件*/
 				var theSelectData=calendar.value;
+		    	window.location.href= pageContextVal+"/wi/indexInfo?dateQuery="+theSelectData;
 			},
 			'onClose':function(){/*取消时触发事件*/
 			}

@@ -81,6 +81,19 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	}
 	
 	/**
+	 * 提交的任务
+	 */
+	public WsMaskWc findSubmitMask(String id) {
+		WsMaskWc queryWmw = dao.get(id);
+		String state = queryWmw.getSubmitState();
+		String yes = DictUtils.getDictValue("有", "yes_no", "0");
+		if(yes.equals(state)) {
+			return queryWmw;
+		}
+		return null;
+	}
+	
+	/**
 	 * 验证今天是不是已经发布过任务了
 	 * 空值为正常
 	 * 非空值为返回消息

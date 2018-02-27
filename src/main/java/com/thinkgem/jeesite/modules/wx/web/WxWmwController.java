@@ -26,7 +26,6 @@ import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904ByItem;
 import com.thinkgem.jeesite.modules.sys.entity.Sf31904cCsItem;
 import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
@@ -218,6 +217,12 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
+		//是否提交
+		if(null != wsMaskWcService.findSubmitMask(wmwId)) {
+			model.addAttribute("message",ERR_MSP_SUBMIT);
+			return WX_ERROR;
+		}
+		
 		MaskMainPerson query = new MaskMainPerson();
 		query.setWsMaskWcId(wmwId);//该任务中审核人任务列表条件
 		
@@ -244,6 +249,7 @@ public class WxWmwController extends WxBaseController{
 						setTemplateContent(wmwId,mc);
 					}
 					msp.setMcList(mcList);
+					msp.setDesc(msp.addDesc());
 				}
 				retList.addAll(mspList);//添加该员工在改审核任务下的任务列表
 			}
@@ -341,6 +347,13 @@ public class WxWmwController extends WxBaseController{
 		if(null == mspId) {
 			//任务不存在
 			model.addAttribute("message",ERR_MSP_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		//提交任务处理
+		if(null != maskSinglePersonService.findSubmitById(mspId)) {
+			//已经提交任务
+			model.addAttribute("message",ERR_MSP_SUBMIT);
 			return WX_ERROR;
 		}
 		

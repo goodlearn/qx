@@ -23,7 +23,34 @@ public class MaskSinglePerson extends DataEntity<MaskSinglePerson> {
 	
 	private String partName;//部位名称
 	private List<MaskContent> mcList;//所属任务
+	private String desc;
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
 	
+	
+	public String getDesc() {
+		return desc;
+	}
+
+
+	public String addDesc() {
+		if(null == mcList || mcList.size() == 0) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		int count = 1;
+		for(MaskContent forMc : mcList) {
+			if(null == forMc.getTemplateId()) {
+				sb.append(count+"、" + " " + forMc.getRemarks() + "\n");
+				count++;
+			}
+		}
+		return sb.toString();
+	}
+
+
 	public List<MaskContent> getMcList() {
 		return mcList;
 	}

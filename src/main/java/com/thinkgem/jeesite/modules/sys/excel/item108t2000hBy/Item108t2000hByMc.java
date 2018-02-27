@@ -37,6 +37,9 @@ public class Item108t2000hByMc implements Comparator<Item108t2000hByMc>{
 
 	@Override
 	public int compare(Item108t2000hByMc o1,Item108t2000hByMc o2) {
+		if(null == o1 || null == o2) {
+			return 0;
+		}
 		Integer i1 = Integer.valueOf(o1.getItem108t2000hBy().getNumber());
 		Integer i2 = Integer.valueOf(o2.getItem108t2000hBy().getNumber());
 		return i1-i2;
