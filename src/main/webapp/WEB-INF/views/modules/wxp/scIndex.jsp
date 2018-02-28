@@ -8,7 +8,9 @@
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
 	<script src="${ctxStatic}/wx/wxjs/datePicker.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/mescroll.min.js" type="text/javascript"></script>
 	<link href="${ctxStatic}/wx/wxcss/normalize.css" type="text/css" rel="stylesheet" />
+	<link href="${ctxStatic}/wx/wxcss/mescroll.min.css" type="text/css" rel="stylesheet" />
 	
 	<style type="text/css">
 		*{
@@ -296,7 +298,7 @@
 			</ul>
 		</div>
 	</div>
-	
+	<div id="mescroll" class="mescroll">
 	<div class="sliderCont">
 		<ul>
 			<li><!-- 任务执行 -->
@@ -530,6 +532,19 @@
 	    		"padding-bottom": '17px'
 	    	});
 	    }
+	    
+	    // 下拉刷新
+	    var mescroll = new MeScroll("mescroll", { 
+				down: {
+					auto:false,
+					callback: downCallback 
+				}
+			});
+	    //下拉刷新的回调
+		function downCallback(e) {
+			//e.preventDefault();
+			window.location.reload();
+		}
 	});
 </script>
 </body>
