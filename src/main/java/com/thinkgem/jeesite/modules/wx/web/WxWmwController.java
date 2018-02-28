@@ -589,10 +589,7 @@ public class WxWmwController extends WxBaseController{
 			//任务还未结束
 			return backJsonWithCode(errCode,validateMsg);
 		}
-		//发布任务
-		WsMaskWc wsMaskWc = wsMaskWcService.releasePd(wsmId,UserUtils.findByEmpNo(empNo));
-		
-		return backJsonWithCode(successCode,wsMaskWc.getId());
+		return backJsonWithCode(successCode,null);
 	}
 	
 	/**
@@ -674,14 +671,6 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
-		//依据任务号找到车间任务号
-		WsMaskWc wsMaskWc = wsMaskWcService.get(maskId);
-		if(null == wsMaskWc) {
-			//任务不存在
-			model.addAttribute("message",ERR_WSM_NULL);
-			return WX_ERROR;
-		}
-		
 		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			model.addAttribute("message",ERR_EMP_NO_NULL);
@@ -693,6 +682,16 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
+		String validateMsg = wsMaskWcService.validateReleasePd(maskId);
+		if(null != validateMsg) {
+			//任务还未结束
+			model.addAttribute("message",validateMsg);
+			return WX_ERROR;
+		}
+		
+		//发布任务
+		WsMaskWc wsMaskWc = wsMaskWcService.releasePd(maskId,UserUtils.findByEmpNo(empNo));
+		//分配页面
 		MdControl stateParam = maskDispatchService.pcMaskDispatch(maskId,model,true,empNo);
 		
 		//依据任务号找到车间任务号

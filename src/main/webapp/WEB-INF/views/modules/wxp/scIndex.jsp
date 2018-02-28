@@ -399,7 +399,7 @@
 				 dataType: "json",
 			     success:function(data){
 						switch(data.code) {
-							case "0" : window.location.href = pageContextVal+'/wmw/pallocation?maskId='+data.message; break;
+							case "0" : window.location.href = pageContextVal+'/wmw/pallocation?maskId='+wsmId; break;
 							case "1" : alert(data.message); break;
 						}
 			     },
