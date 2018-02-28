@@ -18,8 +18,10 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t2000hBy;
 import com.thinkgem.jeesite.modules.sys.entity.Item220DgDj;
+import com.thinkgem.jeesite.modules.sys.entity.Item220tQgDj;
 import com.thinkgem.jeesite.modules.sys.entity.Item220tZxBy;
 import com.thinkgem.jeesite.modules.sys.entity.ItemMt440Zjfq;
+import com.thinkgem.jeesite.modules.sys.entity.ItemQx2bMt4400Dj;
 import com.thinkgem.jeesite.modules.sys.entity.ItemSf31904KcDgDj;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
@@ -33,8 +35,10 @@ import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.Item108t2000hByService;
 import com.thinkgem.jeesite.modules.sys.service.Item220DgDjService;
+import com.thinkgem.jeesite.modules.sys.service.Item220tQgDjService;
 import com.thinkgem.jeesite.modules.sys.service.Item220tZxByService;
 import com.thinkgem.jeesite.modules.sys.service.ItemMt440ZjfqService;
+import com.thinkgem.jeesite.modules.sys.service.ItemQx2bMt4400DjService;
 import com.thinkgem.jeesite.modules.sys.service.ItemSf31904KcDgDjService;
 import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
 import com.thinkgem.jeesite.modules.sys.service.MaskDispatchService;
@@ -97,12 +101,18 @@ public class WxWmwController extends WxBaseController{
 	private Item108t2000hByService item108t2000hByService;
 	@Autowired
 	private ItemMt440ZjfqService itemMt440ZjfqService;
+	@Autowired
+	private Item220tQgDjService item220tQgDjService;
+	@Autowired
+	private ItemQx2bMt4400DjService itemQx2bMt4400DjService;
+	
 	//提交任务
 	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
 	@ResponseBody
 	public String utSubmit(@RequestBody ViewMaskSubmit viewMaskSubmit, HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
+	   // String openId = (String)model.asMap().get("openId");
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 	    String empNo = findEmpNo(openId);
 	    User user = UserUtils.findByEmpNo(empNo);
 		JSONArray jsonOther = JSONArray.fromObject(viewMaskSubmit.getOtherdata());
@@ -119,7 +129,7 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "wmwMask",method = RequestMethod.GET)
 	public String wmwMask(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
+	  /*  String openId = (String)model.asMap().get("openId");
 		String regUrl = validateRegByOpenId(openId,model);
 		if(null!=regUrl) {
 			//有错误信息
@@ -130,7 +140,8 @@ public class WxWmwController extends WxBaseController{
 			}else {
 				return regUrl;
 			}
-		}
+		}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
 			//任务不存在
@@ -196,18 +207,19 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "csp",method = RequestMethod.GET)
 	public String csp(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+	  /*  String openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}*/
+		String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
 			//任务不存在
@@ -332,7 +344,21 @@ public class WxWmwController extends WxBaseController{
 			if(null!=templateId) {
 				ItemMt440Zjfq itemMt440Zjfq = itemMt440ZjfqService.get(templateId);
 				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(itemMt440Zjfq.getPart());
+				templateContent.setItem(itemMt440Zjfq.getCheckContent());
+				maskContent.setTc(templateContent);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				Item220tQgDj item220tQgDj = item220tQgDjService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item220tQgDj.getCheckContent());
+				maskContent.setTc(templateContent);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				ItemQx2bMt4400Dj itemQx2bMt4400Dj = itemQx2bMt4400DjService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(itemQx2bMt4400Dj.getCheckContent());
 				maskContent.setTc(templateContent);
 			}
 		}
@@ -343,18 +369,19 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "mcList",method = RequestMethod.GET)
 	public String mcList(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误也爱你
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+	  /*  String openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		String mspId = request.getParameter("mspId");
 		if(null == mspId) {
 			//任务不存在
@@ -391,7 +418,8 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value = "allocation",method= RequestMethod.POST)
 	@ResponseBody
 	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s,Model model) {
-		String openId = (String)model.asMap().get("openId");
+		//String openId = (String)model.asMap().get("openId");
+		String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
@@ -443,6 +471,14 @@ public class WxWmwController extends WxBaseController{
 			//MT4400卡车钳工周检分区
 			itemMt440ZjfqService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
 			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			//220T卡车钳工点检分区
+			item220tQgDjService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			//汽修二班MT4400保养责任分区
+			itemQx2bMt4400DjService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
 		}
 		return backJsonWithCode(errCode,ERR_NOT_MASK_SERVICE);
 	}
@@ -454,18 +490,19 @@ public class WxWmwController extends WxBaseController{
 	@ResponseBody
 	public String releasePd(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误也爱你
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+	  /*  String openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		//验证任务是否结束
 		String wsmId = request.getParameter("wsmId");
 		if(null == wsmId) {
@@ -505,18 +542,19 @@ public class WxWmwController extends WxBaseController{
 	@ResponseBody
 	public String submitMask(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误也爱你
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+		  /*  String openId = (String)model.asMap().get("openId");
+				String regUrl = validateRegByOpenId(openId,model);
+				if(null!=regUrl) {
+					//有错误信息
+					String errUrl = (String)model.asMap().get("errUrl");
+					if(null != errUrl) {
+						//看是否有错误
+						return errUrl;
+					}else {
+						return regUrl;
+					}
+				}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		//验证任务是否结束
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
@@ -556,18 +594,19 @@ public class WxWmwController extends WxBaseController{
 	@RequestMapping(value="/pallocation",method=RequestMethod.GET)
 	public String pallocation(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误也爱你
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+	  /*  String openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		String maskId = request.getParameter("maskId");
 		if(null == maskId) {
 			//任务号不存在

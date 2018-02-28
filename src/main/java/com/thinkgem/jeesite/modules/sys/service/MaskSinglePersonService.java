@@ -130,6 +130,11 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_MT_440_DICT, "");
 				msp.setPartName(partName);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_220T_QG_DJ_DICT, "");
+				msp.setPartName(partName);
+			}
 		}
 	}
 	
@@ -169,6 +174,9 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 			msp.setPartName(partName);
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
 			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_MT_440_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_220T_QG_DJ_DICT, "");
 			msp.setPartName(partName);
 		}
 	}

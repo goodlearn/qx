@@ -110,7 +110,7 @@
 		<p class="pageTxt">审核提交</p>
 		<p class="backBtn">&lt; 返回</p>
 	</div>
-	<form id="checkForm" method="post">
+	
 		<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 		<input id="wmwId" type="hidden" value="${maskInfo.wsMaskWcId}" />
 		<div class="taskInfo">
@@ -149,7 +149,7 @@
 		</c:forEach>
 		
 		<button class="submitBtn">确认提交</button>
-	</form>
+	
 </div>
 
 <script type="text/javascript">
@@ -187,7 +187,10 @@
 			    dataType: "json",
 			    success:function(data){
 					switch(data.code) {
-						case "0" : window.location.href= pageContextVal+"/wi/indexInfo"; break;
+						case "0" : 
+							alert("提交成功!");
+							window.location.href= pageContextVal+"/wi/indexInfo";
+							break;
 						case "1" : alert(data.message); break;
 					}
 			    },

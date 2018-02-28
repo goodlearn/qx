@@ -21,7 +21,6 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
-import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
@@ -59,9 +58,6 @@ public class WxIndexController extends WxBaseController{
 	
 	@Autowired
 	private MaskSinglePersonService maskSinglePersonService;
-	
-	@Autowired
-	private BusinessAssembleService businessAssembleService;
 	
 	@Autowired
 	private SysWxInfoService sysWxInfoService;
@@ -128,18 +124,19 @@ public class WxIndexController extends WxBaseController{
 	@RequestMapping(value="/indexInfo",method=RequestMethod.GET)
 	public String indexInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
-		String regUrl = validateRegByOpenId(openId,model);
-		if(null!=regUrl) {
-			//有错误信息
-			String errUrl = (String)model.asMap().get("errUrl");
-			if(null != errUrl) {
-				//看是否有错误也爱你
-				return errUrl;
-			}else {
-				return regUrl;
-			}
-		}
+	  /*  String openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}*/
+	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */
@@ -332,8 +329,4 @@ public class WxIndexController extends WxBaseController{
 		
 		return INDEX_INFO;
 	}
-	
-	
-
-	
 }

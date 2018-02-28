@@ -15,7 +15,6 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
-import com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -64,6 +63,12 @@ public class MdControl {
 	
 	public final static String ITEM_MT_4400_ZJFQ = "modules/maskdispatch/itemMt440ZjfqForm";// MT4400卡车钳工周检分区
 	public final static String WX_ITEM_MT_4400_ZJFQ = "modules/wxp/itemMt440Zjfqp";//  MT4400卡车钳工周检分区
+	
+	public final static String ITEM_220T_QG_DJ = "modules/maskdispatch/item220tQgDjForm";// 220T卡车钳工点检分区
+	public final static String WX_ITEM_220T_QG_DJ = "modules/wxp/item220tQgDjp";//  220T卡车钳工点检分区
+	
+	public final static String ITEM_QX2B_MT_4400_DJ = "modules/maskdispatch/itemQx2bMt4400DjForm";// 汽修二班MT4400保养责任分区
+	public final static String WX_ITEM_QX2B_MT_4400_DJ = "modules/wxp/itemQx2bMt4400Djp";//  汽修二班MT4400保养责任分区
 	
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
@@ -132,8 +137,23 @@ public class MdControl {
 			setItem108t2000hByData();
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
 			setItemMt440Data();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+			setItem220tQgDjData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
+			setItemQx2bMt4400DjData();
 		}
 		setWps();//设置人员
+	}
+	
+	// 汽修二班MT4400保养责任分区
+	private void setItemQx2bMt4400DjData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_QX2B_MT_4400_DJ_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_QX2B_MT_4400_DJ);
+		}else {
+			setValue(ITEM_QX2B_MT_4400_DJ);
+		}
 	}
 	
 	// MT4400卡车钳工周检分区
@@ -144,6 +164,17 @@ public class MdControl {
 			setValue(WX_ITEM_MT_4400_ZJFQ);
 		}else {
 			setValue(ITEM_MT_4400_ZJFQ);
+		}
+	}
+	
+	// 220T卡车钳工点检分区
+	private void setItem220tQgDjData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_220T_QG_DJ_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_220T_QG_DJ);
+		}else {
+			setValue(ITEM_220T_QG_DJ);
 		}
 	}
 	
@@ -231,7 +262,7 @@ public class MdControl {
 	private void setWps() {
 		User user = UserUtils.findByEmpNo(empNo);
 		if(user.isAdmin()) {
-			model.addAttribute("wp",BaseInfoUtils.getAllPersonList());
+			model.addAttribute("wp",findWpByCid());
 		}else {
 			model.addAttribute("wp", findWpByCid());
 		}

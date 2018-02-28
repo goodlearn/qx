@@ -103,9 +103,7 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 		try {
 			WsMaskWc query = new WsMaskWc();
 			query.setWorkShopMaskId(wsmId);
-			String no = DictUtils.getDictValue("否", "yes_no", "0");
 			String dateParam = CasUtils.convertDate2YMDString(new Date());
-			query.setSubmitState(no);//未提交的
 			Date date = null;
 			date = CasUtils.convertString2YMDDate(dateParam);
 			String beginDate = CasUtils.convertDate2HMSString(Date2Utils.getDayStartTime(date));

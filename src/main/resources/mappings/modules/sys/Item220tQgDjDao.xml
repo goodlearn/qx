@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.Item220tQgDjDao">
+    
+	<sql id="item220tQgDjColumns">
+		a.id AS "id",
+		a.part AS "part",
+		a.check_content AS "checkContent",
+		a.assemble_id AS "assembleId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		ba.id AS "ba.id",
+		ba.name AS "ba.name"
+	</sql>
+	
+	<sql id="item220tQgDjJoins">
+		LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
+	</sql>
+    
+	<select id="get" resultType="Item220tQgDj">
+		SELECT 
+			<include refid="item220tQgDjColumns"/>
+		FROM item_220t_qg_dj a
+		<include refid="item220tQgDjJoins"/>
+		WHERE a.del_flag = 0 AND a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Item220tQgDj">
+		SELECT 
+			<include refid="item220tQgDjColumns"/>
+		FROM item_220t_qg_dj a
+		<include refid="item220tQgDjJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="part != null and part != ''">
+				AND a.part = #{part}
+			</if>
+			<if test="checkContent != null and checkContent != ''">
+				AND a.check_content = #{checkContent}
+			</if>
+			<if test="assembleId != null and assembleId != ''">
+				AND a.assemble_id = #{assembleId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Item220tQgDj">
+		SELECT 
+			<include refid="item220tQgDjColumns"/>
+		FROM item_220t_qg_dj a
+		<include refid="item220tQgDjJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO item_220t_qg_dj(
+			id,
+			part,
+			check_content,
+			assemble_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{part},
+			#{checkContent},
+			#{assembleId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE item_220t_qg_dj SET 	
+			part = #{part},
+			check_content = #{checkContent},
+			assemble_id = #{assembleId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE item_220t_qg_dj SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
