@@ -29,7 +29,7 @@
 			<include refid="item220tZxByColumns"/>
 		FROM item_220t_zx_by a
 		<include refid="item220tZxByJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="Item220tZxBy">

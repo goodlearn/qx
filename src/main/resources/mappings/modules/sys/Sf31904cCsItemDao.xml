@@ -29,7 +29,7 @@
 			<include refid="sf31904cCsItemColumns"/>
 		FROM sf31904c_cs_item a
 		<include refid="sf31904cCsItemJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="Sf31904cCsItem">

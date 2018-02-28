@@ -29,7 +29,7 @@
 			<include refid="maskSinglePersonColumns"/>
 		FROM mask_single_person a
 		<include refid="maskSinglePersonJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="MaskSinglePerson">

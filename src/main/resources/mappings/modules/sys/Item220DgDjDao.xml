@@ -29,7 +29,7 @@
 			<include refid="item220DgDjColumns"/>
 		FROM item_220_dg_dj a
 		<include refid="item220DgDjJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND  a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="Item220DgDj">

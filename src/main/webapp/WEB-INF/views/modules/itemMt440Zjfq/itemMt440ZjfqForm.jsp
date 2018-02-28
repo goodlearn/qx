@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>车间人员信息管理</title>
+	<title>MT4400卡车钳工周检分区管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -27,44 +27,43 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/sys/workPerson/">车间人员信息列表</a></li>
-		<li class="active"><a href="${ctx}/sys/workPerson/form?id=${workPerson.id}">车间人员信息<shiro:hasPermission name="sys:workPerson:edit">${not empty workPerson.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:workPerson:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/sys/itemMt440Zjfq/">MT4400卡车钳工周检分区列表</a></li>
+		<li class="active"><a href="${ctx}/sys/itemMt440Zjfq/form?id=${itemMt440Zjfq.id}">MT4400卡车钳工周检分区<shiro:hasPermission name="sys:itemMt440Zjfq:edit">${not empty itemMt440Zjfq.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="sys:itemMt440Zjfq:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="workPerson" action="${ctx}/sys/workPerson/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="itemMt440Zjfq" action="${ctx}/sys/itemMt440Zjfq/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}"/>	
 		<div class="control-group">
-			<label class="control-label">编号：</label>
+			<label class="control-label">表格名称：</label>
 			<div class="controls">
-				<form:input path="no" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">姓名：</label>
-			<div class="controls">
-				<form:input path="name" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">所属班组：</label>
-			<div class="controls">
-				<form:select path="workClassId" class="input-xlarge required">
+				<form:select path="assembleId" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getAllClassList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+					<form:options items="${fns:getBaList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>		
+		<div class="control-group">
+			<label class="control-label">部位：</label>
+			<div class="controls">
+				<form:select path="part" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('itemMt440Zjfq')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">级别：</label>
+			<label class="control-label">序号：</label>
 			<div class="controls">
-				<form:select path="level" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('workPersonLevel')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+				<form:input path="number" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">检查内容：</label>
+			<div class="controls">
+				<form:textarea path="checkContent" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -74,7 +73,7 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="sys:workPerson:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="sys:itemMt440Zjfq:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.web;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +64,18 @@ public class WorkPersonController extends BaseController {
 		if (!beanValidator(model, workPerson)){
 			return form(workPerson, model);
 		}
+		
+		String no = workPerson.getNo();
+		if(StringUtils.isEmpty(no)) {
+			addMessage(redirectAttributes, "员工号不能为空");
+			return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";
+		}
+		
+		if(null != workPersonService.findByEmpNo(no)) {
+			addMessage(redirectAttributes, "员工编号已经存在");
+			return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";
+		}
+		
 		workPersonService.save(workPerson);
 		addMessage(redirectAttributes, "保存车间人员信息成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";

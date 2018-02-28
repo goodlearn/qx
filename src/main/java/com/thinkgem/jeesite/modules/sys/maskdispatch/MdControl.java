@@ -62,6 +62,9 @@ public class MdControl {
 	public final static String ITEM_108T_2000H_BY = "modules/maskdispatch/item108t2000hByForm";// 220T卡车电工周点检卡（电气部分）
 	public final static String WX_ITEM_108T_2000H_BY = "modules/wxp/item108t2000hByp";//  220T卡车电工周点检卡（电气部分）
 	
+	public final static String ITEM_MT_4400_ZJFQ = "modules/maskdispatch/itemMt440ZjfqForm";// MT4400卡车钳工周检分区
+	public final static String WX_ITEM_MT_4400_ZJFQ = "modules/wxp/itemMt440Zjfqp";//  MT4400卡车钳工周检分区
+	
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -127,8 +130,21 @@ public class MdControl {
 			setItemSf31904KcDgDjData();
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
 			setItem108t2000hByData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
+			setItemMt440Data();
 		}
 		setWps();//设置人员
+	}
+	
+	// MT4400卡车钳工周检分区
+	private void setItemMt440Data() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_MT_440_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_MT_4400_ZJFQ);
+		}else {
+			setValue(ITEM_MT_4400_ZJFQ);
+		}
 	}
 	
 	// 108T卡车2000H及以上级别保养单(机械部分)

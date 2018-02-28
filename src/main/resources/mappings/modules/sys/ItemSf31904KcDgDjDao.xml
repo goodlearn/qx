@@ -29,7 +29,7 @@
 			<include refid="itemSf31904KcDgDjColumns"/>
 		FROM item_sf31904_kc_dg_dj a
 		<include refid="itemSf31904KcDgDjJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="ItemSf31904KcDgDj">

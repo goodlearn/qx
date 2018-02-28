@@ -12,7 +12,6 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
-import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -126,6 +125,11 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_2000H_BY_DICT, "");
 				msp.setPartName(partName);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_MT_440_DICT, "");
+				msp.setPartName(partName);
+			}
 		}
 	}
 	
@@ -162,6 +166,9 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 			msp.setPartName(partName);
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
 			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_2000H_BY_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_MT_440_DICT, "");
 			msp.setPartName(partName);
 		}
 	}

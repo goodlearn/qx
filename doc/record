@@ -8,7 +8,7 @@ CREATE TABLE `sf31904_by_item`
 	Entity ba
 	EntityDao ba和left Join
 	EntityService createMask
-	EntityControl jsp文件夹和allocation
+	EntityControl jsp文件夹和allocation (导出Excel可以后面写listwmw)
 	EntityList.jsp
 	EntityForm.jsp
 )

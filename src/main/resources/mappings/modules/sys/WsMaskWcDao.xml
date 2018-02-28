@@ -58,7 +58,7 @@
 			<include refid="wsMaskWcColumns"/>
 		FROM ws_mask_wc a
 		<include refid="wsMaskWcJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findDateList" resultType="WsMaskWc">

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.FitterCheckSpotItem1Dao">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.ItemMt440ZjfqDao">
     
-	<sql id="fitterCheckSpotItem1Columns">
+	<sql id="itemMt440ZjfqColumns">
 		a.id AS "id",
 		a.part AS "part",
 		a.number AS "number",
-		a.content AS "content",
+		a.check_content AS "checkContent",
 		a.assemble_id AS "assembleId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -18,25 +18,37 @@
 		ba.name AS "ba.name"
 	</sql>
 	
-	<sql id="fitterCheckSpotItem1Joins">
+	<sql id="itemMt440ZjfqJoins">
 		LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
 	</sql>
     
-	<select id="get" resultType="FitterCheckSpotItem1">
+	<select id="get" resultType="ItemMt440Zjfq">
 		SELECT 
-			<include refid="fitterCheckSpotItem1Columns"/>
-		FROM fitter_check_spot_item_1 a
-		<include refid="fitterCheckSpotItem1Joins"/>
+			<include refid="itemMt440ZjfqColumns"/>
+		FROM item_mt_440_zjfq a
+		<include refid="itemMt440ZjfqJoins"/>
 		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="FitterCheckSpotItem1">
+	<select id="findList" resultType="ItemMt440Zjfq">
 		SELECT 
-			<include refid="fitterCheckSpotItem1Columns"/>
-		FROM fitter_check_spot_item_1 a
-		<include refid="fitterCheckSpotItem1Joins"/>
+			<include refid="itemMt440ZjfqColumns"/>
+		FROM item_mt_440_zjfq a
+		<include refid="itemMt440ZjfqJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="part != null and part != ''">
+				AND a.part = #{part}
+			</if>
+			<if test="number != null and number != ''">
+				AND a.number = #{number}
+			</if>
+			<if test="checkContent != null and checkContent != ''">
+				AND a.check_content = #{checkContent}
+			</if>
+			<if test="assembleId != null and assembleId != ''">
+				AND a.assemble_id = #{assembleId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -48,11 +60,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="FitterCheckSpotItem1">
+	<select id="findAllList" resultType="ItemMt440Zjfq">
 		SELECT 
-			<include refid="fitterCheckSpotItem1Columns"/>
-		FROM fitter_check_spot_item_1 a
-		<include refid="fitterCheckSpotItem1Joins"/>
+			<include refid="itemMt440ZjfqColumns"/>
+		FROM item_mt_440_zjfq a
+		<include refid="itemMt440ZjfqJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
@@ -67,11 +79,11 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO fitter_check_spot_item_1(
+		INSERT INTO item_mt_440_zjfq(
 			id,
 			part,
 			number,
-			content,
+			check_content,
 			assemble_id,
 			create_by,
 			create_date,
@@ -83,7 +95,7 @@
 			#{id},
 			#{part},
 			#{number},
-			#{content},
+			#{checkContent},
 			#{assembleId},
 			#{createBy.id},
 			#{createDate},
@@ -95,10 +107,10 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE fitter_check_spot_item_1 SET 	
+		UPDATE item_mt_440_zjfq SET 	
 			part = #{part},
 			number = #{number},
-			content = #{content},
+			check_content = #{checkContent},
 			assemble_id = #{assembleId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
@@ -107,7 +119,7 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE fitter_check_spot_item_1 SET 
+		UPDATE item_mt_440_zjfq SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>

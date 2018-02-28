@@ -30,7 +30,7 @@
 			<include refid="motorCheckSpotItem1Columns"/>
 		FROM motor_check_spot_item_1 a
 		<include refid="motorCheckSpotItem1Joins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="MotorCheckSpotItem1">

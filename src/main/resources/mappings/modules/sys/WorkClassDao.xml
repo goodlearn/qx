@@ -28,7 +28,7 @@
 			<include refid="workClassColumns"/>
 		FROM work_class a
 		<include refid="workClassJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="WorkClass">

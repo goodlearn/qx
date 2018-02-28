@@ -44,6 +44,7 @@ public class Global {
 	public static final String ITEM_220T_DG_DJ_BY = "220T卡车电工周点检卡（电气部分）";
 	public static final String ITEM_SF31904_KC_DG_DJ = "SF31904卡车电工周点检卡（电气部分）";
 	public static final String ITEM_108T_2000H_BY = "108T卡车2000H及以上级别保养单(机械部分)";
+	public static final String ITEM_MT_440 = "MT4400卡车钳工周检分区";
 	
 	public static final String SF31904_CS_DICT = "sf31904cCsItem";
 	public static final String ZX_BY_220T_DICT = "item220tZxBy";
@@ -51,6 +52,7 @@ public class Global {
 	public static final String DG_DJ_220T_DICT = "item220DgDj";
 	public static final String SF31904_KC_DG_DJ = "itemSf31904KcDgDj";
 	public static final String ITEM_108T_2000H_BY_DICT = "item108t2000hBy";
+	public static final String ITEM_MT_440_DICT = "itemMt440Zjfq";
 
 	
 	public static final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID

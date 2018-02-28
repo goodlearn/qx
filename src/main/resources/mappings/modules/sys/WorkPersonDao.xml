@@ -37,7 +37,7 @@
 			<include refid="workPersonColumns"/>
 		FROM work_person a
 		<include refid="workPersonJoins"/>
-		WHERE a.no = #{0}
+		WHERE a.del_flag = 0 AND a.no = #{0}
 	</select>
     
 	<select id="get" resultType="WorkPerson">
@@ -45,7 +45,7 @@
 			<include refid="workPersonColumns"/>
 		FROM work_person a
 		<include refid="workPersonJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.del_flag = 0 AND a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="WorkPerson">
