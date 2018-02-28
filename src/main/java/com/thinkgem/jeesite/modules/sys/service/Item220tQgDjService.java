@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.CasUtils;
+import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.Item220tQgDj;
@@ -55,6 +57,27 @@ public class Item220tQgDjService extends CrudService<Item220tQgDjDao, Item220tQg
 	@Autowired
 	private MaskContentDao maskContentDao;
 	
+	//获取今天的任务id
+	private String getMaskId(String workShopMaskId) {
+		String maskId = null;
+		try {
+			WsMaskWc query = new WsMaskWc();
+			query.setWorkShopMaskId(workShopMaskId);
+			String dateParam = CasUtils.convertDate2YMDString(new Date());
+			Date date = null;
+			date = CasUtils.convertString2YMDDate(dateParam);
+			String beginDate = CasUtils.convertDate2HMSString(Date2Utils.getDayStartTime(date));
+			String endDate = CasUtils.convertDate2HMSString(Date2Utils.getDayEndTime(date));
+			query.setBeginQueryDate(beginDate);
+			query.setEndQueryDate(endDate);
+			List<WsMaskWc> exitList = wsMaskWcDao.findList(query);
+			WsMaskWc wsMaskWc = exitList.get(0);//今天只有一个任务 如果没有或者过多 均为异常情况
+			maskId = wsMaskWc.getId();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return maskId;
+	}
 	
 	/**
 	 * 生成任务
@@ -63,9 +86,8 @@ public class Item220tQgDjService extends CrudService<Item220tQgDjDao, Item220tQg
 	@Transactional(readOnly = false)
 	public void createMask(ViewMcsi1[] viewMcsi1s,User user) {
 		//获取总任务号
-		String maskId = viewMcsi1s[0].getMaskId();
-		WsMaskWc wsMaskWc = wsMaskWcDao.get(maskId);
-		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
+		String workShopMaskId = viewMcsi1s[0].getMaskId();
+		String maskId = getMaskId(workShopMaskId);
 		//找到车间任务
 		WorkShopMask workShopMask = workShopMaskDao.get(workShopMaskId);
 		//找到业务集号

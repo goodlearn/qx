@@ -118,8 +118,7 @@ public class MdControl {
 	private void setMaskAllocation() {
 		
 		//依据任务号找到车间任务号
-		WsMaskWc wsMaskWc = wsMaskWcDao.get(maskId);
-		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
+		String workShopMaskId = maskId;
 		//找到车间任务
 		WorkShopMask workShopMask = workShopMaskDao.get(workShopMaskId);
 		//找到业务集号

@@ -474,8 +474,12 @@ public class WxWmwController extends WxBaseController{
 		}
 		
 		//根据任务获取对应的业务对象
+		
 		String maskId = viewMcsi1s[0].getMaskId();
-		WsMaskWc wsMaskWc = wsMaskWcService.get(maskId);
+		//发布任务
+		WsMaskWc wsMaskWc = wsMaskWcService.releasePd(maskId,UserUtils.findByEmpNo(empNo));
+		
+		//设置分配人员
 		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
 		//找到车间任务
 		WorkShopMask workShopMask = workShopMaskService.get(workShopMaskId);
@@ -570,7 +574,7 @@ public class WxWmwController extends WxBaseController{
 			return backJsonWithCode(errCode,ERR_WSM_ID_NULL);
 		}
 		
-		if(null == wsMaskWcService.validateWsmId(wsmId)) {
+		if(null == workShopMaskService.get(wsmId)) {
 			//任务不存在
 			return backJsonWithCode(errCode,ERR_WSM_NULL);
 		}
@@ -589,6 +593,7 @@ public class WxWmwController extends WxBaseController{
 			//任务还未结束
 			return backJsonWithCode(errCode,validateMsg);
 		}
+		
 		return backJsonWithCode(successCode,null);
 	}
 	
@@ -671,6 +676,12 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
+		if(null == workShopMaskService.get(maskId)) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
 		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			model.addAttribute("message",ERR_EMP_NO_NULL);
@@ -688,16 +699,11 @@ public class WxWmwController extends WxBaseController{
 			model.addAttribute("message",validateMsg);
 			return WX_ERROR;
 		}
-		
-		//发布任务
-		WsMaskWc wsMaskWc = wsMaskWcService.releasePd(maskId,UserUtils.findByEmpNo(empNo));
+	
 		//分配页面
 		MdControl stateParam = maskDispatchService.pcMaskDispatch(maskId,model,true,empNo);
-		
-		//依据任务号找到车间任务号
-		String workShopMaskId = wsMaskWc.getWorkShopMaskId();
 		//找到车间任务
-		WorkShopMask workShopMask = workShopMaskService.get(workShopMaskId);
+		WorkShopMask workShopMask = workShopMaskService.get(maskId);
 		model.addAttribute("wsmName",workShopMask.getName());
 		return stateParam.getValue();
 	}
