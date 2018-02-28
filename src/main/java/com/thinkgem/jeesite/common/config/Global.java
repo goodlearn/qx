@@ -47,7 +47,11 @@ public class Global {
 	public static final String ITEM_MT_440 = "MT4400卡车钳工周检分区";
 	public static final String ITEM_220T_QG_DJ = "220T卡车钳工点检分区";
 	public static final String ITEM_QX2B_MT_4400_DJ = "汽修二班MT4400保养责任分区";
-
+	public static final String ITEM_QX2B_830_BY = "汽修二班830E保养责任分区";
+	public static final String ITEM_108T_330_BY = "108T卡车330小时保养单(机械部分)";
+	public static final String ITEM_108T_660_BY = "108T卡车660小时保养单(机械部分)";
+	public static final String ITEM_108T_1000_BY = "108T卡车1000小时保养单(机械部分)";
+	
 	public static final String SF31904_CS_DICT = "sf31904cCsItem";
 	public static final String ZX_BY_220T_DICT = "item220tZxBy";
 	public static final String SF31904_BY_DICT = "sf31904ByItem";
@@ -57,6 +61,10 @@ public class Global {
 	public static final String ITEM_MT_440_DICT = "itemMt440Zjfq";
 	public static final String ITEM_220T_QG_DJ_DICT = "item220tQgDj";
 	public static final String ITEM_QX2B_MT_4400_DJ_DICT = "itemQx2bMt4400Dj";
+	public static final String ITEM_QX2B_830_BY_DICT = "itemQx2b830eBy";
+	public static final String ITEM_108T_330_BY_DICT = "item108t330By";
+	public static final String ITEM_108T_660_BY_DICT = "item108t660By";
+	public static final String ITEM_108T_1000_BY_DICT = "item108t1000By";
 	
 	public static final String DEFAULT_ID_SYS_MANAGER = "1";//系统管理员默认ID
 	public static final int TIE_DATE_NUM = 30;//微信绑定时间

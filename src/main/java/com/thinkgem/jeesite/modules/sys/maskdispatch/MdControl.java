@@ -70,6 +70,18 @@ public class MdControl {
 	public final static String ITEM_QX2B_MT_4400_DJ = "modules/maskdispatch/itemQx2bMt4400DjForm";// 汽修二班MT4400保养责任分区
 	public final static String WX_ITEM_QX2B_MT_4400_DJ = "modules/wxp/itemQx2bMt4400Djp";//  汽修二班MT4400保养责任分区
 	
+	public final static String ITEM_QX2B_830_BY = "modules/maskdispatch/itemQx2b830eByForm";// 汽修二班830E保养责任分区
+	public final static String WX_ITEM_QX2B_830_BY = "modules/wxp/itemQx2b830eByp";//  汽修二班830E保养责任分区
+	
+	public final static String ITEM_108T_330_BY = "modules/maskdispatch/item108t330ByForm";// 108T卡车330小时保养单(机械部分)
+	public final static String WX_ITEM_108T_330_BY = "modules/wxp/item108t330Byp";//  108T卡车330小时保养单(机械部分)
+	
+	public final static String ITEM_108T_660_BY = "modules/maskdispatch/item108t660ByForm";// 108T卡车660小时保养单(机械部分)
+	public final static String WX_ITEM_108T_660_BY = "modules/wxp/item108t660Byp";//  108T卡车660小时保养单(机械部分)
+	
+	public final static String ITEM_108T_1000_BY = "modules/maskdispatch/item108t1000ByForm";// 108T卡车1000小时保养单(机械部分)
+	public final static String WX_ITEM_108T_1000_BY = "modules/wxp/item108t1000Byp";//  108T卡车1000小时保养单(机械部分)
+	
 	
 	public final static String NO_MONITOR = "您不是班长，无操作权限";
 	
@@ -141,8 +153,60 @@ public class MdControl {
 			setItem220tQgDjData();
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
 			setItemQx2bMt4400DjData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
+			setItemQx2b830eByData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
+			setItem108t330ByData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
+			setItem108t660ByData();
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
+			setItem108t1000ByData();
 		}
 		setWps();//设置人员
+	}
+	
+	// 108T卡车1000小时保养单(机械部分)
+	private void setItem108t1000ByData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_108T_1000_BY_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_108T_1000_BY);
+		}else {
+			setValue(ITEM_108T_1000_BY);
+		}
+	}
+	
+	// 108T卡车660小时保养单(机械部分)
+	private void setItem108t660ByData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_108T_660_BY_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_108T_660_BY);
+		}else {
+			setValue(ITEM_108T_660_BY);
+		}
+	}
+	
+	// 108T卡车330小时保养单(机械部分)
+	private void setItem108t330ByData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_108T_330_BY_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_108T_330_BY);
+		}else {
+			setValue(ITEM_108T_330_BY);
+		}
+	}
+	
+	// 汽修二班830E保养责任分区
+	private void setItemQx2b830eByData() {
+		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_QX2B_830_BY_DICT));
+		model.addAttribute("maskId",maskId);
+		if(isWx()) {
+			setValue(WX_ITEM_QX2B_830_BY);
+		}else {
+			setValue(ITEM_QX2B_830_BY);
+		}
 	}
 	
 	// 汽修二班MT4400保养责任分区
@@ -150,9 +214,9 @@ public class MdControl {
 		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_QX2B_MT_4400_DJ_DICT));
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
-			setValue(WX_ITEM_QX2B_MT_4400_DJ);
+			setValue(WX_ITEM_QX2B_830_BY);
 		}else {
-			setValue(ITEM_QX2B_MT_4400_DJ);
+			setValue(ITEM_QX2B_830_BY);
 		}
 	}
 	

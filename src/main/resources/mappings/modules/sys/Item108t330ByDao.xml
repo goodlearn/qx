@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.Item108t330ByDao">
+    
+	<sql id="item108t330ByColumns">
+		a.id AS "id",
+		a.part AS "part",
+		a.number AS "number",
+		a.by_item AS "byItem",
+		a.by_standard AS "byStandard",
+		a.by_tool AS "byTool",
+		a.need_time AS "needTime",
+		a.need_person AS "needPerson",
+		a.check_result AS "checkResult",
+		a.assemble_id AS "assembleId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		ba.id AS "ba.id",
+		ba.name AS "ba.name"
+	</sql>
+	
+	<sql id="item108t330ByJoins">
+			LEFT JOIN business_assemble ba ON ba.id = a.assemble_id
+	</sql>
+    
+	<select id="get" resultType="Item108t330By">
+		SELECT 
+			<include refid="item108t330ByColumns"/>
+		FROM item_108t_330_by a
+		<include refid="item108t330ByJoins"/>
+		WHERE a.del_flag = 0 AND a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Item108t330By">
+		SELECT 
+			<include refid="item108t330ByColumns"/>
+		FROM item_108t_330_by a
+		<include refid="item108t330ByJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="part != null and part != ''">
+				AND a.part = #{part}
+			</if>
+			<if test="number != null and number != ''">
+				AND a.number = #{number}
+			</if>
+			<if test="byItem != null and byItem != ''">
+				AND a.by_item = #{byItem}
+			</if>
+			<if test="byStandard != null and byStandard != ''">
+				AND a.by_standard = #{byStandard}
+			</if>
+			<if test="byTool != null and byTool != ''">
+				AND a.by_tool = #{byTool}
+			</if>
+			<if test="needTime != null and needTime != ''">
+				AND a.need_time = #{needTime}
+			</if>
+			<if test="needPerson != null and needPerson != ''">
+				AND a.need_person = #{needPerson}
+			</if>
+			<if test="checkResult != null and checkResult != ''">
+				AND a.check_result = #{checkResult}
+			</if>
+			<if test="assembleId != null and assembleId != ''">
+				AND a.assemble_id = #{assembleId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Item108t330By">
+		SELECT 
+			<include refid="item108t330ByColumns"/>
+		FROM item_108t_330_by a
+		<include refid="item108t330ByJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO item_108t_330_by(
+			id,
+			part,
+			number,
+			by_item,
+			by_standard,
+			by_tool,
+			need_time,
+			need_person,
+			check_result,
+			assemble_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{part},
+			#{number},
+			#{byItem},
+			#{byStandard},
+			#{byTool},
+			#{needTime},
+			#{needPerson},
+			#{checkResult},
+			#{assembleId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE item_108t_330_by SET 	
+			part = #{part},
+			number = #{number},
+			by_item = #{byItem},
+			by_standard = #{byStandard},
+			by_tool = #{byTool},
+			need_time = #{needTime},
+			need_person = #{needPerson},
+			check_result = #{checkResult},
+			assemble_id = #{assembleId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE item_108t_330_by SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
+import com.thinkgem.jeesite.modules.sys.entity.Item108t1000By;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t2000hBy;
+import com.thinkgem.jeesite.modules.sys.entity.Item108t330By;
+import com.thinkgem.jeesite.modules.sys.entity.Item108t660By;
 import com.thinkgem.jeesite.modules.sys.entity.Item220DgDj;
 import com.thinkgem.jeesite.modules.sys.entity.Item220tQgDj;
 import com.thinkgem.jeesite.modules.sys.entity.Item220tZxBy;
 import com.thinkgem.jeesite.modules.sys.entity.ItemMt440Zjfq;
+import com.thinkgem.jeesite.modules.sys.entity.ItemQx2b830eBy;
 import com.thinkgem.jeesite.modules.sys.entity.ItemQx2bMt4400Dj;
 import com.thinkgem.jeesite.modules.sys.entity.ItemSf31904KcDgDj;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
@@ -33,11 +37,15 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.maskdispatch.MdControl;
 import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
+import com.thinkgem.jeesite.modules.sys.service.Item108t1000ByService;
 import com.thinkgem.jeesite.modules.sys.service.Item108t2000hByService;
+import com.thinkgem.jeesite.modules.sys.service.Item108t330ByService;
+import com.thinkgem.jeesite.modules.sys.service.Item108t660ByService;
 import com.thinkgem.jeesite.modules.sys.service.Item220DgDjService;
 import com.thinkgem.jeesite.modules.sys.service.Item220tQgDjService;
 import com.thinkgem.jeesite.modules.sys.service.Item220tZxByService;
 import com.thinkgem.jeesite.modules.sys.service.ItemMt440ZjfqService;
+import com.thinkgem.jeesite.modules.sys.service.ItemQx2b830eByService;
 import com.thinkgem.jeesite.modules.sys.service.ItemQx2bMt4400DjService;
 import com.thinkgem.jeesite.modules.sys.service.ItemSf31904KcDgDjService;
 import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
@@ -105,6 +113,14 @@ public class WxWmwController extends WxBaseController{
 	private Item220tQgDjService item220tQgDjService;
 	@Autowired
 	private ItemQx2bMt4400DjService itemQx2bMt4400DjService;
+	@Autowired
+	private ItemQx2b830eByService itemQx2b830eByService;
+	@Autowired
+	private Item108t330ByService item108t330ByService;
+	@Autowired
+	private Item108t660ByService item108t660ByService;
+	@Autowired
+	private Item108t1000ByService item108t1000ByService;
 	
 	//提交任务
 	@RequestMapping(value = "utSubmit",method = RequestMethod.POST)
@@ -361,6 +377,34 @@ public class WxWmwController extends WxBaseController{
 				templateContent.setItem(itemQx2bMt4400Dj.getCheckContent());
 				maskContent.setTc(templateContent);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				ItemQx2b830eBy itemQx2b830eBy = itemQx2b830eByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(itemQx2b830eBy.getCheckContent());
+				maskContent.setTc(templateContent);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				Item108t330By item108t330By = item108t330ByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item108t330By.getByItem());
+				maskContent.setTc(templateContent);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				Item108t660By item108t660By = item108t660ByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item108t660By.getByItem());
+				maskContent.setTc(templateContent);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
+			if(null!=templateId) {
+				Item108t1000By item108t1000By = item108t1000ByService.get(templateId);
+				TemplateContent templateContent = new TemplateContent();
+				templateContent.setItem(item108t1000By.getByItem());
+				maskContent.setTc(templateContent);
+			}
 		}
 		
 	}
@@ -475,9 +519,25 @@ public class WxWmwController extends WxBaseController{
 			//220T卡车钳工点检分区
 			item220tQgDjService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
 			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
 			//汽修二班MT4400保养责任分区
 			itemQx2bMt4400DjService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
+			//汽修二班830E保养责任分区
+			itemQx2b830eByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
+			//108T卡车330小时保养单(机械部分)
+			item108t330ByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
+			//108T卡车660小时保养单(机械部分)
+			item108t660ByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
+			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
+			//108T卡车1000小时保养单(机械部分)
+			item108t1000ByService.createMask(viewMcsi1s,UserUtils.findByEmpNo(empNo));
 			return backJsonWithCode(successCode,MSG_ALLOCATION_SUCCESS);
 		}
 		return backJsonWithCode(errCode,ERR_NOT_MASK_SERVICE);

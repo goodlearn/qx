@@ -135,6 +135,26 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_220T_QG_DJ_DICT, "");
 				msp.setPartName(partName);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_QX2B_MT_4400_DJ_DICT, "");
+				msp.setPartName(partName);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_QX2B_830_BY_DICT, "");
+				msp.setPartName(partName);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_330_BY_DICT, "");
+				msp.setPartName(partName);
+			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_660_BY_DICT, "");
+				msp.setPartName(partName);
+			}
 		}
 	}
 	
@@ -177,6 +197,18 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 			msp.setPartName(partName);
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
 			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_220T_QG_DJ_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_QX2B_MT_4400_DJ_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_QX2B_830_BY_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_330_BY_DICT, "");
+			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_660_BY_DICT, "");
 			msp.setPartName(partName);
 		}
 	}

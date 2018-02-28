@@ -1,6 +1,6 @@
 待办:JS提醒
 
-CREATE TABLE `sf31904_by_item`
+CREATE TABLE `Item108t2000hBy`
 生成代码
 添加导航
 添加代码(
@@ -12,7 +12,7 @@ CREATE TABLE `sf31904_by_item`
 	EntityList.jsp
 	EntityForm.jsp
 )
-添加字典新部位 参考 Sf31904ByItem
+添加字典新部位 参考 Sf31904ByItem Item108t2000hBy
 添加字典bussinessType 
 添加表格数据
 添加分配页面maskDispatch maskDispatch MdControl
