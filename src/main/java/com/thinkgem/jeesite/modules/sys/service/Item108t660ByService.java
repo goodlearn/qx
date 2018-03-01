@@ -98,7 +98,7 @@ public class Item108t660ByService extends CrudService<Item108t660ByDao, Item108t
 		String type = businessAssemble.getType();
 		
 		//字典数据检验
-		if(!type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
+		if(!type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
 			//108T卡车2000H及以上级别保养单(机械部分)
 			return;
 		}

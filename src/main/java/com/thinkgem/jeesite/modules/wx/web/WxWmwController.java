@@ -128,7 +128,7 @@ public class WxWmwController extends WxBaseController{
 	public String utSubmit(@RequestBody ViewMaskSubmit viewMaskSubmit, HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
 	   // String openId = (String)model.asMap().get("openId");
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+	    String openId = Global.TEST_WX_OPEN_ID;
 	    String empNo = findEmpNo(openId);
 	    User user = UserUtils.findByEmpNo(empNo);
 		JSONArray jsonOther = JSONArray.fromObject(viewMaskSubmit.getOtherdata());
@@ -157,7 +157,7 @@ public class WxWmwController extends WxBaseController{
 				return regUrl;
 			}
 		}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
 			//任务不存在
@@ -235,7 +235,7 @@ public class WxWmwController extends WxBaseController{
 					return regUrl;
 				}
 			}*/
-		String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
 			//任务不存在
@@ -425,7 +425,7 @@ public class WxWmwController extends WxBaseController{
 					return regUrl;
 				}
 			}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		String mspId = request.getParameter("mspId");
 		if(null == mspId) {
 			//任务不存在
@@ -463,7 +463,7 @@ public class WxWmwController extends WxBaseController{
 	@ResponseBody
 	public String allocation(@RequestBody ViewMcsi1[] viewMcsi1s,Model model) {
 		//String openId = (String)model.asMap().get("openId");
-		String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		String empNo = findEmpNo(openId);
 		if(null == empNo) {
 			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
@@ -566,7 +566,7 @@ public class WxWmwController extends WxBaseController{
 					return regUrl;
 				}
 			}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		//验证任务是否结束
 		String wsmId = request.getParameter("wsmId");
 		if(null == wsmId) {
@@ -616,7 +616,7 @@ public class WxWmwController extends WxBaseController{
 						return regUrl;
 					}
 				}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		//验证任务是否结束
 		String wmwId = request.getParameter("wmwId");
 		if(null == wmwId) {
@@ -668,7 +668,7 @@ public class WxWmwController extends WxBaseController{
 					return regUrl;
 				}
 			}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+		String openId = Global.TEST_WX_OPEN_ID;
 		String maskId = request.getParameter("maskId");
 		if(null == maskId) {
 			//任务号不存在

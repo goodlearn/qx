@@ -70,6 +70,12 @@ public class Global {
 	public static final int TIE_DATE_NUM = 30;//微信绑定时间
 	
 	/**
+	 * 测试微信
+	 */
+	public static final String TEST_WX_OPEN_ID = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+	
+	
+	/**
 	 * 显示/隐藏
 	 */
 	public static final String SHOW = "1";

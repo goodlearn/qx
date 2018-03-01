@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
@@ -136,7 +137,7 @@ public class WxIndexController extends WxBaseController{
 					return regUrl;
 				}
 			}*/
-	    String openId = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+	    String openId = Global.TEST_WX_OPEN_ID;
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */

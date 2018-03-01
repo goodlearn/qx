@@ -98,7 +98,7 @@ public class ItemQx2bMt4400DjService extends CrudService<ItemQx2bMt4400DjDao, It
 		String type = businessAssemble.getType();
 		
 		//字典数据检验
-		if(!type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
+		if(!type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
 			//108T卡车2000H及以上级别保养单(机械部分)
 			return;
 		}
