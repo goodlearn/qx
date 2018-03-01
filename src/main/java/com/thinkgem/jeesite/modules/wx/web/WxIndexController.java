@@ -123,8 +123,13 @@ public class WxIndexController extends WxBaseController{
 	 */
 	@RequestMapping(value="/indexInfo",method=RequestMethod.GET)
 	public String indexInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
-		//是否已经注册并且激活
-	    String openId = (String)model.asMap().get("openId");
+		String openId = null;
+		if(null != Global.TEST_WX_OPEN_ID) {
+			//微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		}else {
+			//是否已经注册并且激活
+		    openId = (String)model.asMap().get("openId");
 			String regUrl = validateRegByOpenId(openId,model);
 			if(null!=regUrl) {
 				//有错误信息
@@ -135,8 +140,8 @@ public class WxIndexController extends WxBaseController{
 				}else {
 					return regUrl;
 				}
-			}
-	   // String openId = Global.TEST_WX_OPEN_ID;
+			}	
+		}
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */

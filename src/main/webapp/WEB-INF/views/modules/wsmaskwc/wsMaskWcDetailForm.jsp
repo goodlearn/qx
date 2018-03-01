@@ -57,12 +57,30 @@
 										<td colspan="6">${msp.partName}</td>
 									</tr>
 									<c:forEach items="${msp.mcList}" var="mc" varStatus="status">
-										<tr>
-											<td class="tit">检查内容</td>
-											<td colspan="4">${mc.tc.item}</td>
-											<td class="tit">有无问题</td>
-											<td colspan="2">${fns:getDictLabel(mc.problem,'yes_no','')}</td>
-										</tr>
+										<c:if test = "${empty mc.tc}">
+												<tr style="color:#FF0000">
+													<td class="tit">补充问题</td>
+													<td colspan="6">${mc.remarks}</td>
+												</tr>
+										</c:if>
+										<c:if test = "${not empty mc.tc}">
+											<c:if test = "${mc.problem == '0'}">
+													<tr style="color:#FF0000">
+														<td class="tit">检查内容</td>
+														<td colspan="4">${mc.tc.item}</td>
+														<td class="tit">有无问题</td>
+														<td  colspan="2">${fns:getDictLabel(mc.problem,'have_no','')}</td>
+													</tr>
+											</c:if>
+											<c:if test = "${mc.problem == '1'}">
+													<tr>
+														<td class="tit">检查内容</td>
+														<td colspan="4">${mc.tc.item}</td>
+														<td class="tit">有无问题</td>
+														<td  colspan="2">${fns:getDictLabel(mc.problem,'have_no','')}</td>
+													</tr>
+											</c:if>
+										</c:if>
 									</c:forEach>
 								</c:forEach>
 							</c:forEach>

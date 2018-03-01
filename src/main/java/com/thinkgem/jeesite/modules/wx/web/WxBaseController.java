@@ -133,6 +133,12 @@ public abstract class WxBaseController {
 	
 	@ModelAttribute
 	public String init(HttpServletRequest request, HttpServletResponse response,Model model) {
+		
+		//微信测试
+		if(null != Global.TEST_WX_OPEN_ID) {
+			return null;
+		}
+		
 		try {
 			if(!DeviceUtils.isWeChat(request)) {
 				logger.info(ERR_NO_WX_REQUEST);

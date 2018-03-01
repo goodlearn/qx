@@ -155,6 +155,11 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_660_BY_DICT, "");
 				msp.setPartName(partName);
 			}
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
+			for(MaskSinglePerson msp : msps) {
+				String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_1000_BY_DICT, "");
+				msp.setPartName(partName);
+			}
 		}
 	}
 	
@@ -210,6 +215,9 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
 			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_660_BY_DICT, "");
 			msp.setPartName(partName);
+		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
+			String partName = DictUtils.getDictLabel(msp.getPart(), Global.ITEM_108T_1000_BY_DICT, "");
+			msp.setPartName(partName);
 		}
 	}
 	
@@ -229,6 +237,14 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		List<MaskContent> mcList = maskContentDao.findList(queryMc);
 		if(null!=params && params.size() > 0) {
 			submitContentUpdate(user,params,mcList);//循环更新
+		}
+		
+		//将原先的新内容全部删除
+		for(MaskContent forMc : mcList) {
+			String templateId = forMc.getTemplateId();
+			if(null == templateId) {
+				maskContentDao.delete(forMc);
+			}
 		}
 		
 		//有无问题

@@ -72,7 +72,8 @@ public class Global {
 	/**
 	 * 测试微信
 	 */
-	public static final String TEST_WX_OPEN_ID = "oJSgx0ePI9jPLEQHmM8_Jhm-oWas";
+	public static final String TEST_WX_OPEN_ID = null;
+	
 	
 	
 	/**

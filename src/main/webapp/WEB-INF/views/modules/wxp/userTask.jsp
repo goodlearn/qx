@@ -198,6 +198,14 @@
 	<div class="addOtherBtn">添加其他问题</div>
 
 	<div class="addOtherCont">
+		<c:forEach items="${mcList}" var="mc" varStatus="status">
+			<c:if test = "${empty mc.tc}">
+					<div class="checkOther">
+						<textarea placeholder="${mc.remarks}">${mc.remarks}</textarea>
+						<div class="removeContBtn">删除此条问题</div>
+					</div>
+			</c:if>
+		</c:forEach>
 		<!-- 
 		<div class="checkOther">
 			<textarea placeholder="在此输入其他问题，多条请添加多次..."></textarea>
