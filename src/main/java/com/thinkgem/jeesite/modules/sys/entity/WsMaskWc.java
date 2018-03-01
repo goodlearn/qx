@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -24,6 +25,17 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private String beginQueryDate;
 	private String endQueryDate;
 	
+	private List<MaskMainPerson> mmpList;//总负责人
+
+
+	public List<MaskMainPerson> getMmpList() {
+		return mmpList;
+	}
+
+	public void setMmpList(List<MaskMainPerson> mmpList) {
+		this.mmpList = mmpList;
+	}
+
 	public String getBeginQueryDate() {
 		return beginQueryDate;
 	}

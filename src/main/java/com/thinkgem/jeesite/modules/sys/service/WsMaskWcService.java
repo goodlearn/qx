@@ -12,12 +12,18 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
+import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
+import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.sys.dao.MaskContentDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskMainPersonDao;
+import com.thinkgem.jeesite.modules.sys.dao.MaskSinglePersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkShopMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.WsMaskWcDao;
@@ -36,6 +42,15 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	@Autowired
 	private WorkShopMaskDao workShopMaskDao;
 
+	@Autowired
+	private MaskMainPersonDao maskMainPersonDao;
+	
+	@Autowired
+	private MaskSinglePersonDao maskSinglePersonDao;
+	
+	@Autowired
+	private MaskContentDao maskContentDao;
+	
 	public WsMaskWc get(String id) {
 		return super.get(id);
 	}
@@ -77,6 +92,44 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 			return wmwId;
 		}
 		return null;
+	}
+	
+	/**
+	 * 查询详细任务
+	 */
+	public WsMaskWc findDetailInfo(String id) {
+		WsMaskWc queryWmw = dao.get(id);
+		if(null == queryWmw) {
+			return null;//没有数据
+		}
+		MaskMainPerson queryMmp = new MaskMainPerson();
+		queryMmp.setWsMaskWcId(id);
+		List<MaskMainPerson> mmpList = maskMainPersonDao.findList(queryMmp);
+		
+		//没有总负责人
+		if(null == mmpList || mmpList.size() == 0) {
+			return queryWmw;
+		}
+		
+		String wsmId = queryWmw.getWorkShopMaskId();
+		WorkShopMask wsm = workShopMaskDao.get(wsmId);
+		queryWmw.setWsm(wsm);
+	
+		queryWmw.setMmpList(mmpList);//任务设置总负责人
+		for(MaskMainPerson mmp : mmpList) {
+			String mmpId = mmp.getId();
+			MaskSinglePerson queryMsp = new MaskSinglePerson();
+			queryMsp.setMmpId(mmpId);
+			List<MaskSinglePerson> mspList = maskSinglePersonDao.findList(queryMsp);
+			mmp.setMspList(mspList);//总负责人关联单个负责人
+			for(MaskSinglePerson msp : mspList) {
+				MaskContent queryMc = new MaskContent();
+				queryMc.setMspId(msp.getId());;
+				List<MaskContent> mcList = maskContentDao.findList(queryMc);
+				msp.setMcList(mcList);//单个负责人关联内容
+			}
+		}
+		return queryWmw;
 	}
 	
 	/**

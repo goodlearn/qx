@@ -272,6 +272,7 @@
 <div class="content">
 	<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
 	<div class="pageDesc">${fullName}</div>
+	<div id="mescroll" class="mescroll">
 	<div class="userInfo">
 		<div class="userInfoCont">
 			<div class="userImgDiv">
@@ -298,7 +299,6 @@
 			</ul>
 		</div>
 	</div>
-	<div id="mescroll" class="mescroll">
 	<div class="sliderCont">
 		<ul>
 			<li><!-- 任务执行 -->
@@ -310,7 +310,7 @@
 									<div class="taskType">
 										<div class="taskTypeTxt">${pm.workShopMaskName}</div>
 										<div class="taskBtn showtaskBtn">展开</div>
-										<c:if test = "${not empty isMonitor}">
+										<c:if test = "${isMonitor == 'yes'}">
 											<div id="${pm.wsMaskWcId}" class="taskBtn verifyBtn">审核</div>
 										</c:if>
 									</div>
@@ -318,7 +318,12 @@
 										<ul>
 											<c:forEach items="${pm.mspList}" var="msp" varStatus="status">
 												<a href="${pageContext.request.contextPath}/wmw/mcList?mspId=${msp.id}">
-													<li><p class="uncomplete">${msp.partName}</p></li>
+													<c:if test = "${msp.submitState == '1'}">
+														<li><p class="complete">${msp.partName}</p></li>
+													</c:if>
+													<c:if test = "${msp.submitState == '0'}">
+														<li><p class="uncomplete">${msp.partName}</p></li>
+													</c:if>
 												</a>
 											</c:forEach>
 										</ul>

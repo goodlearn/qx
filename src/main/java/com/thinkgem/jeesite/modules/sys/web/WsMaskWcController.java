@@ -1,6 +1,8 @@
 package com.thinkgem.jeesite.modules.sys.web;
 
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,8 +19,14 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
+import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
+import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
+import com.thinkgem.jeesite.modules.sys.service.MaskContentService;
+import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
+import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
@@ -39,6 +47,15 @@ public class WsMaskWcController extends BaseController {
 	@Autowired
 	private WorkShopMaskService workShopMaskService;
 	
+	@Autowired
+	private MaskContentService maskContentService;
+	
+	@Autowired
+	private MaskMainPersonService maskMainPersonService;
+	
+	@Autowired
+	private MaskSinglePersonService maskSinglePersonService;
+	
 	@ModelAttribute
 	public WsMaskWc get(@RequestParam(required=false) String id) {
 		WsMaskWc entity = null;
@@ -49,6 +66,33 @@ public class WsMaskWcController extends BaseController {
 			entity = new WsMaskWc();
 		}
 		return entity;
+	}
+	
+	
+	@RequiresPermissions("sys:wsMaskWc:view")
+	@RequestMapping(value = {"detail"})
+	public String detail(WsMaskWc wsMaskWc, HttpServletRequest request, HttpServletResponse response, Model model) {
+		wsMaskWc = wsMaskWcService.findDetailInfo(wsMaskWc.getId());//查询详细信息
+		
+		if(null!=wsMaskWc) {
+			List<MaskMainPerson> mmpList = wsMaskWc.getMmpList();
+			for(MaskMainPerson mmp : mmpList) {
+				List<MaskSinglePerson> mspList = mmp.getMspList();
+				for(MaskSinglePerson msp : mspList) {
+					maskSinglePersonService.setPartName(msp, wsMaskWc.getId());
+					MaskContent queryMc = new MaskContent();
+					queryMc.setMspId(msp.getId());;
+					List<MaskContent> mcList = msp.getMcList();
+					for(MaskContent mc : mcList) {
+						maskContentService.setTemplateContent(wsMaskWc.getId(),mc);
+					}
+				}
+			}
+		}
+		
+		model.addAttribute("wsMaskWc",wsMaskWc);
+		//设置部位信息
+		return "modules/wsmaskwc/wsMaskWcDetailForm";
 	}
 	
 	@RequiresPermissions("sys:wsMaskWc:view")

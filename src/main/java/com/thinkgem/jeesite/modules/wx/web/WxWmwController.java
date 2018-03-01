@@ -133,10 +133,8 @@ public class WxWmwController extends WxBaseController{
 	    User user = UserUtils.findByEmpNo(empNo);
 		JSONArray jsonOther = JSONArray.fromObject(viewMaskSubmit.getOtherdata());
 		List<String> otherData = (List<String>)JSONArray.toCollection(jsonOther, String.class);
-		System.out.println(otherData);
 		JSONArray jsonCheck = JSONArray.fromObject(viewMaskSubmit.getCheckdata());
 		List<ViewMaskDesc> checkData = (List<ViewMaskDesc>)JSONArray.toCollection(jsonCheck, ViewMaskDesc.class);
-		System.out.println(checkData.size());
 		maskSinglePersonService.submitSingleMask(user, viewMaskSubmit.getSubmitMspId(), checkData, otherData);
 		return backJsonWithCode(successCode,"");
 	}
@@ -195,7 +193,7 @@ public class WxWmwController extends WxBaseController{
 					mcQuery.setMspId(mspId);
 					List<MaskContent> mcList = maskContentService.findList(mcQuery);
 					for(MaskContent mc : mcList) {
-						setTemplateContent(wmwId,mc);
+						maskContentService.setTemplateContent(wmwId,mc);
 					}
 					msp.setMcList(mcList);
 					msp.setDesc(msp.addDesc());
@@ -279,7 +277,7 @@ public class WxWmwController extends WxBaseController{
 					mcQuery.setMspId(mspId);
 					List<MaskContent> mcList = maskContentService.findList(mcQuery);
 					for(MaskContent mc : mcList) {
-						setTemplateContent(wmwId,mc);
+						maskContentService.setTemplateContent(wmwId,mc);
 					}
 					msp.setMcList(mcList);
 					msp.setDesc(msp.addDesc());
@@ -303,111 +301,7 @@ public class WxWmwController extends WxBaseController{
 		return CHECK_SUBMIT;
 	}
 	
-	/**
-	 * 根据任务号填充模板信息
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	private void setTemplateContent(String wsMaskWcId,MaskContent maskContent) {
-		String type = businessAssembleService.findBaType(wsMaskWcId);
-		String templateId = maskContent.getTemplateId();
-		if(type.equals(DictUtils.getDictValue(Global.SF31904C_CS_ITEM, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Sf31904cCsItem sf31904cCsItem = sf31904cCsItemService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(sf31904cCsItem.getItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_ZX_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item220tZxBy item220tZxBy = item220tZxByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item220tZxBy.getItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.SF31904C_BY_ITEM, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Sf31904ByItem sf31904ByItem = sf31904ByItemService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(sf31904ByItem.getItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_DG_DJ_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item220DgDj item220DgDj = item220DgDjService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item220DgDj.getCheckStandard());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_SF31904_KC_DG_DJ, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				ItemSf31904KcDgDj itemSf31904KcDgDj = itemSf31904KcDgDjService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(itemSf31904KcDgDj.getCheckStandard());
-				maskContent.setTc(templateContent);
-			}
-			
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_2000H_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item108t2000hBy item108t2000hBy = item108t2000hByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item108t2000hBy.getByItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_MT_440, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				ItemMt440Zjfq itemMt440Zjfq = itemMt440ZjfqService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(itemMt440Zjfq.getCheckContent());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_220T_QG_DJ, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item220tQgDj item220tQgDj = item220tQgDjService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item220tQgDj.getCheckContent());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_MT_4400_DJ, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				ItemQx2bMt4400Dj itemQx2bMt4400Dj = itemQx2bMt4400DjService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(itemQx2bMt4400Dj.getCheckContent());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_QX2B_830_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				ItemQx2b830eBy itemQx2b830eBy = itemQx2b830eByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(itemQx2b830eBy.getCheckContent());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_330_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item108t330By item108t330By = item108t330ByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item108t330By.getByItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_660_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item108t660By item108t660By = item108t660ByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item108t660By.getByItem());
-				maskContent.setTc(templateContent);
-			}
-		}else if(type.equals(DictUtils.getDictValue(Global.ITEM_108T_1000_BY, "bussinessType", "1"))) {
-			if(null!=templateId) {
-				Item108t1000By item108t1000By = item108t1000ByService.get(templateId);
-				TemplateContent templateContent = new TemplateContent();
-				templateContent.setItem(item108t1000By.getByItem());
-				maskContent.setTc(templateContent);
-			}
-		}
-		
-	}
+	
 	
 	//查询任务
 	@RequestMapping(value = "mcList",method = RequestMethod.GET)
@@ -451,7 +345,7 @@ public class WxWmwController extends WxBaseController{
 		WorkShopMask wsm = workShopMaskService.get(wmw.getWorkShopMaskId());
 		maskSinglePersonService.setPartName(msp, wmw.getId());
 		for(MaskContent mc : mcList) {
-			setTemplateContent(wmw.getId(),mc);
+			maskContentService.setTemplateContent(wmw.getId(),mc);
 		}
 		model.addAttribute("maskName",wsm.getName());
 		model.addAttribute("msp",msp);

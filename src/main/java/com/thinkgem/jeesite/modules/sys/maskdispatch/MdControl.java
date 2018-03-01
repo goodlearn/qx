@@ -14,7 +14,6 @@ import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
-import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -323,12 +322,7 @@ public class MdControl {
 	
 	//设置人员
 	private void setWps() {
-		User user = UserUtils.findByEmpNo(empNo);
-		if(user.isAdmin()) {
-			model.addAttribute("wp",findWpByCid());
-		}else {
-			model.addAttribute("wp", findWpByCid());
-		}
+		model.addAttribute("wp",findWpByCid());
 	}
 	
 	//查询本班级人员
@@ -345,15 +339,13 @@ public class MdControl {
 	//先看看是不是班长
 	private boolean isMonitor() {
 		User user = null;
-		if(isWx()) {
-			user = UserUtils.findByEmpNo(empNo);
-		}else {
+		if(!isWx()) {
 			user = UserUtils.getUser();
+			if(user.isAdmin()) {
+				return true;//如果是管理员直接跳过
+			}
 		}
-		if(user.isAdmin()) {
-			return true;//如果是管理员直接跳过
-		}
-		String empNo = user.getEmpNo();
+		
 		WorkPerson person = workPersonDao.findByEmpNo(empNo);
 		String level = person.getLevel();
 		String dictLevel = DictUtils.getDictValue("班长", "workPersonLevel", "1");
