@@ -48,7 +48,7 @@
 			<div class="controls">
 				<form:select path="part" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('item108t330By')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -92,12 +92,6 @@
 			<div class="controls">
 				<form:input path="needPerson" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">检查结果：</label>
-			<div class="controls">
-				<form:textarea path="checkResult" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -22,7 +22,6 @@ import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
-import com.thinkgem.jeesite.modules.sys.service.BusinessAssembleService;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
@@ -125,7 +124,7 @@ public class WxIndexController extends WxBaseController{
 	@RequestMapping(value="/indexInfo",method=RequestMethod.GET)
 	public String indexInfo(HttpServletRequest request, HttpServletResponse response,Model model) {
 		//是否已经注册并且激活
-	  /*  String openId = (String)model.asMap().get("openId");
+	    String openId = (String)model.asMap().get("openId");
 			String regUrl = validateRegByOpenId(openId,model);
 			if(null!=regUrl) {
 				//有错误信息
@@ -136,8 +135,8 @@ public class WxIndexController extends WxBaseController{
 				}else {
 					return regUrl;
 				}
-			}*/
-	    String openId = Global.TEST_WX_OPEN_ID;
+			}
+	   // String openId = Global.TEST_WX_OPEN_ID;
 		/**
 		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
 		 */
