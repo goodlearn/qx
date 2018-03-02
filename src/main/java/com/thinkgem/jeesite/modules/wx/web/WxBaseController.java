@@ -54,6 +54,7 @@ public abstract class WxBaseController {
 	protected final String ERR_WS_MASK_WC_NOT_NULL = "任务已经发布过了";
 	protected final String ERR_MSP_ID_NULL = "人员未分配任务号";
 	protected final String ERR_MSP_SUBMIT = "任务已经提交，不得修改";
+	protected final String ERR_MSP_SUBMIT_TOTAL = "班长已经提交任务，不得修改";
 	protected final String ERR_MSP_LIST_NULL = "人员未分配任务";
 	protected final String ERR_EMP_NO_NULL = "员工号为空";
 	protected final String ERR_NAME_NO_NULL = "姓名不能为空";

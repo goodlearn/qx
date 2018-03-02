@@ -128,6 +128,12 @@
 			<if test="beginQueryDate != null and endQueryDate != null and beginQueryDate != '' and endQueryDate != ''">
 				AND a.create_date BETWEEN #{beginQueryDate} AND #{endQueryDate}
 			</if>
+			<if test="wsm != null and wsm.carMotorCycleId != null and wsm.carMotorCycleId != ''">
+				AND wsm.car_motor_cycle_id = #{wsm.carMotorCycleId}
+			</if>
+			<if test="wsm != null and wsm.carWagonId != null and wsm.carWagonId != ''">
+				AND wsm.car_wagon_id = #{wsm.carWagonId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

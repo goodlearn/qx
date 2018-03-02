@@ -134,13 +134,34 @@ public class WxWmwController extends WxBaseController{
 			//是否已经注册并且激活
 			openId = (String)model.asMap().get("openId");
 		}
+		
+		//任务号不存在
+		String mspId = viewMaskSubmit.getSubmitMspId();
+		if(null == mspId) {
+			return backJsonWithCode(errCode,ERR_WSM_ID_NULL);
+		}
+		
+		//不存在该任务
+		MaskSinglePerson msp = maskSinglePersonService.get(mspId);
+		if(null == msp) {
+			return backJsonWithCode(errCode,ERR_WSM_NULL);
+		}
+		
+		String mmpId = msp.getMmpId();
+		MaskMainPerson mmp = maskMainPersonService.get(mmpId);
+		String yes = DictUtils.getDictValue("是", "yes_no", "1");
+		String submit = mmp.getSubmitState();
+		if(yes.equals(submit)) {
+			return backJsonWithCode(errCode,ERR_MSP_SUBMIT_TOTAL);
+		}
+		
 	    String empNo = findEmpNo(openId);
 	    User user = UserUtils.findByEmpNo(empNo);
 		JSONArray jsonOther = JSONArray.fromObject(viewMaskSubmit.getOtherdata());
 		List<String> otherData = (List<String>)JSONArray.toCollection(jsonOther, String.class);
 		JSONArray jsonCheck = JSONArray.fromObject(viewMaskSubmit.getCheckdata());
 		List<ViewMaskDesc> checkData = (List<ViewMaskDesc>)JSONArray.toCollection(jsonCheck, ViewMaskDesc.class);
-		maskSinglePersonService.submitSingleMask(user, viewMaskSubmit.getSubmitMspId(), checkData, otherData);
+		maskSinglePersonService.submitSingleMask(user, mspId, checkData, otherData);
 		return backJsonWithCode(successCode,"");
 	}
 	

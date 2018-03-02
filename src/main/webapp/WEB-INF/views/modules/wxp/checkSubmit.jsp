@@ -127,24 +127,38 @@
 			</div>
 			<div class="checkCont">
 				<ul>
-					<c:forEach items="${msp.mcList}" var="mc" varStatus="mcstatus">
-						<c:if test = "${not empty mc.tc}">
-							<li class="borderButtom">
-								<input type="text" value="fdsafd" name="" readonly="true">
-								<p class="checkTxt">${mc.tc.item}</p>
-								<textarea readonly="true">${mc.remarks}</textarea>
-							</li>
-						</c:if>
-					</c:forEach>
+					<c:if test = "${msp.submitState == '0'}">
+						<li>
+							<input type="text" value="fdsafd" name="" readonly="true">
+							<p class="unCheckTxt">负责人还未提交任务</p>
+						</li>
+					</c:if>
+					<c:if test = "${msp.submitState == '1'}">
+							<c:forEach items="${msp.mcList}" var="mc" varStatus="mcstatus">
+								<c:if test = "${not empty mc.tc}">
+									<c:if test = "${mc.problem == '0'}">
+										<li class="borderButtom">
+											<input type="text" value="fdsafd" name="" readonly="true">
+											<p class="checkTxt">${mc.tc.item}</p>
+											<textarea readonly="true">${mc.remarks}</textarea>
+										</li>
+									</c:if>
+								</c:if>
+							</c:forEach>
+					</c:if>
 				</ul>
 			</div>
 			<!-- 其他问题展示 -->
 			<div class="otherProb">
-				<ul>
-					<li class="borderButtom">
-						${msp.desc}		
-					</li>
-				</ul>
+				<c:if test = "${msp.submitState == '1'}">
+						<c:if test = "${msp.desc != ''}">
+							<ul>
+								<li class="borderButtom">
+									${msp.desc}		
+								</li>
+							</ul>
+						</c:if>
+				</c:if>
 			</div>
 		</c:forEach>
 		

@@ -298,6 +298,21 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	@Transactional(readOnly = false)
 	public WsMaskWc submitMask(WsMaskWc wsMaskWc,User user) {
 		String yes = DictUtils.getDictValue("是", "yes_no", "1");
+		
+		//负责人提交
+		MaskMainPerson mmpQuery = new MaskMainPerson();
+		mmpQuery.setWsMaskWcId(wsMaskWc.getId());
+		List<MaskMainPerson> mmpList = maskMainPersonDao.findList(mmpQuery);
+		if(null!=mmpList) {
+			for(MaskMainPerson mmp : mmpList) {
+				mmp.setSubmitState(yes);//提交
+				mmp.setUpdateBy(user);
+				mmp.setUpdateDate(new Date());
+				maskMainPersonDao.update(mmp);
+			}
+		}
+		
+		//总任务提交
 		wsMaskWc.setSubmitState(yes);//提交
 		wsMaskWc.setUpdateBy(user);
 		wsMaskWc.setUpdateDate(new Date());

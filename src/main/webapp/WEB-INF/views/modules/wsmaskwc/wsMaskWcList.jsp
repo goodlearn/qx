@@ -37,6 +37,18 @@
 					<form:options items="${fns:getAllClassList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label>车型：</label>
+				<form:select path="wsm.carMotorCycleId" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getAllCmcList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>车号：</label>
+				<form:select path="wsm.carWagonId" class="input-medium">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getCwList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>

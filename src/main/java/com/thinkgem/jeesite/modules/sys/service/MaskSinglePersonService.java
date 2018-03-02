@@ -253,18 +253,21 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		if(null !=remarks && remarks.size() > 0) {
 			//记录新内容
 			for(String remark :remarks) {
-				MaskContent mcEntity= new MaskContent();
-				String mcEntityId = IdGen.uuid();
-				mcEntity.setId(mcEntityId);
-				mcEntity.setMspId(submitMspId);
-				mcEntity.setTemplateId(null);
-				mcEntity.setProblem(haveProblem);
-				mcEntity.setCreateBy(user);
-				mcEntity.setCreateDate(new Date());
-				mcEntity.setUpdateBy(user);
-				mcEntity.setUpdateDate(new Date());
-				mcEntity.setRemarks(remark);
-				maskContentDao.insert(mcEntity);
+				//空数据不保存
+				if(!"".equals(remark.trim())) {
+					MaskContent mcEntity= new MaskContent();
+					String mcEntityId = IdGen.uuid();
+					mcEntity.setId(mcEntityId);
+					mcEntity.setMspId(submitMspId);
+					mcEntity.setTemplateId(null);
+					mcEntity.setProblem(haveProblem);
+					mcEntity.setCreateBy(user);
+					mcEntity.setCreateDate(new Date());
+					mcEntity.setUpdateBy(user);
+					mcEntity.setUpdateDate(new Date());
+					mcEntity.setRemarks(remark);
+					maskContentDao.insert(mcEntity);
+				}
 			}
 		}
 	}

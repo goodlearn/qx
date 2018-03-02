@@ -186,8 +186,16 @@
 				<c:forEach items="${mcList}" var="mc" varStatus="status">
 					<c:if test = "${not empty mc.tc}">
 						<li class="borderButtom">
-							<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb">
-							<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
+							<c:if test = "${mc.problem == '1'}">
+								<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb" >
+								<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
+							</c:if>
+							<c:if test = "${mc.problem == '0'}">
+								<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb" checked>
+								<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
+								<div class="taskBtn addTxtBtn">描述</div> 
+								<textarea placeholder="在此输入对该问题的描述...">${mc.remarks}</textarea>
+							</c:if>
 						</li>
 					</c:if>
 				</c:forEach>
@@ -201,8 +209,8 @@
 		<c:forEach items="${mcList}" var="mc" varStatus="status">
 			<c:if test = "${empty mc.tc}">
 					<div class="checkOther">
-						<textarea placeholder="${mc.remarks}">${mc.remarks}</textarea>
-						<div class="removeContBtn">删除此条问题</div>
+						<textarea >${mc.remarks}</textarea>
+						<div class="removeContBtn">修改此条问题（不输入内容为删除）</div>
 					</div>
 			</c:if>
 		</c:forEach>
@@ -344,7 +352,7 @@ $(function() {
 	
 		// submit
 		$(".submitBtn").click(function(){
-			var areaArr = $(".checkOther textarea");
+			/* var areaArr = $(".checkOther textarea");
 			if (areaArr.length != 0) {
 				var areaTxt;
 				for(var i = 0; i < areaArr.length; i++) {
@@ -354,7 +362,7 @@ $(function() {
 						return false;
 					}
 				}
-			}
+			} */
 			
 			var state = confirm("确认提交审核？");
 			if(!state){
