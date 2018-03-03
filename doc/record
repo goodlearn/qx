@@ -1,3 +1,5 @@
+还有就是，员工在提交任务的时候，感觉选错啦。需要修改，把对勾取消。再次提交后。班长那还显示的没有改变
+
 待办:JS提醒
 create database sina default character set utf8mb4 collate utf8mb4_unicode_ci;
 

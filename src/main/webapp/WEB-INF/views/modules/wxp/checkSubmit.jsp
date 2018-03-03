@@ -140,7 +140,9 @@
 										<li class="borderButtom">
 											<input type="text" value="fdsafd" name="" readonly="true">
 											<p class="checkTxt">${mc.tc.item}</p>
-											<textarea readonly="true">${mc.remarks}</textarea>
+											<c:if test = "${mc.remarks!='-1'}">
+												<textarea readonly="true">${mc.remarks}</textarea>
+											</c:if>
 										</li>
 									</c:if>
 								</c:if>

@@ -60,6 +60,19 @@ public class WsMaskWcService extends CrudService<WsMaskWcDao, WsMaskWc> {
 	}
 	
 	public Page<WsMaskWc> findPage(Page<WsMaskWc> page, WsMaskWc wsMaskWc) {
+		
+		if(null == wsMaskWc) {
+			return super.findPage(page, wsMaskWc);
+		}
+		
+		Date date = wsMaskWc.getEndDate();
+		if(null != date) {
+			String beginDate = CasUtils.convertDate2HMSString(Date2Utils.getDayStartTime(date));
+			String endDate = CasUtils.convertDate2HMSString(Date2Utils.getDayEndTime(date));
+			wsMaskWc.setBeginQueryDate(beginDate);
+			wsMaskWc.setEndQueryDate(endDate);
+			wsMaskWc.setEndDate(null);
+		}
 		return super.findPage(page, wsMaskWc);
 	}
 	
