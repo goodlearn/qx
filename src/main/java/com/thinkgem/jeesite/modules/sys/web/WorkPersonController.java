@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,6 +49,12 @@ public class WorkPersonController extends BaseController {
 	@RequestMapping(value = {"list", ""})
 	public String list(WorkPerson workPerson, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<WorkPerson> page = workPersonService.findPage(new Page<WorkPerson>(request, response), workPerson); 
+		
+		/**
+		 * 查看是否绑定微信
+		 */
+		workPersonService.setWxInfoTie(page.getList());
+		
 		model.addAttribute("page", page);
 		return "modules/workperson/workPersonList";
 	}

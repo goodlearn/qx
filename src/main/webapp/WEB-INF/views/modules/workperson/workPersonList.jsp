@@ -55,6 +55,7 @@
 				<th>所属部门</th>
 				<th>所属班组</th>
 				<th>级别</th>
+				<th>是否绑定微信</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="sys:workPerson:edit"><th>操作</th></shiro:hasPermission>
@@ -77,6 +78,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(workPerson.level, 'workPersonLevel', '')}
+				</td>
+				<td>
+					${workPerson.tieWx}
 				</td>
 				<td>
 					<fmt:formatDate value="${workPerson.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

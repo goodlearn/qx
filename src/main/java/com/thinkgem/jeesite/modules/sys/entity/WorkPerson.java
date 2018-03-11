@@ -21,7 +21,19 @@ public class WorkPerson extends DataEntity<WorkPerson> {
 	private WorkShop ws;		// 车间号
 	private WorkDepartment wd;		// 部门号
 	
+	private String tieWx;//微信是否绑定
 	
+	
+	
+	
+	public String getTieWx() {
+		return tieWx;
+	}
+
+	public void setTieWx(String tieWx) {
+		this.tieWx = tieWx;
+	}
+
 	//获取车间部门工种班级名称
 	public String getFullName() {
 		return ws.getName() + wd.getName() + wk.getName() + workClass.getName();
