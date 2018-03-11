@@ -40,9 +40,15 @@ public class Item108t2000hByMc implements Comparator<Item108t2000hByMc>{
 		if(null == o1 || null == o2) {
 			return 0;
 		}
-		Integer i1 = Integer.valueOf(o1.getItem108t2000hBy().getNumber());
-		Integer i2 = Integer.valueOf(o2.getItem108t2000hBy().getNumber());
-		return i1-i2;
+		
+		Item108t2000hBy oi1 = o1.getItem108t2000hBy();
+		Item108t2000hBy oi2 = o2.getItem108t2000hBy();
+		if(null != oi1 && null != oi2 ) {
+			Integer i1 = Integer.valueOf(o1.getItem108t2000hBy().getNumber());
+			Integer i2 = Integer.valueOf(o2.getItem108t2000hBy().getNumber());
+			return i1-i2;
+		}
+		return 0;
 	}
 	
 }

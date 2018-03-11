@@ -257,7 +257,6 @@ public class Item108t2000hByExcel {
 				List<Item108t2000hByMc> i108mspList = forI108bmsp.getMcs();
 				MaskSinglePerson msp = forI108bmsp.getMsp();
 				setRow5Data(wb,sheet,msp,i108mspList,cell0);//设置数据
-				rownum = i108mspList.size() + rownum;
 			}
 		}
 	}
@@ -282,7 +281,7 @@ public class Item108t2000hByExcel {
 	private void setRow6(Sheet sheet,SXSSFWorkbook wb) {
 		Row row = sheet.createRow(rownum);
 		row.setHeightInPoints(16);
-		rownum = rownum + 3;
+	
 		sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(),
 				rownum, 0, 2));
 		sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(),
@@ -358,14 +357,16 @@ public class Item108t2000hByExcel {
 		Collections.sort(i108mspList,new Item108t2000hByMc());
 		int num = rownum;
 		for(Item108t2000hByMc forI108Bm : i108mspList) {
-			if(num == rownum) {
-				setRow4CellData(row4,forI108Bm,wb);
-			}else {
-				Row newRow = sheet.createRow(num);
-				newRow.setHeightInPoints(40);
-				setRow4CellData(newRow,forI108Bm,wb);
+			if(null!=forI108Bm.getItem108t2000hBy()) {
+				if(num == rownum) {
+					setRow4CellData(row4,forI108Bm,wb);
+				}else {
+					Row newRow = sheet.createRow(num);
+					newRow.setHeightInPoints(40);
+					setRow4CellData(newRow,forI108Bm,wb);
+				}
+				num++;
 			}
-			num++;
 		}
 		
 		Cell cellLast = row4.createCell(lastColumn);

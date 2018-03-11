@@ -337,6 +337,18 @@
 				</c:if>
 			<c:if test = "${isMonitor == 'yes'}">
 				<li> <!-- 任务发布 -->
+				<%-- 	<div class="funcDesc">当前已发布任务</div>
+					<c:forEach items="${wsmList}" var="wsm" varStatus="status">
+						<div class="taksInfoCont">
+							<div class="workTaskCont">
+								<div class="taskType">
+									<div class="taskTypeTxt">${wsm.name}</div>
+									<div id="${wsm.id}" class="taskBtn taskPubBtn">发布</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach> --%>
+					
 					<div class="funcDesc">当前待发布任务</div>
 					<c:forEach items="${wsmList}" var="wsm" varStatus="status">
 						<div class="taksInfoCont">

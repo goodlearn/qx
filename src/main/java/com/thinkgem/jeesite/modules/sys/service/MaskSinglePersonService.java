@@ -226,6 +226,7 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 	public void submitSingleMask(User user,String submitMspId,List<ViewMaskDesc> params,List<String> remarks) {
 		MaskSinglePerson msp = dao.get(submitMspId);
 		String yesSubmit = DictUtils.getDictValue("是", "yes_no", "0");
+		String noProblem = DictUtils.getDictValue("没有", "have_no", "1");
 		msp.setSubmitState(yesSubmit);
 		msp.setUpdateBy(user);
 		msp.setUpdateDate(new Date());
@@ -235,16 +236,23 @@ public class MaskSinglePersonService extends CrudService<MaskSinglePersonDao, Ma
 		MaskContent queryMc = new MaskContent();
 		queryMc.setMspId(submitMspId);
 		List<MaskContent> mcList = maskContentDao.findList(queryMc);
-		if(null!=params && params.size() > 0) {
-			submitContentUpdate(user,params,mcList);//循环更新
-		}
 		
 		//将原先的新内容全部删除
 		for(MaskContent forMc : mcList) {
 			String templateId = forMc.getTemplateId();
 			if(null == templateId) {
 				maskContentDao.delete(forMc);
+			}else {
+				forMc.setProblem(noProblem);
+				forMc.setRemarks(null);
+				forMc.setUpdateBy(user);
+				forMc.setUpdateDate(new Date());
+				maskContentDao.update(forMc);
 			}
+		}
+		
+		if(null!=params && params.size() > 0) {
+			submitContentUpdate(user,params,mcList);//循环更新
 		}
 		
 		//有无问题

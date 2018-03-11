@@ -334,11 +334,11 @@ $(function() {
 		initCheck();
 	
 		$(".checkCont ul li input[type=checkbox]").change(function(){
-
 			if ($(this).is(":checked")) {
 				$(this).siblings('label').removeClass('unselect').addClass('select');
 				$(this).siblings('label').css({'width':"calc(100% - 30px - 60px)"});
-				var $addBtn = $("<div class='taskBtn addTxtBtn'>描述</div>");
+				var $addBtn = $("<div class='taskBtn addTxtBtn taskDescBtn'>描述</div>");
+				
 				$addBtn.bind("click",function(){
 					if ($(this).siblings('textarea').length == 0) {
 						$(this).text("删除");
@@ -467,8 +467,8 @@ $(function() {
 				 dataType: "json",
 				 contentType:"application/json",
 			     success:function(data){
-			    	 alert("提交成功");
-			    	 window.location.href= pageContextVal+"/wi/indexInfo";
+		 	    	 alert("提交成功");
+			    	 window.location.href= pageContextVal+"/wi/indexInfo"; 
 			     },
 			     error:function(){
 			    	 alert("未知失败");

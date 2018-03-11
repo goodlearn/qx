@@ -67,7 +67,7 @@ public class WxIndexController extends WxBaseController{
 	//导航
 	private final String NAVIGAION_1 = "任务执行";
 	private final String NAVIGAION_2 = "任务发布";
-	private final String NAVIGAION_3 = "任务情况";
+	//private final String NAVIGAION_3 = "任务情况";
 	private final String NAVIGAION_4 = "暂未开发";
 	
 	/**
@@ -313,7 +313,7 @@ public class WxIndexController extends WxBaseController{
 		List<String> navigaionList = new ArrayList<String>();
 		navigaionList.add(NAVIGAION_1);
 		navigaionList.add(NAVIGAION_2);
-		navigaionList.add(NAVIGAION_3);
+	//	navigaionList.add(NAVIGAION_3);
 		navigaionList.add(NAVIGAION_4);
 		model.addAttribute("navigaionList",navigaionList);
 		
