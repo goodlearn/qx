@@ -22,11 +22,16 @@
 		.checkCont .taskBtn{
 			float: right;
 			font-size: 12px;
-			background: #1f72ff;
 			padding: 5px 15px;
 			margin: 16px 0px 0px 0px;
 			color: #fff;
 			border-radius: 5px;
+		}
+		.checkCont .taskDescBtn{
+			background: #1f72ff;
+		}
+		.checkCont .taskRemoveBtn{
+			background: #1f72ff;
 		}
 		.checkCont ul li{
 			display: block;
@@ -193,8 +198,15 @@
 							<c:if test = "${mc.problem == '0'}">
 								<input type="checkbox" id="check${status.count}" value="${mc.id}" name="chb" checked>
 								<label class="unselect" for="check${status.count}" id="${mc.id}" >${mc.tc.item}</label>
-								<div class="taskBtn addTxtBtn">描述</div> 
-								<textarea placeholder="在此输入对该问题的描述...">${mc.remarks}</textarea>
+								<c:if test = "${mc.remarks != '-1'}">
+									<div class="taskBtn addTxtBtn taskRemoveBtn">删除</div>
+								</c:if>
+								<c:if test = "${mc.remarks == '-1'}">
+									<div class="taskBtn addTxtBtn taskDescBtn">描述</div>
+								</c:if> 
+								<c:if test = "${mc.remarks != '-1'}">
+									<textarea placeholder="在此输入对该问题的描述...">${mc.remarks}</textarea>
+								</c:if>
 							</c:if>
 						</li>
 					</c:if>
@@ -272,9 +284,31 @@ $(function() {
 			for (var i = 0; i < checkArray.length; i++) {
 				checkArray.eq(i).siblings('label').removeClass('unselect').addClass('select');
 				checkArray.eq(i).siblings('label').css({'width':"calc(100% - 30px - 60px)"});
-				var $addBtn = $("<div class='taskBtn addTxtBtn'>描述</div>");
+				
+				if ($(this).siblings('.textarea').length != 0){
+					$(this).siblings('.addTxtBtn').text("删除");
+					$(this).siblings('.addTxtBtn').css({"background":"#d81f07"});
+				} else {
+					$(this).siblings('.addTxtBtn').text("描述");
+					$(this).siblings('.addTxtBtn').css({"background":"#1f72ff"});
+				}
+				/*var $addBtn,$txtarea;
+				if ($(this).siblings('textarea').length != 0){
+					var $addBtn = $("<div class='taskBtn addTxtBtn'>删除1</div>");
+					$addBtn.bind("click",function(){
+						$(this).css({"background":"#d81f07"});
+						var $txtarea = $("<textarea placeholder='在此输入对该问题的描述...'></textarea>");
+						//$(this).parent().append($txtarea);
+					});
+				} else {
+					var $addBtn = $("<div class='taskBtn addTxtBtn'>描述1</div>");
+					$(this).css({"background":"#1f72ff"});
+					$(this).siblings('textarea').remove();
+				}
+				
+				var $addBtn = $("<div class='taskBtn addTxtBtn'>描述111</div>");
 				$addBtn.bind("click",function(){
-					if ($(this).siblings('textarea').length == 0) {
+					if ($(this).siblings('textarea').length != 0) {
 						$(this).text("删除");
 						$(this).css({"background":"#d81f07"});
 						var $txtarea = $("<textarea placeholder='在此输入对该问题的描述...'></textarea>");
@@ -285,8 +319,9 @@ $(function() {
 						$(this).siblings('textarea').remove();
 					}
 					
-				});
-				checkArray.eq(i).parent().append($addBtn);
+				});*/
+				//checkArray.eq(i).parent().append($addBtn);
+				//checkArray.eq(i).parent().append($txtarea);
 			}
 			for (var i = 0; i < unCheckArray.length; i++) {
 				unCheckArray.eq(i).siblings('label').removeClass('select').addClass('unselect');
@@ -299,7 +334,7 @@ $(function() {
 		initCheck();
 	
 		$(".checkCont ul li input[type=checkbox]").change(function(){
-	
+
 			if ($(this).is(":checked")) {
 				$(this).siblings('label').removeClass('unselect').addClass('select');
 				$(this).siblings('label').css({'width':"calc(100% - 30px - 60px)"});
@@ -318,7 +353,7 @@ $(function() {
 					
 				});
 				$(this).parent().append($addBtn);
-	
+
 				var btnH = $addBtn.outerHeight();
 				var liH = $addBtn.siblings('label').outerHeight();
 				$addBtn.css({'margin-top':(liH - btnH)/2 + "px"});
@@ -330,6 +365,19 @@ $(function() {
 				$(this).siblings('label').css({'width':"calc(100% - 30px)"});
 			}
 			//initCheck();
+		});
+		
+		$('.addTxtBtn').click(function(){
+			if ($(this).siblings('textarea').length != 0){
+				$(this).siblings('textarea').remove();
+				$(this).text("描述");
+				$(this).css({"background":"#1f72ff"});
+			} else{
+				$(this).text("删除");
+				$(this).css({"background":"#d81f07"});
+				var $txtarea = $("<textarea placeholder='在此输入对该问题的描述...'></textarea>");
+				$(this).parent().append($txtarea);
+			}
 		});
 	
 		// addOther
@@ -352,7 +400,19 @@ $(function() {
 	
 		// submit
 		$(".submitBtn").click(function(){
-			/* var areaArr = $(".checkOther textarea");
+			var descArr = $(".checkCont textarea");
+			if (descArr.length != 0) {
+				var descTxt;
+				for(var i = 0; i < descArr.length; i++) {
+					descTxt = $.trim(descArr.eq(i).val());
+					if (descTxt == "") {
+						alert("描述输入框为空，没问题请删除再提交");
+						return false;
+					}
+				}
+			}
+			
+			var areaArr = $(".checkOther textarea");
 			if (areaArr.length != 0) {
 				var areaTxt;
 				for(var i = 0; i < areaArr.length; i++) {
@@ -362,7 +422,7 @@ $(function() {
 						return false;
 					}
 				}
-			} */
+			} 
 			
 			var state = confirm("确认提交审核？");
 			if(!state){
