@@ -22,7 +22,6 @@ public class MaskMainPerson extends DataEntity<MaskMainPerson> {
 	
 	List<MaskSinglePerson> mspList;
 	
-	
 	public List<MaskSinglePerson> getMspList() {
 		return mspList;
 	}

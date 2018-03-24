@@ -96,10 +96,7 @@
 		<div class="control-group">
 			<label class="control-label">参与人员：</label>
 			<div class="controls">
-				<form:select path="wpPartId" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllPersonList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
+				<form:input path="wpPartId" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -121,8 +118,18 @@
 		</div>
 		<div class="control-group">
 			<label class="control-label">故障类型：</label>
+				<div class="controls">
+				<form:select path="type" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('frType')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">使用配件：</label>
 			<div class="controls">
-				<form:input path="type" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<form:input path="userTool" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

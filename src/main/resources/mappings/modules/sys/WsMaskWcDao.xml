@@ -10,6 +10,7 @@
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		a.image_path AS "imagePath",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
@@ -27,6 +28,7 @@
 		a.work_class_id AS "workClassId",
 		a.run_time AS "runTime",
 		a.create_by AS "createBy.id",
+		a.image_path AS "imagePath",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
@@ -176,7 +178,8 @@
 			remarks,
 			del_flag,
 			submit_state,
-			end_date
+			end_date,
+			image_path,
 		) VALUES (
 			#{id},
 			#{workShopMaskId},
@@ -189,7 +192,8 @@
 			#{remarks},
 			#{delFlag},
 			#{submitState},
-			#{endDate}
+			#{endDate},
+			#{imagePath},
 		)
 	</insert>
 	
@@ -202,6 +206,7 @@
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			submit_state = #{submitState},
+			image_path = #{imagePath},
 			end_date = #{endDate}
 		WHERE id = #{id}
 	</update>

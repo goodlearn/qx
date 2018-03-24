@@ -117,6 +117,13 @@ public class WsMaskWcController extends BaseController {
 		if (!beanValidator(model, wsMaskWc)){
 			return form(wsMaskWc, model);
 		}
+		
+		String idImg = wsMaskWc.getImagePath();
+		if(null!=idImg&&idImg.startsWith("|")) {
+			idImg = idImg.substring(1,idImg.length());
+			wsMaskWc.setImagePath(idImg);
+		}
+		
 		wsMaskWcService.save(wsMaskWc);
 		addMessage(redirectAttributes, "保存车间任务班级关联数据成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/wsMaskWc/?repage";

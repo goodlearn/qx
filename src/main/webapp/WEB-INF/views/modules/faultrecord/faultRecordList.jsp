@@ -105,7 +105,7 @@
 				<th>处理方法</th>
 				<th>故障时间</th>
 				<th>更新时间</th>
-				<th>备注信息</th>
+				<th>使用配件</th>
 				<shiro:hasPermission name="sys:faultRecord:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
@@ -137,7 +137,7 @@
 					${faultRecord.runTime}
 				</td>
 				<td>
-					${faultRecord.type}
+					${fns:getDictLabel(faultRecord.type, 'frType', '')}
 				</td>
 				<td>
 					${faultRecord.description}
@@ -152,7 +152,7 @@
 					<fmt:formatDate value="${faultRecord.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
-					${faultRecord.remarks}
+					${faultRecord.userTool}
 				</td>
 				<shiro:hasPermission name="sys:faultRecord:edit"><td>
     				<a href="${ctx}/sys/faultRecord/form?id=${faultRecord.id}">修改</a>

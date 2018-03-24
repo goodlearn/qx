@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.common.config;
 
+import com.thinkgem.jeesite.modules.sys.manager.WxAccessTokenManager;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
@@ -9,6 +10,13 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 * @Description 类描述
 */
 public class WxGlobal {
+	
+	//获取上传图片
+	public static String getUpImage(String mediaId) {
+		WxAccessTokenManager wxAccessTokenManager = WxAccessTokenManager.getInstance();
+		return String.format("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", wxAccessTokenManager.getAccessToken(),mediaId);
+	}
+		
 
 	public static String getCertificationToken() {
 		return DictUtils.getDictValue("CERTIFICATION_TOKEN", "systemControl", "");

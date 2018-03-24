@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.utils.BasePathUtils;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t1000By;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t2000hBy;
@@ -57,6 +60,7 @@ import com.thinkgem.jeesite.modules.sys.service.Sf31904cCsItemService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
+import com.thinkgem.jeesite.modules.sys.service.WxService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.view.TemplateContent;
@@ -69,6 +73,9 @@ import net.sf.json.JSONArray;
 @Controller
 @RequestMapping(value = "wmw")
 public class WxWmwController extends WxBaseController{
+	
+	@Autowired
+	private WxService wxService;
 
 	@Autowired
 	private WsMaskWcService wsMaskWcService;
@@ -386,6 +393,102 @@ public class WxWmwController extends WxBaseController{
 		model.addAttribute("mcList",mcList);
 		return USER_TASK;
 	}
+	
+	
+	private String headPhotoPath(){
+    	StringBuilder sb;
+		try {
+			sb = new StringBuilder(getSavePath(Global.WMW_IMAGE_PATH));
+/*			sb.append(File.separator);
+			sb.append(idCard);*/
+			return sb.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	 }
+	
+	 /**
+     * 返回上传文件保存的位置
+     * 
+     * @return
+     * @throws Exception
+     */
+    private String getSavePath(String savePath) throws Exception {
+        return ContextLoader.getCurrentWebApplicationContext().getServletContext().getRealPath("/") + savePath;
+    }
+	
+	/**
+	 * 上传个人图片信息
+	 */
+	@ResponseBody
+	@RequestMapping(value="/upImage",method=RequestMethod.POST)
+	public String upImage(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+	
+		String openId = null;
+		if(null != Global.TEST_WX_OPEN_ID) {
+			//微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		}else {
+			//是否已经注册并且激活
+		    openId = (String)model.asMap().get("openId");
+		}
+		
+		String empNo = findEmpNo(openId);
+		if(null == empNo) {
+			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
+		}
+		
+		if(null == workPersonService.findByEmpNo(empNo)) {
+			return backJsonWithCode(errCode,ERR_WP_NULL);
+		}
+		
+		String mediaId = request.getParameter("serverId");
+		String wmwId = request.getParameter("wmwId");
+		logger.info("mediaId:"+mediaId);
+		logger.info("wmwId:"+wmwId);
+		try {
+			request.setCharacterEncoding("UTF-8");
+			//获取用户的身份证ID
+			String dirParam = headPhotoPath();
+			String filePath = wxService.downloadMedia(mediaId, dirParam,wmwId);
+			logger.info("filePath:"+filePath);
+			String isServer = DictUtils.getDictValue("isServer", "systemControl", "0");
+			String httpProtocol = DictUtils.getDictValue("httpProtocol", "systemControl", "http");
+			String url = null;
+			if("0".equals(isServer)) {
+				url = BasePathUtils.getBasePathNoServer(request,true);
+			}else {
+				url = BasePathUtils.getBasePathNoServer(request,false);
+			}
+		    if("https".equals(httpProtocol)) {
+		    	url = url.replace("http", "https");
+		    }
+		    String[] paths = filePath.split("/");
+		    String reqUrl = url + request.getContextPath() + "/" + Global.WMW_IMAGE_PATH + "/" + paths[paths.length-1];
+		    logger.info(reqUrl);
+			 //上传
+      	    /*File fileName = new File(dirParam,openId + ".jpeg");
+      	    CommonsMultipartResolver multipartResolver=new CommonsMultipartResolver(request.getSession().getServletContext());
+			if(multipartResolver.isMultipart(request)){
+				  //将request变成多部分request
+                MultipartHttpServletRequest multiRequest=(MultipartHttpServletRequest)request;
+                //获取multiRequest 中所有的文件名
+                Iterator<String> iter=multiRequest.getFileNames();
+                while(iter.hasNext()){
+               	 MultipartFile file=multiRequest.getFile(iter.next().toString());
+                 if(file!=null){
+                   	   //上传
+                       file.transferTo(fileName);
+                 }
+               }
+			}*/
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return backJsonWithCode("0","成功");
+	}
+	
 	//获取任务分配数据
 	@RequestMapping(value = "allocation",method= RequestMethod.POST)
 	@ResponseBody

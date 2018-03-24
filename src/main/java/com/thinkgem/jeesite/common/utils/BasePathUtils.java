@@ -13,6 +13,14 @@ public class BasePathUtils {
 		protected static String contextPath = null;
 		protected static String basePath = null; 
 		protected static String realPath = null;
+		
+		public static String getBasePathNoServer(HttpServletRequest request,boolean isServer) {
+			if(isServer) {
+				return request.getScheme()+"://"+request.getServerName();
+			}else {
+				return request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort();
+			}
+		}
 	
 		public static String getBasePath(HttpServletRequest request) {
 			contextPath = request.getContextPath();

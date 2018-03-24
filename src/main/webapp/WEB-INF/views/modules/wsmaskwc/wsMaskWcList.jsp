@@ -103,6 +103,9 @@
 					${wsMaskWc.remarks}
 				</td>
 				<shiro:hasPermission name="sys:wsMaskWc:edit"><td>
+					<c:if test = "${not empty wsMaskWc.imagePath}">
+						<a href="${wsMaskWc.imagePath}">查看图片</a>
+					</c:if>
     				<a href="${ctx}/sys/wsMaskWc/detail?id=${wsMaskWc.id}">详细内容</a>
 					<a href="${ctx}/sys/maskDispatch/maskDispatch?maskId=${wsMaskWc.workShopMaskId}">分配</a>
     				<a href="${ctx}/sys/wsMaskWc/form?id=${wsMaskWc.id}">修改</a>

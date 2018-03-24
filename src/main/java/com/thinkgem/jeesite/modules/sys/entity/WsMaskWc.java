@@ -20,6 +20,7 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	private String runTime;  //运行时间数
 	private Date endDate;	// 结束日期
 	private String submitState;//是否提交
+	private String imagePath; //图片路径
 	private WorkShopMask wsm; //任务
 	private WorkClass wc; //班级
 	private String beginQueryDate;
@@ -27,6 +28,14 @@ public class WsMaskWc extends DataEntity<WsMaskWc> {
 	
 	private List<MaskMainPerson> mmpList;//总负责人
 
+	
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
 
 	public List<MaskMainPerson> getMmpList() {
 		return mmpList;

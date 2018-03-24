@@ -72,9 +72,12 @@ public class Global {
 	/**
 	 * 测试微信
 	 */
-	public static final String TEST_WX_OPEN_ID = "oJSgx0az506pYCl1R2PydJIVHGkg";
+	public static final String TEST_WX_OPEN_ID = null;
 	
-	
+	/**
+	 * 存放图片信息路径
+	 */
+	public static final String WMW_IMAGE_PATH = "/userfiles/1/files/sys/wmw/2018/03";
 	
 	/**
 	 * 显示/隐藏

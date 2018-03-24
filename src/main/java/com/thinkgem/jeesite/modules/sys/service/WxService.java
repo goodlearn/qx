@@ -1,7 +1,12 @@
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,6 +28,7 @@ import org.springframework.stereotype.Service;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.service.BaseService;
+import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.WxUrlUtils;
 import com.thinkgem.jeesite.modules.sys.dao.DictDao;
@@ -50,7 +56,47 @@ public class WxService extends BaseService implements InitializingBean {
 		
 	}
 	
-	
+	/**
+	   * 获取媒体文件
+	   * @param accessToken 接口访问凭证
+	   * @param mediaId 媒体文件id
+	   * @param savePath 文件在本地服务器上的存储路径
+	   * */
+	 public  String downloadMedia(String mediaId, String savePath,String openId) {
+		 String filePath = null;
+	     try {
+	    	//获取Token
+	    	 String requestUrl = String.format(WxGlobal.getUpImage(mediaId));
+	    	 logger.info("格式化Url:" + requestUrl); 
+	    	 URL url = new URL(requestUrl);
+	    	 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	    	 conn.setDoInput(true);
+		     conn.setRequestMethod("GET");
+		     if (!savePath.endsWith("/")) {
+		        savePath += "/";
+		     }
+		     // 根据内容类型获取扩展名
+		     String fileExt = CasUtils.getFileexpandedName(conn.getHeaderField("Content-Type"));
+		     // 将mediaId作为文件名
+		      filePath = savePath + openId + fileExt;
+		      BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+		      FileOutputStream fos = new FileOutputStream(new File(filePath));
+		      byte[] buf = new byte[8096];
+		      int size = 0;
+		      while ((size = bis.read(buf)) != -1)
+		      fos.write(buf, 0, size);
+		      fos.close();
+		      bis.close();
+		      conn.disconnect();
+		      String info = String.format("下载媒体文件成功，filePath=" + filePath);
+		      logger.info(info);
+	    } catch (IOException e) {
+	    	  e.printStackTrace();
+	 	      String error = String.format("下载媒体文件失败：%s", e);
+	 	      logger.info(error);
+	    }
+	    return filePath;
+	}
 	
 	
 	

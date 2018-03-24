@@ -25,6 +25,7 @@ public class FaultRecord extends DataEntity<FaultRecord> {
 	private String wpPartId;		// 参与人员
 	private String runTime;		// 运行时间
 	private String type;		// 故障类型
+	private String userTool; //使用配件
 	private String description;		// 故障描述
 	private String dealMethod;		// 处理方法
 	private Date faultDate;		// 故障时间
@@ -43,6 +44,8 @@ public class FaultRecord extends DataEntity<FaultRecord> {
 	public FaultRecord(String id){
 		super(id);
 	}
+	
+	
 	
 	@ExcelField(title="所属部门", align=2, sort=1)
 	public String getDepartmentName() {
@@ -117,6 +120,17 @@ public class FaultRecord extends DataEntity<FaultRecord> {
 		this.wpPartId = wpPartId;
 	}
 	
+	
+	@Length(min=1, max=100, message="使用配件长度必须介于 1 和 100 之间")
+	@ExcelField(title="使用配件", align=2, sort=13)
+	public String getUserTool() {
+		return userTool;
+	}
+
+	public void setUserTool(String userTool) {
+		this.userTool = userTool;
+	}
+
 	@Length(min=1, max=100, message="运行时间长度必须介于 1 和 100 之间")
 	@ExcelField(title="运行时间", align=2, sort=8)
 	public String getRunTime() {
