@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.BasePathUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.MaskContent;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
@@ -99,6 +100,31 @@ public class WsMaskWcController extends BaseController {
 	@RequestMapping(value = {"list", ""})
 	public String list(WsMaskWc wsMaskWc, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<WsMaskWc> page = wsMaskWcService.findPage(new Page<WsMaskWc>(request, response), wsMaskWc); 
+		
+		String isServer = DictUtils.getDictValue("isServer", "systemControl", "0");
+		String httpProtocol = DictUtils.getDictValue("httpProtocol", "systemControl", "http");
+		String url = null;
+		if("0".equals(isServer)) {
+			url = BasePathUtils.getBasePathNoServer(request,true);
+		}else {
+			url = BasePathUtils.getBasePathNoServer(request,false);
+		}
+	    if("https".equals(httpProtocol)) {
+	    	url = url.replace("http", "https");
+	    }
+	    
+	    //附件URL
+	    List<WsMaskWc> userList = page.getList();
+	    if(null!=userList && userList.size() > 0) {
+	    	for(WsMaskWc forSysWxUser : userList) {
+	    		String imgIdCard = forSysWxUser.getImagePath();
+	    		if(null!=imgIdCard) {
+	    			imgIdCard = url + imgIdCard;
+	    			forSysWxUser.setImagePath(imgIdCard);;
+	    		}
+	    	}
+	    }
+		
 		model.addAttribute("page", page);
 		return "modules/wsmaskwc/wsMaskWcList";
 	}
