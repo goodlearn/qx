@@ -57,7 +57,7 @@
 				AND m.end_date &gt;= #{mmws.endDate}
 			</if>
 			<if test="mmws != null and mmws.workKindId != null and mmws.workKindId != ''">
-				AND m.work_kind_id = in (#{mmws.workKindId},'all')
+				AND m.work_kind_id  in (#{mmws.workKindId},'all')
 			</if>
 			<if test="monthMaskWsId != null and monthMaskWsId != ''">
 				AND a.month_mask_ws_id = #{monthMaskWsId}
