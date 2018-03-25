@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MonthMaskDao">
+    
+	<sql id="monthMaskColumns">
+		a.id AS "id",
+		a.month_mask_wc_id AS "monthMaskWcId",
+		a.work_person_id AS "workPersonId",
+		a.car_motor_cycle_id AS "carMotorCycleId",
+		a.car_wagon_id AS "carWagonId",
+		a.run_time AS "runTime",
+		a.check_result AS "checkResult",
+		a.check_date AS "checkDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		mmwc.id AS "mmwc.id",
+		mmws.mask_desc AS "mmws.maskDesc",
+		wp.id AS "wp.id",
+		wp.name AS "wp.name",
+		cmc.id AS "cmc.id",
+		cmc.name AS "cmc.name",
+		cw.id AS "cw.id",
+		cw.name AS "cw.name"
+	</sql>
+	
+	<sql id="monthMaskJoins">
+			LEFT JOIN month_mask_wc mmwc ON mmwc.id = a.month_mask_wc_id
+				LEFT JOIN month_mask_ws mmws ON mmws.id = mmwc.month_mask_ws_id
+						LEFT JOIN work_person wp ON wp.id = a.work_person_id
+								LEFT JOIN car_motor_cycle cmc ON cmc.id = a.car_motor_cycle_id
+									LEFT JOIN car_wagon cw ON cw.id = a.car_wagon_id
+	</sql>
+    
+	<select id="get" resultType="MonthMask">
+		SELECT 
+			<include refid="monthMaskColumns"/>
+		FROM month_mask a
+		<include refid="monthMaskJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MonthMask">
+		SELECT 
+			<include refid="monthMaskColumns"/>
+		FROM month_mask a
+		<include refid="monthMaskJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="monthMaskWcId != null and monthMaskWcId != ''">
+				AND a.month_mask_wc_id = #{monthMaskWcId}
+			</if>
+			<if test="workPersonId != null and workPersonId != ''">
+				AND a.work_person_id = #{workPersonId}
+			</if>
+			<if test="carMotorCycleId != null and carMotorCycleId != ''">
+				AND a.car_motor_cycle_id = #{carMotorCycleId}
+			</if>
+			<if test="carWagonId != null and carWagonId != ''">
+				AND a.car_wagon_id = #{carWagonId}
+			</if>
+			<if test="runTime != null and runTime != ''">
+				AND a.run_time = #{runTime}
+			</if>
+			<if test="checkResult != null and checkResult != ''">
+				AND a.check_result = #{checkResult}
+			</if>
+			<if test="checkDate != null and checkDate != ''">
+				AND a.check_date &gt;= #{checkDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MonthMask">
+		SELECT 
+			<include refid="monthMaskColumns"/>
+		FROM month_mask a
+		<include refid="monthMaskJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO month_mask(
+			id,
+			month_mask_wc_id,
+			work_person_id,
+			car_motor_cycle_id,
+			car_wagon_id,
+			run_time,
+			check_result,
+			check_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{monthMaskWcId},
+			#{workPersonId},
+			#{carMotorCycleId},
+			#{carWagonId},
+			#{runTime},
+			#{checkResult},
+			#{checkDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE month_mask SET 	
+			month_mask_wc_id = #{monthMaskWcId},
+			work_person_id = #{workPersonId},
+			car_motor_cycle_id = #{carMotorCycleId},
+			car_wagon_id = #{carWagonId},
+			run_time = #{runTime},
+			check_result = #{checkResult},
+			check_date = #{checkDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE month_mask SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

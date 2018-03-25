@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao">
+    
+	<sql id="monthMaskWsColumns">
+		a.id AS "id",
+		a.work_kind_id AS "workKindId",
+		a.end_date AS "endDate",
+		a.mask_desc AS "maskDesc",
+		a.type AS "type",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		k.id AS "workKind.id",
+		k.name AS "workKind.name",
+		a.submit_state AS "submitState"
+	</sql>
+	
+	<sql id="monthMaskWsJoins">
+		LEFT JOIN work_kind k ON k.id = a.work_kind_id
+	</sql>
+    
+	<select id="get" resultType="MonthMaskWs">
+		SELECT 
+			<include refid="monthMaskWsColumns"/>
+		FROM month_mask_ws a
+		<include refid="monthMaskWsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MonthMaskWs">
+		SELECT 
+			<include refid="monthMaskWsColumns"/>
+		FROM month_mask_ws a
+		<include refid="monthMaskWsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="workKindId != null and workKindId != ''">
+				AND a.work_kind_id in (#{workKindId},'all')
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date &gt;= #{endDate}
+			</if>
+			<if test="maskDesc != null and maskDesc != ''">
+				AND a.mask_desc = #{maskDesc}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MonthMaskWs">
+		SELECT 
+			<include refid="monthMaskWsColumns"/>
+		FROM month_mask_ws a
+		<include refid="monthMaskWsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO month_mask_ws(
+			id,
+			work_kind_id,
+			end_date,
+			mask_desc,
+			type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			submit_state
+		) VALUES (
+			#{id},
+			#{workKindId},
+			#{endDate},
+			#{maskDesc},
+			#{type},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{submitState}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE month_mask_ws SET 	
+			work_kind_id = #{workKindId},
+			end_date = #{endDate},
+			mask_desc = #{maskDesc},
+			type = #{type},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			submit_state = #{submitState}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE month_mask_ws SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

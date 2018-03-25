@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.dao.SysWxInfoDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 
 /**
@@ -23,6 +26,9 @@ public class WorkPersonService extends CrudService<WorkPersonDao, WorkPerson> {
 
 	@Autowired
 	private SysWxInfoDao sysWxInfoDao;
+	
+	@Autowired
+	private WorkClassDao workClassDao;
 	
 	public WorkPerson get(String id) {
 		return super.get(id);
@@ -51,6 +57,28 @@ public class WorkPersonService extends CrudService<WorkPersonDao, WorkPerson> {
 	 */
 	public WorkPerson findByEmpNo(String empNo) {
 		return dao.findByEmpNo(empNo);
+	}
+	
+	//查询所在班组所有员工
+	public List<WorkPerson> findWpsByUser(){
+		if(UserUtils.getUser().isAdmin()) {
+			return dao.findList(new WorkPerson());
+		}
+		
+		//查询员工号
+		String empNo = UserUtils.getUser().getEmpNo();
+		if(null == empNo) {
+			return null;//空数据
+		}
+		
+		WorkPerson resultWp = new WorkPerson();
+		resultWp = dao.findByEmpNo(empNo);
+		String classId = resultWp.getWorkClassId();//查询班级
+		WorkClass resultWc = workClassDao.get(classId);//查询班级
+		
+		WorkPerson queryWp = new WorkPerson();
+		queryWp.setWorkClassId(classId);
+		return dao.findList(queryWp);
 	}
 	
 	/**

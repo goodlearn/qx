@@ -3,6 +3,12 @@ ALTER TABLE fault_record ADD COLUMN user_tool VARCHAR(100) DEFAULT NULL
 ALTER TABLE ws_mask_wc ADD COLUMN image_path VARCHAR(100) DEFAULT NULL 
 待办:JS提醒
 create database sina default character set utf8mb4 collate utf8mb4_unicode_ci;
+https://www.cnblogs.com/xyhz0310/p/6387951.html //resin中关于url rewrite来传递jsessionid的问题
+https://blog.csdn.net/aofavx/article/details/51701012 //去掉shiro登录时url里的JSESSIONID
+https://blog.csdn.net/Mr_yangzc/article/details/78773053 //去掉shiro登录时url里的JSESSIONID
+SELECT id,NAME
+FROM userinfo
+WHERE id LIKE '%a%' OR id LIKE '%b%' OR id LIKE '%c%'
 
 CREATE TABLE `Item108t2000hBy`
 生成代码

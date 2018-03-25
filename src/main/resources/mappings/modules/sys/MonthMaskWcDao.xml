@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao">
+    
+	<sql id="monthMaskWcColumns">
+		a.id AS "id",
+		a.month_mask_ws_id AS "monthMaskWsId",
+		a.work_person_id AS "workPersonId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		m.id AS "mmws.id",
+		m.end_date AS "mmws.endDate",
+		m.mask_desc AS "mmws.maskDesc",
+		m.mask_desc AS "maskDesc",
+		m.submit_state AS "mmws.submitState",
+		wp.id AS "wp.id",
+		wp.name AS "wp.name"
+	</sql>
+	
+	<sql id="monthMaskWcJoins">
+			LEFT JOIN month_mask_ws m ON m.id = a.month_mask_ws_id
+						LEFT JOIN work_person wp ON wp.id = a.work_person_id
+			
+	</sql>
+    
+    <select id="getByMmwsId" resultType="MonthMaskWc">
+		SELECT 
+			<include refid="monthMaskWcColumns"/>
+		FROM month_mask_wc a
+		<include refid="monthMaskWcJoins"/>
+		WHERE a.month_mask_ws_id = #{monthMaskWsId}
+	</select>
+    
+	<select id="get" resultType="MonthMaskWc">
+		SELECT 
+			<include refid="monthMaskWcColumns"/>
+		FROM month_mask_wc a
+		<include refid="monthMaskWcJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListAll" resultType="MonthMaskWc">
+		SELECT 
+			<include refid="monthMaskWcColumns"/>
+		FROM month_mask_wc a
+		<include refid="monthMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mmws != null and mmws.submitState != null and mmws.submitState != ''">
+				AND m.submit_state = #{mmws.submitState}
+			</if>
+			<if test="mmws != null and mmws.endDate != null and mmws.endDate != ''">
+				AND m.end_date &gt;= #{mmws.endDate}
+			</if>
+			<if test="mmws != null and mmws.workKindId != null and mmws.workKindId != ''">
+				AND m.work_kind_id = in (#{mmws.workKindId},'all')
+			</if>
+			<if test="monthMaskWsId != null and monthMaskWsId != ''">
+				AND a.month_mask_ws_id = #{monthMaskWsId}
+			</if>
+			<if test="workPersonId != null and workPersonId != ''">
+				AND a.work_person_id = #{workPersonId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findList" resultType="MonthMaskWc">
+		SELECT 
+			<include refid="monthMaskWcColumns"/>
+		FROM month_mask_wc a
+		<include refid="monthMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="monthMaskWsId != null and monthMaskWsId != ''">
+				AND a.month_mask_ws_id = #{monthMaskWsId}
+			</if>
+			<if test="workPersonId != null and workPersonId != ''">
+				AND a.work_person_id = #{workPersonId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MonthMaskWc">
+		SELECT 
+			<include refid="monthMaskWcColumns"/>
+		FROM month_mask_wc a
+		<include refid="monthMaskWcJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO month_mask_wc(
+			id,
+			month_mask_ws_id,
+			work_person_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{monthMaskWsId},
+			#{workPersonId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE month_mask_wc SET 	
+			month_mask_ws_id = #{monthMaskWsId},
+			work_person_id = #{workPersonId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE month_mask_wc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

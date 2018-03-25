@@ -299,6 +299,30 @@ public class BaseInfoUtils {
 	}
 	
 	/**
+	 * 获取所有工种信息(有一个特殊的数据 所有工种)
+	 * @return
+	 */
+	public static List<WorkKind> getAllwk(){
+		@SuppressWarnings("unchecked")
+		List<WorkKind> list = (List<WorkKind>)CacheUtils.get(WORK_KIND_LIST);
+		if (list==null  || list.size() == 0){
+			list = Lists.newArrayList();
+			for (WorkKind cl : workKindDao.findAllList(new WorkKind())){
+				list.add(cl);
+			}
+			
+			//所有工种
+			WorkKind allWk = new WorkKind();
+			allWk.setName(Global.ALL_WK_NAME);
+			allWk.setId(Global.ALL_WK);
+			list.add(allWk);
+			
+			CacheUtils.put(WORK_KIND_LIST, list);
+		}
+		return list;
+	}
+	
+	/**
 	 * 获取所有班组信息
 	 * @return
 	 */
