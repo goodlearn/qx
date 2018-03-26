@@ -46,6 +46,8 @@ public abstract class WxBaseController {
 	protected final String USER_TASK = "modules/wxp/userTask";///用户任务
 	protected final String TASK_INFO = "modules/wxp/taskInfo";//任务信息
 	protected final String CHECK_SUBMIT = "modules/wxp/checkSubmit";//任务信息
+	//月度任务页面
+	protected final String MONTH_MASK_INDEX_INFO = "modules/wxp/mmIndex";//首页
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
