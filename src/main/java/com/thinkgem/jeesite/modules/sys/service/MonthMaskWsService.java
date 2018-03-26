@@ -58,6 +58,8 @@ public class MonthMaskWsService extends CrudService<MonthMaskWsDao, MonthMaskWs>
 	
 	//依据员工查询
 	public Page<MonthMaskWs> findPageByEmpNo(Page<MonthMaskWs> page, MonthMaskWs monthMaskWs) {
+		String value = DictUtils.getDictValue("是", "yes_no", "是");
+		monthMaskWs.setSubmitState(value);//依据发布的
 		if(UserUtils.getUser().isAdmin()) {
 			return super.findPage(page, monthMaskWs);
 		}
@@ -74,10 +76,7 @@ public class MonthMaskWsService extends CrudService<MonthMaskWsDao, MonthMaskWs>
 		WorkClass resultWc = workClassDao.get(classId);//查询班级
 		String wkId = resultWc.getWorkKindId();//查询工种
 		
-		String value = DictUtils.getDictValue("是", "yes_no", "是");
-		
 		monthMaskWs.setEndDate(new Date());
-		monthMaskWs.setSubmitState(value);//依据发布的
 		monthMaskWs.setWorkKindId(wkId);//设置工种查询
 		return super.findPage(page, monthMaskWs);
 	}

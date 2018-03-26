@@ -73,6 +73,9 @@ public class BaseInfoUtils {
 	
 	public static final String WORK_KIND_LIST= "workKindMap";
 	
+	//全部工种
+	public static final String WORK_KIND_LIST_ALL= "workKindAllMap";
+	
 	//班组人员
 	private static WorkPersonDao workPersonDao = SpringContextHolder.getBean(WorkPersonDao.class);
 	
@@ -304,7 +307,7 @@ public class BaseInfoUtils {
 	 */
 	public static List<WorkKind> getAllwk(){
 		@SuppressWarnings("unchecked")
-		List<WorkKind> list = (List<WorkKind>)CacheUtils.get(WORK_KIND_LIST);
+		List<WorkKind> list = (List<WorkKind>)CacheUtils.get(WORK_KIND_LIST_ALL);
 		if (list==null  || list.size() == 0){
 			list = Lists.newArrayList();
 			for (WorkKind cl : workKindDao.findAllList(new WorkKind())){
@@ -317,7 +320,7 @@ public class BaseInfoUtils {
 			allWk.setId(Global.ALL_WK);
 			list.add(allWk);
 			
-			CacheUtils.put(WORK_KIND_LIST, list);
+			CacheUtils.put(WORK_KIND_LIST_ALL, list);
 		}
 		return list;
 	}

@@ -43,11 +43,17 @@
 					<form:options items="${fns:getCwList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>运行时间数：</label>
-				<form:input path="runTime" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label>任务说明：</label>
+				<form:input path="mmws.maskDesc" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>检查时间：</label>
-				<input name="checkDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+			<li><label>任务类型：</label>
+				<form:select path="mmws.type" class="input-xlarge required">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('monthMaskType')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>结束时间：</label>
+				<input name="mmws.endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${monthMask.checkDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
 			</li>

@@ -24,6 +24,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>任务类型</th>
 				<th>任务说明</th>
 				<th>责任人</th>
 				<th>任务结束时间</th>
@@ -34,6 +35,9 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="monthMaskWc">
 			<tr>
+				<td>
+					${fns:getDictLabel(monthMaskWc.mmws.type, 'monthMaskType', '')}
+				</td>
 				<td>
 					${monthMaskWc.mmws.maskDesc}
 				</td>

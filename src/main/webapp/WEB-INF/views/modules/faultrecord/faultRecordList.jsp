@@ -69,15 +69,6 @@
 					<form:options items="${fns:getAllPersonList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>参与人员：</label>
-				<form:select path="wpPartId" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getAllPersonList()}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>运行时间：</label>
-				<form:input path="runTime" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
 			<li><label>故障时间：</label>
 				<input name="faultDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${faultRecord.faultDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"

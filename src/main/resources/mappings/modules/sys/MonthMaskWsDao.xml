@@ -50,6 +50,9 @@
 			<if test="type != null and type != ''">
 				AND a.type = #{type}
 			</if>
+			<if test="submitState != null and submitState != ''">
+				AND a.submit_state = #{submitState}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
