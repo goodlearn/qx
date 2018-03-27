@@ -89,7 +89,7 @@
 					${workPerson.remarks}
 				</td>
 				<shiro:hasPermission name="sys:workPerson:edit"><td>
-    				<a href="${ctx}/sys/workPerson/form?id=${workPerson.id}">修改</a>
+    				<a href="${ctx}/sys/workPerson/updateForm?id=${workPerson.id}">修改</a>
 					<a href="${ctx}/sys/workPerson/delete?id=${workPerson.id}" onclick="return confirmx('确认要删除该车间人员信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>

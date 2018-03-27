@@ -122,7 +122,7 @@
 					${faultRecord.wpTotal.name}
 				</td>
 				<td>
-					${faultRecord.wpPart.name}
+					${faultRecord.wpPartId}
 				</td>
 				<td>
 					${faultRecord.runTime}

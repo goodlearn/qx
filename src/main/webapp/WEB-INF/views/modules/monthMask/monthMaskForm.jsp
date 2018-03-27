@@ -44,16 +44,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">责任人：</label>
-			<div class="controls">
-				<form:select path="workPersonId" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${wps}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">车型：</label>
 			<div class="controls">
 				<form:select path="carMotorCycleId" class="input-xlarge ">

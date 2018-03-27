@@ -48,6 +48,10 @@ public abstract class WxBaseController {
 	protected final String CHECK_SUBMIT = "modules/wxp/checkSubmit";//任务信息
 	//月度任务页面
 	protected final String MONTH_MASK_INDEX_INFO = "modules/wxp/mmIndex";//首页
+	protected final String MONTH_MASK_ALLOCATION_PAGE = "modules/wxp/allocationPage";//分配页面
+	//故障记录
+	protected final String ADD_FR_PAGE = "modules/wxp/addFrPage";//添加故障页面
+	protected final String SUCCESS_FR_PAGE = "modules/wxp/frSuccess";//故障成功页面
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
@@ -73,9 +77,11 @@ public abstract class WxBaseController {
 	protected final String ERR_USER_NO_AUTH = "用户未授权";
 	protected final String ERR_NAME_NO_MATCH_NAME = "工号和姓名不匹配";
 	protected final String ERR_EXIST_WX_INFO = "该工号已绑定";
+	protected final String ERR_FRR_SAVE = "故障保存失败";
 	
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
+	protected final String MSG_FR_SUCCESS = "故障保存成功";
 
 	
 	protected final String successCode = "0";//成功码

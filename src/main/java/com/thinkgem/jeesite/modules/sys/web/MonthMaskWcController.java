@@ -108,13 +108,24 @@ public class MonthMaskWcController extends BaseController {
 	public String allocation(MonthMaskWc monthMaskWc, Model model,HttpServletRequest request) {
 		String mmwsId = request.getParameter("mmwsId");
 		monthMaskWc.setMonthMaskWsId(mmwsId);
-		model.addAttribute("monthMaskWc", monthMaskWc);
-		model.addAttribute("wps", workPersonService.findWpsByUser());
+		
 		MonthMaskWs mmws = monthMaskWsService.get(mmwsId);
-		if(null!=mmws) {
-			monthMaskWc.setMmws(mmws);
-			model.addAttribute("monthMaskWs", mmws);
+		
+		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
+		if (null != mmws) {
+			model.addAttribute("monthMaskWs", mmws);//加入任务
 		}
+		
+		if(null != mmwcList && mmwcList.size() > 0) {
+			model.addAttribute("monthMaskWc", mmwcList.get(0));//应该只有一条 如果有多条也只取一条
+			if(null!=mmws) {
+				monthMaskWc.setMmws(mmws);
+				model.addAttribute("monthMaskWs", mmws);
+			}
+		}
+		
+		model.addAttribute("wps", workPersonService.findWpsByUser());
+		
 		return "modules/monthMaskWc/monthMaskWcAllocation";
 	}
 	

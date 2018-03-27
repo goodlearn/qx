@@ -75,7 +75,16 @@ public class MonthMaskController extends BaseController {
 		if (!beanValidator(model, monthMask)){
 			return form(monthMask, model);
 		}
-		monthMaskService.save(monthMask);
+		//如果ID是空的说明是保存数据，我们置空数据
+		if(StringUtils.isBlank(monthMask.getId())) {
+			monthMask.setId(null);
+		}
+		//验证数量
+		if(!monthMaskService.validateNum(monthMask)) {
+			addMessage(redirectAttributes, "任务数量已达上限");
+			return "redirect:"+Global.getAdminPath()+"/sys/monthMask/?repage";
+		}
+		monthMaskService.saveForm(monthMask);
 		addMessage(redirectAttributes, "保存月度任务表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/monthMask/?repage";
 	}

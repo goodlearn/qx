@@ -11,6 +11,7 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
+		a.mm_num AS "mmNum",
 		a.del_flag AS "delFlag",
 		d.id AS "workDepartment.id",
 		d.name AS "workDepartment.name"
@@ -83,6 +84,7 @@
 			update_by,
 			update_date,
 			remarks,
+			mm_num,
 			del_flag
 		) VALUES (
 			#{id},
@@ -93,6 +95,7 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
+			#{mmNum},
 			#{delFlag}
 		)
 	</insert>
@@ -103,6 +106,7 @@
 			work_department_id = #{workDepartmentId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
+			mm_num = #{mmNum},
 			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>

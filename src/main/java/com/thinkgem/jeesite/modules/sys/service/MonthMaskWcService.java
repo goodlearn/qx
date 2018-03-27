@@ -7,11 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
@@ -50,6 +53,23 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 	@Transactional(readOnly = false)
 	public void save(MonthMaskWc monthMaskWc) {
 		super.save(monthMaskWc);
+	}
+	
+	@Transactional(readOnly = false)
+	public void saveWxEntity(MonthMaskWc monthMaskWc,String empNo) {
+		User user = UserUtils.findByEmpNo(empNo);
+		if (monthMaskWc.getIsNewRecord()){
+			monthMaskWc.setId(IdGen.uuid());
+			monthMaskWc.setUpdateBy(user);
+			monthMaskWc.setCreateBy(user);
+			monthMaskWc.setUpdateDate(new Date());
+			monthMaskWc.setCreateDate(monthMaskWc.getUpdateDate());
+			dao.insert(monthMaskWc);
+		}else{
+			monthMaskWc.setUpdateDate(new Date());
+			monthMaskWc.setUpdateBy(user);
+			dao.update(monthMaskWc);
+		}
 	}
 	
 	@Transactional(readOnly = false)

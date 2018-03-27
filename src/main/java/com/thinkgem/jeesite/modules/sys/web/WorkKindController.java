@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.web;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +49,23 @@ public class WorkKindController extends BaseController {
 		Page<WorkKind> page = workKindService.findPage(new Page<WorkKind>(request, response), workKind); 
 		model.addAttribute("page", page);
 		return "modules/workkind/workKindList";
+	}
+	
+	//月度计划列表
+	@RequiresPermissions("sys:workKind:view")
+	@RequestMapping(value = {"listMm"})
+	public String listMm(WorkKind workKind, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<WorkKind> page = workKindService.findPage(new Page<WorkKind>(request, response), workKind); 
+		model.addAttribute("page", page);
+		return "modules/workkind/workKindListMm";
+	}
+	
+	//月度计划表
+	@RequiresPermissions("sys:workKind:view")
+	@RequestMapping(value = "formMm")
+	public String formMm(WorkKind workKind, Model model) {
+		model.addAttribute("workKind", workKind);
+		return "modules/workkind/workKindFormMm";
 	}
 
 	@RequiresPermissions("sys:workKind:view")

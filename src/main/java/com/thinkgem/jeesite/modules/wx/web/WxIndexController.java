@@ -315,7 +315,7 @@ public class WxIndexController extends WxBaseController{
 		navigaionList.add(NAVIGAION_2);
 	//	navigaionList.add(NAVIGAION_3);
 		navigaionList.add(NAVIGAION_4);
-		model.addAttribute("navigaionList",navigaionList);
+		model.addAttribute("mmwsList",navigaionList);
 		
 		/**
 		 * 任务发布列表

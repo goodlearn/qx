@@ -31,9 +31,17 @@ public class MonthMask extends DataEntity<MonthMask> {
 	private CarMotorCycle cmc;
 	private CarWagon cw;
 	
+	private String workKindId;//查询类型 
 	
-	
-	
+
+	public String getWorkKindId() {
+		return workKindId;
+	}
+
+	public void setWorkKindId(String workKindId) {
+		this.workKindId = workKindId;
+	}
+
 	public MonthMaskWs getMmws() {
 		return mmws;
 	}
@@ -91,7 +99,6 @@ public class MonthMask extends DataEntity<MonthMask> {
 		this.monthMaskWcId = monthMaskWcId;
 	}
 	
-	@Length(min=1, max=64, message="责任人长度必须介于 1 和 64 之间")
 	public String getWorkPersonId() {
 		return workPersonId;
 	}

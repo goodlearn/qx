@@ -15,6 +15,7 @@
 		m.id AS "mmws.id",
 		m.end_date AS "mmws.endDate",
 		m.mask_desc AS "mmws.maskDesc",
+		m.type AS "mmws.type",
 		m.mask_desc AS "maskDesc",
 		m.submit_state AS "mmws.submitState",
 		wp.id AS "wp.id",

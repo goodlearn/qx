@@ -253,32 +253,23 @@
 </head>
 <body>
 <div class="content">
-	<div class="pageDesc">车间月度计划表</div>
+	<input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
+	<div class="pageDesc">${fullName}</div>
 	<div class="userInfo">
 		<div class="userInfoCont">
 			<div class="userImgDiv">
 				<img src="../static/wx/wximages/headerimgicon.png" alt="" width="100%">
 			</div>
-			<div class="userName">王宇</div>
+			<div class="userName">${userName}</div>
 		</div>
 		<div class="userFunc">
 			<ul>
-				<li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务执行</p>
-				</li>
-				<li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务发布</p>
-				</li>
-				<!-- <li class="leftborder">
-					<p class="funcIcon"></p>
-					<p class="funcTxt">任务情况</p>
-				</li>
-				<li>
-					<p class="funcIcon"></p>
-					<p class="funcTxt">暂未开发</p>
-				</li> -->
+			<c:forEach items="${navigaionList}" var="navigaion" varStatus="status">
+					<li class="leftborder">
+							<p class="funcIcon"></p>
+							<p class="funcTxt">${navigaion}</p>
+						</li>
+				</c:forEach>
 			</ul>
 		</div>
 	</div>
@@ -333,38 +324,28 @@
 
 			<li> <!-- 任务发布 -->
 				<div class="funcDesc">月度计划任务列表</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">4月份月度计划表</div>
-							<div class="taskBtn taskPubBtn">分配</div>
-						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">3月份月度计划表</div>
-							<div class="taskBtn taskPubBtn">分配</div>
-						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">2月份月度计划表</div>
-							<div class="taskBtn taskPubBtn">分配</div>
-						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">1月份月度计划表</div>
-							<div class="taskBtn taskPubBtn">分配</div>
-						</div>
-					</div>
-				</div>
+				<c:if test = "${not empty mmwsList}">
+					<c:forEach items="${mmwsList}" var="mmws" varStatus="status">
+							<div class="taksInfoCont">
+								<div class="workTaskCont">
+									<div class="taskType">
+										<div class="taskTypeTxt">${mmws.maskDesc}</div>
+										<div id="${mmws.id}" class="taskBtn taskPubBtn">分配</div>
+									</div>
+								</div>
+							</div>
+					</c:forEach>
+				</c:if>
+				<c:if test = "${empty mmwsList}">
+					无分配任务
+				</c:if>
 			</li>
 		</ul>
 	</div>
 </div>
 
 <script type="text/javascript">
+	var pageContextVal = $("#PageContext").val();
 	$(document).ready(function() {
 		// task show
 		$(".showtaskBtn").click(function(){
@@ -408,7 +389,8 @@
 
 		// task pub
 		$(".taskPubBtn").click(function(){
-			window.location.href = "monthPlanTaskPub.html";
+			var  mmwsId =  $(this).attr("id");
+			window.location.href =pageContextVal+'/mmc/allocationPage?mmwsId='+mmwsId;
 		});
 	});
 </script>

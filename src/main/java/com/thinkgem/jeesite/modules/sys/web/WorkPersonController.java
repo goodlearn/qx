@@ -65,6 +65,36 @@ public class WorkPersonController extends BaseController {
 		model.addAttribute("workPerson", workPerson);
 		return "modules/workperson/workPersonForm";
 	}
+	
+	@RequiresPermissions("sys:workPerson:view")
+	@RequestMapping(value = "updateForm")
+	public String updateForm(WorkPerson workPerson, Model model) {
+		model.addAttribute("workPerson", workPerson);
+		return "modules/workperson/workPersonUForm";
+	}
+	
+	@RequiresPermissions("sys:workPerson:edit")
+	@RequestMapping(value = "update")
+	public String update(WorkPerson workPerson, Model model, RedirectAttributes redirectAttributes) {
+		if (!beanValidator(model, workPerson)){
+			return form(workPerson, model);
+		}
+		
+		String no = workPerson.getNo();
+		if(StringUtils.isEmpty(no)) {
+			addMessage(redirectAttributes, "员工号不能为空");
+			return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";
+		}
+		
+		if(null == workPersonService.findByEmpNo(no)) {
+			addMessage(redirectAttributes, "员工编号不存在");
+			return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";
+		}
+		
+		workPersonService.save(workPerson);
+		addMessage(redirectAttributes, "更新车间人员信息成功");
+		return "redirect:"+Global.getAdminPath()+"/sys/workPerson/?repage";
+	}
 
 	@RequiresPermissions("sys:workPerson:edit")
 	@RequestMapping(value = "save")

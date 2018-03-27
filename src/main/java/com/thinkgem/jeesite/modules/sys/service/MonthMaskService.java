@@ -5,13 +5,24 @@ package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMask;
+import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
+import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
+import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
+import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskDao;
+import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao;
+import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkKindDao;
+import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 
 /**
  * 月度任务表Service
@@ -21,6 +32,21 @@ import com.thinkgem.jeesite.modules.sys.dao.MonthMaskDao;
 @Service
 @Transactional(readOnly = true)
 public class MonthMaskService extends CrudService<MonthMaskDao, MonthMask> {
+	
+	@Autowired
+	private MonthMaskWcDao monthMaskWcDao;
+	
+	@Autowired
+	private MonthMaskWsDao monthMaskWsDao;
+	
+	@Autowired
+	private WorkKindDao workKindDao;
+	
+	@Autowired
+	private WorkPersonDao workPersonDao;
+	
+	@Autowired
+	private WorkClassDao workClassDao;
 
 	public MonthMask get(String id) {
 		return super.get(id);
@@ -37,6 +63,54 @@ public class MonthMaskService extends CrudService<MonthMaskDao, MonthMask> {
 	@Transactional(readOnly = false)
 	public void save(MonthMask monthMask) {
 		super.save(monthMask);
+	}
+	
+	@Transactional(readOnly = false)
+	public void saveForm(MonthMask monthMask) {
+		String mmwcId = monthMask.getMonthMaskWcId();
+		MonthMaskWc mmwc = monthMaskWcDao.get(mmwcId);
+		monthMask.setWorkPersonId(mmwc.getWorkPersonId());
+		super.save(monthMask);
+	}
+	
+	//查询数量
+	public boolean validateNum(MonthMask monthMask) {
+		String mmwcId = monthMask.getMonthMaskWcId();
+		MonthMaskWc mmwc = monthMaskWcDao.get(mmwcId);
+		
+		//班组分配的人
+		String workPersonId = mmwc.getWorkPersonId();
+		//班组人员
+		WorkPerson wp = workPersonDao.get(workPersonId);
+		//班组信息
+		WorkClass wc = workClassDao.get(wp.getWorkClassId());
+		//工种信息
+		WorkKind wk = workKindDao.get(wc.getWorkKindId());
+		//分配人员的工种信息
+		String workKindId = wk.getId();
+		//该工作下、该工种已经完成的任务数量
+		MonthMask queryMonthMask = new MonthMask();
+		queryMonthMask.setWorkKindId(workKindId);
+		queryMonthMask.setMonthMaskWcId(mmwcId);
+		int num = dao.findCountByType(queryMonthMask);
+		
+		//该工种要求的数量
+		String monthMaskNum = wk.getMmNum();
+		
+		//限制数量
+		int limitNum = 0;
+		//给一个默认值
+		if(null == monthMaskNum) {
+			limitNum = 0;
+		}else {
+			limitNum = Integer.valueOf(monthMaskNum);
+		}
+		
+		//如果超出规定数量 返回错误
+		if(num >= limitNum) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Transactional(readOnly = false)

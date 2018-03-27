@@ -34,6 +34,27 @@
 								LEFT JOIN car_motor_cycle cmc ON cmc.id = a.car_motor_cycle_id
 									LEFT JOIN car_wagon cw ON cw.id = a.car_wagon_id
 	</sql>
+	
+	<sql id="monthMaskJoinsWorkKind">
+			LEFT JOIN work_person wp ON wp.id = a.work_person_id
+				LEFT JOIN work_class wc ON wc.id = wp.work_class_id
+	</sql>
+	
+	<select id="findCountByType" resultType="Integer">
+		SELECT 
+			count(a.id)
+		FROM month_mask a
+		<include refid="monthMaskJoinsWorkKind"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="monthMaskWcId != null and monthMaskWcId != ''">
+				AND a.month_mask_wc_id = #{monthMaskWcId}
+			</if>
+			<if test="workKindId != null and workKindId != ''">
+				AND wc.work_kind_id in (#{workKindId},'all')
+			</if>
+		</where>
+	</select>
     
 	<select id="get" resultType="MonthMask">
 		SELECT 

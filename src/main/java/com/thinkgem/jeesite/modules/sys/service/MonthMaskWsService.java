@@ -81,6 +81,32 @@ public class MonthMaskWsService extends CrudService<MonthMaskWsDao, MonthMaskWs>
 		return super.findPage(page, monthMaskWs);
 	}
 	
+	//依据员工查询
+	public List<MonthMaskWs> findMmwsByEmpNo(MonthMaskWs monthMaskWs,String empNo) {
+		String value = DictUtils.getDictValue("是", "yes_no", "是");
+		monthMaskWs.setSubmitState(value);//依据发布的
+		
+		//查询员工号
+		if(null == empNo) {
+			return null;//空数据
+		}
+		
+		if(null == UserUtils.findByEmpNo(empNo)) {
+			return null;//空数据
+		}
+		
+		
+		WorkPerson resultWp = new WorkPerson();
+		resultWp = workPersonDao.findByEmpNo(empNo);
+		String classId = resultWp.getWorkClassId();//查询班级
+		WorkClass resultWc = workClassDao.get(classId);//查询班级
+		String wkId = resultWc.getWorkKindId();//查询工种
+		
+		monthMaskWs.setEndDate(new Date());
+		monthMaskWs.setWorkKindId(wkId);//设置工种查询
+		return dao.findList(monthMaskWs);
+	}
+	
 
 	
 	@Transactional(readOnly = false)

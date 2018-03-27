@@ -14,8 +14,18 @@ public class WorkKind extends DataEntity<WorkKind> {
 	private static final long serialVersionUID = 1L;
 	private String name;		// 工种名称
 	private String workDepartmentId;		// 所属部门
+	private String mmNum;//月度计划任务数量
 	private WorkDepartment workDepartment;
 	
+	
+	public String getMmNum() {
+		return mmNum;
+	}
+
+	public void setMmNum(String mmNum) {
+		this.mmNum = mmNum;
+	}
+
 	public WorkKind() {
 		super();
 	}
