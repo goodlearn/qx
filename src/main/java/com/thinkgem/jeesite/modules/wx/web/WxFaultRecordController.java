@@ -140,12 +140,12 @@ public class WxFaultRecordController extends WxBaseController {
 			faultRecord.setFaultDate(date);
 			faultRecordService.save(faultRecord);
 			model.addAttribute("message", MSG_FR_SUCCESS);
-			return WX_ERROR;
+			return SUCCESS_FR_PAGE;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		model.addAttribute("message", ERR_FRR_SAVE);
-		return SUCCESS_FR_PAGE;
+		return WX_ERROR;
 	}
 	
 	//页面跳转-获取分配页面
