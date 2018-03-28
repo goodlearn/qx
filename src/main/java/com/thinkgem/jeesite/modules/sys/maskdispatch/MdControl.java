@@ -212,9 +212,9 @@ public class MdControl {
 		model.addAttribute("parts", DictUtils.getDictList(Global.ITEM_QX2B_MT_4400_DJ_DICT));
 		model.addAttribute("maskId",maskId);
 		if(isWx()) {
-			setValue(WX_ITEM_QX2B_830_BY);
+			setValue(WX_ITEM_QX2B_MT_4400_DJ);
 		}else {
-			setValue(ITEM_QX2B_830_BY);
+			setValue(ITEM_QX2B_MT_4400_DJ);
 		}
 	}
 	

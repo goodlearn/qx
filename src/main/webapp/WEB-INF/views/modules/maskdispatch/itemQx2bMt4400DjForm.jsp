@@ -66,7 +66,7 @@
 		
 		 $.ajax({
 		     type:'POST',
-		     url:pageContextVal+'/sys/item108t2000hBy/allocation',
+		     url:pageContextVal+'/sys/itemQx2bMt4400Dj/allocation',
 		     data:JSON.stringify(mcsijson.viewMcsi1),
 			 dataType: "json",
 			 contentType:"application/json",

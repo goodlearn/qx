@@ -55,6 +55,7 @@ public abstract class WxBaseController {
 	//错误页面
 	protected final String WX_ERROR = "modules/wxp/500";
 	//错误信息
+	protected final String ERR_MEDIA_ID_NULL = "图片编号出现错误";
 	protected final String ERR_WSM_ID_NULL = "任务号为空";
 	protected final String ERR_WSM_NULL = "不存在该任务";
 	protected final String ERR_WS_MASK_WC_NOT_NULL = "任务已经发布过了";

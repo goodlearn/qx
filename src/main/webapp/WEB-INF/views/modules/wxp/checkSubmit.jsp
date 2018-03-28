@@ -7,7 +7,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<script src="${ctxStatic}/wx/wxjs/jquery.min.js" type="text/javascript"></script>
+	<script src="${ctxStatic}/wx/wxjs/jweixin-1.2.0.js" type="text/javascript"></script>
 	<link href="${ctxStatic}/wx/wxcss/common.css" type="text/css" rel="stylesheet" />
+	
 
 	<style type="text/css">
 		.checkCont{
@@ -86,6 +88,35 @@
 			border: none;
 			resize: none;
 		}
+		
+		/* userIdImg css */
+		.userIdImgUpload{
+			width: 96%; 
+			margin: 0 auto 20px;
+			overflow: hidden;
+			box-shadow: 0px 5px 5px #d1d1d1; 
+			border-radius: 8px;
+		}
+		.userIdImgUpload .userIdImgCont{
+			width: 100%;
+			overflow: hidden;
+			
+			border: 1px solid #e1e1e1;
+			background: #fff;
+		}
+		.userIdImgUpload .userIdImgCont img{
+			width: 100%;
+			display: block;
+			margin: 0 auto;
+		}
+		.userIdImgUpload .userIdImgCont .userIdImgUploadDesc{
+			margin: 0px; 
+			line-height: 30px;
+			font-size: 14px;
+			color: #999999;
+			font-weight: bold;
+			text-align: center;
+		}
 
 		.submitBtn{
 			display: block;
@@ -106,6 +137,10 @@
 </head>
 <body>
 <div class="content">
+	<input id="appId" type="hidden" value="${appId}"/>
+	<input id="timestamp" type="hidden" value="${timestamp}" />
+    <input id="noncestr" type="hidden" value="${nonceStr}" />
+    <input id="signature" type="hidden" value="${signature}" />
 	<div class="pageNav">
 		<p class="pageTxt">审核提交</p>
 		<p class="backBtn">&lt; 返回</p>
@@ -164,6 +199,13 @@
 			</div>
 		</c:forEach>
 		
+		<div class="userIdImgUpload">
+			<div class="userIdImgCont" id="userIdImgPositive">
+				<img src="${ctxStatic}/wx/wximages/defaultimage.jpg" alt="图片加载中...">
+				<p class="userIdImgUploadDesc">点击上传照片</p>
+			</div>
+		</div>
+		
 		<button class="submitBtn">确认提交</button>
 	
 </div>
@@ -216,6 +258,110 @@
 			});
 		});
 	});
+	
+	// 用户上传图片函数
+	// JSSDK
+	var appId = $("#appId").val();
+	var timestamp = $("#timestamp").val();//时间戳
+    var nonceStr = $("#noncestr").val();//随机串
+    var signature = $("#signature").val();//签名
+    wx.config({
+        debug : true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId : appId, // 必填，公众号的唯一标识
+        timestamp : timestamp, // 必填，生成签名的时间戳
+        nonceStr : nonceStr, // 必填，生成签名的随机串
+        signature : signature,// 必填，签名，见附录1
+        jsApiList : [ 
+        	'checkJsApi',
+	        'onMenuShareTimeline',
+	        'onMenuShareAppMessage',
+	        'onMenuShareQQ',
+	        'onMenuShareWeibo',
+	        'hideMenuItems',
+	        'showMenuItems',
+	        'hideAllNonBaseMenuItem',
+	        'showAllNonBaseMenuItem',
+	        'translateVoice',
+	        'startRecord',
+	        'stopRecord',
+	        'onRecordEnd',
+	        'playVoice',
+	        'pauseVoice',
+	        'stopVoice',
+	        'uploadVoice',
+	        'downloadVoice',
+	        'chooseImage',
+	        'previewImage',
+	        'uploadImage',
+	        'downloadImage',
+	        'getNetworkType',
+	        'openLocation',
+	        'getLocation',
+	        'hideOptionMenu',
+	        'showOptionMenu',
+	        'closeWindow',
+	        'scanQRCode',
+	        'chooseWXPay',
+	        'openProductSpecificView',
+	        'addCard',
+	        'chooseCard',
+	        'openCard'
+        ]
+    // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+
+    wx.ready(function() {  
+        wx.checkJsApi({  
+            jsApiList : ['chooseImage','previewImage','uploadImage','downloadImage'],  
+            success : function(res) {  
+
+            }  
+        });  
+
+        //扫描二维码  
+        document.querySelector('#userIdImgPositive').onclick = function() {  
+            wx.chooseImage({
+				count: 1, // 默认9
+				sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+				sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+				success: function (res) {
+					var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+
+					wx.uploadImage({
+						localId: localIds[0], // 需要上传的图片的本地ID，由chooseImage接口获得
+						isShowProgressTips: 1, // 默认为1，显示进度提示
+						success: function (res) {
+							var serverId = res.serverId; // 返回图片的服务器端ID
+							$.ajax({
+							    type: 'POST',
+							    url: 'upMaskImage',
+							    data: {'serverId':serverId,'wmwId':wmwId},
+							    success:function(data){
+							    	var prompt = "操作提示";
+							    	var code = data.code;
+							    	var message = data.message;
+							    	if(code == "1"){
+							    		rzAlert(prompt,message);
+							    		alert("图片上传成功！");  // 需要返回一个图片连接
+								    	var imgaddr = data;
+								    	$("userIdImgCont image").attr("src",imgaddr);
+							    	}else{
+							    		rzAlert(prompt,message);
+							    	}
+							    },
+							    error:function(){
+							    	
+							    }
+							    
+							});
+						}
+					});
+				}
+			});
+        };//end_document_scanQRCode  
+        
+          
+    });//end_ready 
 </script>
 </body>
 </html>

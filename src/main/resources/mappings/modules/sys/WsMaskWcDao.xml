@@ -179,7 +179,7 @@
 			del_flag,
 			submit_state,
 			end_date,
-			image_path,
+			image_path
 		) VALUES (
 			#{id},
 			#{workShopMaskId},
@@ -193,7 +193,7 @@
 			#{delFlag},
 			#{submitState},
 			#{endDate},
-			#{imagePath},
+			#{imagePath}
 		)
 	</insert>
 	

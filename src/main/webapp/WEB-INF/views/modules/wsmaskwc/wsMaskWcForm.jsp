@@ -61,13 +61,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">图片信息：</label>
-			<div class="controls">
-				<form:hidden id="imagePath" path="imagePath" htmlEscape="false" class="input-xlarge"/>
-				<sys:ckfinder input="imagePath" type="files" uploadPath="/sys/wmw" selectMultiple="true"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>

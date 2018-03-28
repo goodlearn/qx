@@ -132,13 +132,53 @@ public class WxFaultRecordController extends WxBaseController {
 	@RequestMapping(value = "save",method=RequestMethod.POST)
 	public String save(FaultRecord faultRecord,HttpServletResponse response,Model model,HttpServletRequest request) {
 		try {
+			String openId = null;
+			if (null != Global.TEST_WX_OPEN_ID) {
+				// 微信测试
+				openId = Global.TEST_WX_OPEN_ID;
+			} else {
+				// 是否已经注册并且激活
+				openId = (String) model.asMap().get("openId");
+				String regUrl = validateRegByOpenId(openId, model);
+				if (null != regUrl) {
+					// 有错误信息
+					String errUrl = (String) model.asMap().get("errUrl");
+					if (null != errUrl) {
+						// 看是否有错误
+						return errUrl;
+					} else {
+						return regUrl;
+					}
+				}
+			}
+			/**
+			 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
+			 */
+			String empNo = findEmpNo(openId);
+			if (null == empNo) {
+				model.addAttribute("message", ERR_EMP_NO_NULL);
+				return WX_ERROR;
+			}
+
+			if (null == workPersonService.findByEmpNo(empNo)) {
+				model.addAttribute("message", ERR_WP_NULL);
+				return WX_ERROR;
+			}
+			
+			User user = UserUtils.findByEmpNo(empNo);
+			if (null == user) {
+				model.addAttribute("message", ERR_WP_NULL);
+				return WX_ERROR;
+			}
+			
 			String dateParam = request.getParameter("dateQuery");
 			if(null == dateParam) {
 				dateParam = CasUtils.convertDate2YMDString(new Date());
 			}
+		
 			Date date = CasUtils.convertString2YMDDate(dateParam);
 			faultRecord.setFaultDate(date);
-			faultRecordService.save(faultRecord);
+			faultRecordService.saveWx(faultRecord,user);
 			model.addAttribute("message", MSG_FR_SUCCESS);
 			return SUCCESS_FR_PAGE;
 		} catch (Exception e) {

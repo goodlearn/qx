@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.wx.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +19,9 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.config.WxGlobal;
 import com.thinkgem.jeesite.common.utils.BasePathUtils;
+import com.thinkgem.jeesite.common.utils.WxJsSkdUtils;
 import com.thinkgem.jeesite.modules.sys.entity.BusinessAssemble;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t1000By;
 import com.thinkgem.jeesite.modules.sys.entity.Item108t2000hBy;
@@ -334,6 +338,18 @@ public class WxWmwController extends WxBaseController{
 			return WX_ERROR;
 		}
 		
+		//获取jsApiTicket
+		Map<String, String> map = WxJsSkdUtils.getJsApiSign(request, response);
+		String retCode = map.get("code");
+		if("0".equals(retCode)) {
+			model.addAttribute("appId",WxGlobal.getAppId());
+			model.addAttribute("timestamp",map.get("timestamp"));
+			model.addAttribute("nonceStr",map.get("nonceStr"));
+			model.addAttribute("signature",map.get("signature"));
+		}else {
+			logger.info("jsApiTicket is null");
+		}
+		
 		ViewUnFinishMask vufm = new ViewUnFinishMask();
 		vufm.setWorkShopMaskId(wsMaskWc.getWsm().getId());//车间任务ID
 		vufm.setWorkShopMaskName(wsMaskWc.getWsm().getName());//车间任务名称
@@ -342,6 +358,84 @@ public class WxWmwController extends WxBaseController{
 		maskSinglePersonService.setPartNameForList(retList, wmwId);
 		model.addAttribute("maskInfo",vufm);//任务列表
 		return CHECK_SUBMIT;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/upMaskImage",method=RequestMethod.POST)
+	public String upMaskImage(HttpServletRequest request, HttpServletResponse response,Model model, RedirectAttributes redirectAttributes) {
+		String openId = null;
+		if(null != Global.TEST_WX_OPEN_ID) {
+			//微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		}else {
+			//是否已经注册并且激活
+		    openId = (String)model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId,model);
+			if(null!=regUrl) {
+				//有错误信息
+				String errUrl = (String)model.asMap().get("errUrl");
+				if(null != errUrl) {
+					//看是否有错误
+					return errUrl;
+				}else {
+					return regUrl;
+				}
+			}	
+		}
+		String wmwId = request.getParameter("wmwId");
+		if(null == wmwId) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		logger.info("任务编号是:"+wmwId);
+		
+		WsMaskWc wsMaskWc = wsMaskWcService.get(wmwId);
+		if(null == wsMaskWc) {
+			//任务不存在
+			model.addAttribute("message",ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
+		String mediaId = request.getParameter("serverId");
+		logger.info("mediaId:"+mediaId);
+		
+		if(null == mediaId) {
+			//任务不存在
+			model.addAttribute("message",ERR_MEDIA_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		try {
+			request.setCharacterEncoding("UTF-8");
+			//获取用户的身份证ID
+			String dirParam = headPhotoPath();
+			String filePath = wxService.downloadMedia(mediaId, dirParam,wmwId);
+			logger.info("filePath:"+filePath);
+			String isServer = DictUtils.getDictValue("isServer", "systemControl", "0");
+			String httpProtocol = DictUtils.getDictValue("httpProtocol", "systemControl", "http");
+			String url = null;
+			String[] paths = null;
+			if("0".equals(isServer)) {
+				url = BasePathUtils.getBasePathNoServer(request,true);
+			}else {
+				url = BasePathUtils.getBasePathNoServer(request,false);
+			}
+			String pattern = Pattern.quote(System.getProperty("file.separator"));
+			paths = filePath.split(pattern);
+		    if("https".equals(httpProtocol)) {
+		    	url = url.replace("http", "https");
+		    }
+		    String reqUrl = url + request.getContextPath()  + Global.WMW_IMAGE_PATH + "/" + paths[paths.length-1];
+		    logger.info(reqUrl);
+		    //保存路径
+		    wsMaskWc.setImagePath(reqUrl);
+		    wsMaskWcService.save(wsMaskWc);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return backJsonWithCode("0","成功");
 	}
 	
 	
