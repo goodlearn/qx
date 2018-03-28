@@ -44,7 +44,7 @@
 	<div class="content">
 	<div class="notfoundCont">
 		<div class="notfoundImg">
-			<img src="${ctxStatic}/wx/wximages/notfound.png" alt="图片加载中..." width="100%">
+			<img src="${ctxStatic}/wx/wximages/frSuccess.png" alt="图片加载中..." width="100%">
 		</div>
 		<div class="notfoundTxt">${message}</div>
 	</div>
