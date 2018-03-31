@@ -47,7 +47,7 @@
 		<p class="pageTxt">任务发布</p>
 		<p class="backBtn">&lt; 返回</p>
 	</div>
-	<form id="taksPubSubmit" method="POST" action="allocation">
+	<form id="taksPubSubmit" method="POST" action="allocationMmWp">
 		<c:if test = "${not empty monthMaskWs}">
 			<c:if test = "${not empty monthMaskWc}">
 				<input id="mmwcId" type="hidden" name="id" value="${monthMaskWc.id}" />

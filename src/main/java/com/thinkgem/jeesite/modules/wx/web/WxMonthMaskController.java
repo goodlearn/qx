@@ -2,7 +2,9 @@ package com.thinkgem.jeesite.modules.wx.web;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.MaskMainPerson;
 import com.thinkgem.jeesite.modules.sys.entity.MaskSinglePerson;
+import com.thinkgem.jeesite.modules.sys.entity.MonthMask;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
 import com.thinkgem.jeesite.modules.sys.entity.SysWxInfo;
@@ -28,12 +32,14 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
 import com.thinkgem.jeesite.modules.sys.entity.WsMaskWc;
 import com.thinkgem.jeesite.modules.sys.service.MaskMainPersonService;
 import com.thinkgem.jeesite.modules.sys.service.MaskSinglePersonService;
+import com.thinkgem.jeesite.modules.sys.service.MonthMaskService;
 import com.thinkgem.jeesite.modules.sys.service.MonthMaskWcService;
 import com.thinkgem.jeesite.modules.sys.service.MonthMaskWsService;
 import com.thinkgem.jeesite.modules.sys.service.SysWxInfoService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 import com.thinkgem.jeesite.modules.sys.service.WorkShopMaskService;
 import com.thinkgem.jeesite.modules.sys.service.WsMaskWcService;
+import com.thinkgem.jeesite.modules.sys.utils.BaseInfoUtils;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.wx.view.ViewUnFinishMask;
@@ -53,6 +59,10 @@ public class WxMonthMaskController extends WxBaseController {
 
 	@Autowired
 	private WorkPersonService workPersonService;
+	
+
+	@Autowired
+	private MonthMaskService monthMaskService;
 	
 	@Autowired
 	private MonthMaskWsService monthMaskWsService;
@@ -139,6 +149,8 @@ public class WxMonthMaskController extends WxBaseController {
 		List<String> navigaionList = new ArrayList<String>();
 		navigaionList.add(NAVIGAION_1);
 		model.addAttribute("navigaionList", navigaionList);
+		model.addAttribute("mmwcList", getMmsList(loginPerson));//月度任务
+
 
 		return MONTH_MASK_INDEX_INFO;
 	}
@@ -157,6 +169,7 @@ public class WxMonthMaskController extends WxBaseController {
 		model.addAttribute("navigaionList", navigaionList);
 
 		model.addAttribute("mmwsList", monthMaskWsService.findMmwsByEmpNo(new MonthMaskWs(),loginPerson.getNo()));
+		model.addAttribute("mmwcList", getMmsList(loginPerson));//月度任务
 		
 		/**
 		 * 任务发布列表
@@ -170,6 +183,17 @@ public class WxMonthMaskController extends WxBaseController {
 		 */
 
 		return MONTH_MASK_INDEX_INFO;
+	}
+	
+	//查询任务数据
+	private List<MonthMaskWc> getMmsList(WorkPerson loginPerson){
+		List<MonthMaskWc> mmwList = monthMaskWcService.findMaskMmwcs(loginPerson.getNo());//该员工的任务
+		//设置员工的已经添加的任务
+		monthMaskService.setMonthMask(mmwList);//设置任务数据
+		
+		
+		
+		return mmwList;
 	}
 	
 	
@@ -237,11 +261,211 @@ public class WxMonthMaskController extends WxBaseController {
 		
 		return MONTH_MASK_ALLOCATION_PAGE;
 	}
+	@RequestMapping(value = "addCarPage")
+	//页面跳转-添加车辆任务
+	public String addCarPage(MonthMask monthMask, HttpServletResponse response,Model model,HttpServletRequest request) {
+		String openId = null;
+		if (null != Global.TEST_WX_OPEN_ID) {
+			// 微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		} else {
+			// 是否已经注册并且激活
+			openId = (String) model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId, model);
+			if (null != regUrl) {
+				// 有错误信息
+				String errUrl = (String) model.asMap().get("errUrl");
+				if (null != errUrl) {
+					// 看是否有错误
+					return errUrl;
+				} else {
+					return regUrl;
+				}
+			}
+		}
+		/**
+		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
+		 */
+		String empNo = findEmpNo(openId);
+		if (null == empNo) {
+			model.addAttribute("message", ERR_EMP_NO_NULL);
+			return WX_ERROR;
+		}
+
+		if (null == workPersonService.findByEmpNo(empNo)) {
+			model.addAttribute("message", ERR_WP_NULL);
+			return WX_ERROR;
+		}
+		
+		String mmwcId = request.getParameter("monthMaskWcId");
+		if (null == mmwcId) {
+			model.addAttribute("message", ERR_WSM_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		MonthMaskWc mmwc = monthMaskWcService.get(mmwcId);
+		if(null == mmwc) {
+			return backJsonWithCode(errCode,ERR_WSM_NULL);
+		}
+		
+		MonthMaskWs mmws = mmwc.getMmws();
+		if(null == mmws) {
+			model.addAttribute("message", ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
+		model.addAttribute("mmwc", mmwc);
+		//车型
+		model.addAttribute("cmcList", BaseInfoUtils.getAllCmcList());
+		//车号
+		model.addAttribute("cwList", BaseInfoUtils.getCwList());
+
+		if(null!=monthMask&&null!=monthMask.getId()) {
+			monthMask = monthMaskService.get(monthMask.getId());
+		}
+		model.addAttribute("mm", monthMask);
+		
+		return MONTH_MASK_ADD_CAR_PAGE;
+	}
 	
+	@RequestMapping(value = "addNoCarPage")
+	//页面跳转-添加非车辆任务
+	public String addNoCarPage(MonthMask monthMask, HttpServletResponse response,Model model,HttpServletRequest request) {
+		String openId = null;
+		if (null != Global.TEST_WX_OPEN_ID) {
+			// 微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		} else {
+			// 是否已经注册并且激活
+			openId = (String) model.asMap().get("openId");
+			String regUrl = validateRegByOpenId(openId, model);
+			if (null != regUrl) {
+				// 有错误信息
+				String errUrl = (String) model.asMap().get("errUrl");
+				if (null != errUrl) {
+					// 看是否有错误
+					return errUrl;
+				} else {
+					return regUrl;
+				}
+			}
+		}
+		/**
+		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
+		 */
+		String empNo = findEmpNo(openId);
+		if (null == empNo) {
+			model.addAttribute("message", ERR_EMP_NO_NULL);
+			return WX_ERROR;
+		}
+
+		if (null == workPersonService.findByEmpNo(empNo)) {
+			model.addAttribute("message", ERR_WP_NULL);
+			return WX_ERROR;
+		}
+		
+		String mmwcId = request.getParameter("monthMaskWcId");
+		if (null == mmwcId) {
+			model.addAttribute("message", ERR_WSM_ID_NULL);
+			return WX_ERROR;
+		}
+		
+		MonthMaskWc mmwc = monthMaskWcService.get(mmwcId);
+		if(null == mmwc) {
+			model.addAttribute("message", ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
+		model.addAttribute("mmwc", mmwc);
+		if(null!=monthMask&&null!=monthMask.getId()) {
+			monthMask = monthMaskService.get(monthMask.getId());
+		}
+		model.addAttribute("mm", monthMask);
+		return MONTH_MASK_ADD_NO_CAR_PAGE;
+	}
+	
+	//页面跳转-添加任务
+	@RequestMapping(value = "addCar")
+	@ResponseBody
+	public String addCar(MonthMaskWc monthMaskWc, HttpServletResponse response,Model model,HttpServletRequest request) {
+		String openId = null;
+		if (null != Global.TEST_WX_OPEN_ID) {
+			// 微信测试
+			openId = Global.TEST_WX_OPEN_ID;
+		} else {
+			// 是否已经注册并且激活
+			openId = (String) model.asMap().get("openId");
+			String regUrl = validateRegByOpenIdForJson(openId, model);
+			if (null != regUrl) {
+				// 有错误信息
+				String errUrl = (String) model.asMap().get("errUrl");
+				if (null != errUrl) {
+					// 看是否有错误
+					return backJsonWithCode(errCode,errUrl);
+				} else {
+					return backJsonWithCode(errCode,regUrl);
+				}
+			}
+		}
+		/**
+		 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
+		 */
+		String empNo = findEmpNo(openId);
+		if (null == empNo) {
+			return backJsonWithCode(errCode,ERR_EMP_NO_NULL);
+		}
+
+		if (null == workPersonService.findByEmpNo(empNo)) {
+			return backJsonWithCode(errCode,ERR_WP_NULL);
+		}
+		
+		String mmwcId = request.getParameter("monthMaskWcId");
+		if (null == mmwcId) {
+			return backJsonWithCode(errCode,ERR_WSM_ID_NULL);
+		}
+		
+		MonthMaskWc mmwc = monthMaskWcService.get(mmwcId);
+		if(null == mmwc) {
+			return backJsonWithCode(errCode,ERR_WSM_NULL);
+		}
+		
+		MonthMaskWs mmws = mmwc.getMmws();
+		if(null == mmws) {
+			return backJsonWithCode(errCode,ERR_WSM_NULL);
+		}
+		
+		MonthMask mmwcConf = new MonthMask();
+		mmwcConf.setMonthMaskWcId(mmwcId);
+		//验证数量
+		if(!monthMaskService.validateNum(mmwcConf)) {
+			return backJsonWithCode(errCode,ERR_MONTH_MASK_NUM_LIMITED);
+		}
+		
+		//任务类型
+		String type = mmws.getType();
+		String value = DictUtils.getDictValue("车辆任务", "monthMaskType", "车辆任务");
+		if(value.equals(type)) {
+			//车辆任务
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("code", successCode);
+			map.put("type", "0");
+			map.put("mmwcId", mmwcId);
+			String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+			return jsonResult;
+		}else {
+			//非车辆任务
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("code", successCode);
+			map.put("type", "1");
+			map.put("mmwcId", mmwcId);
+			String jsonResult = JSONObject.toJSONString(map);//将map对象转换成json类型数据
+			return jsonResult;
+		}
+	}
 	
 	//页面跳转-获取分配页面
-	@RequestMapping(value = "allocation")
-	public String allocation(MonthMaskWc monthMaskWc, HttpServletResponse response,Model model,HttpServletRequest request) {
+	@RequestMapping(value = "allocationMmWp")
+	public String allocationMmWp(MonthMaskWc monthMaskWc, HttpServletResponse response,Model model,HttpServletRequest request) {
 		String openId = null;
 		if (null != Global.TEST_WX_OPEN_ID) {
 			// 微信测试
@@ -290,6 +514,87 @@ public class WxMonthMaskController extends WxBaseController {
 		monthMaskWcService.saveWxEntity(monthMaskWc,empNo);
 	
 		return indexInfo(request,response,model);
+	}
+	
+	
+	//保存
+	@RequestMapping(value = "saveCarMask",method=RequestMethod.POST)
+	public String saveCarMask(MonthMask monthMask,HttpServletResponse response,Model model,HttpServletRequest request) {
+		try {
+			String openId = null;
+			if (null != Global.TEST_WX_OPEN_ID) {
+				// 微信测试
+				openId = Global.TEST_WX_OPEN_ID;
+			} else {
+				// 是否已经注册并且激活
+				openId = (String) model.asMap().get("openId");
+				String regUrl = validateRegByOpenId(openId, model);
+				if (null != regUrl) {
+					// 有错误信息
+					String errUrl = (String) model.asMap().get("errUrl");
+					if (null != errUrl) {
+						// 看是否有错误
+						return errUrl;
+					} else {
+						return regUrl;
+					}
+				}
+			}
+			/**
+			 * 需要获取员工号 查询员工信息后，获得任务，因为没有连接微信，所以暂时不写
+			 */
+			String empNo = findEmpNo(openId);
+			if (null == empNo) {
+				model.addAttribute("message", ERR_EMP_NO_NULL);
+				return WX_ERROR;
+			}
+
+			if (null == workPersonService.findByEmpNo(empNo)) {
+				model.addAttribute("message", ERR_WP_NULL);
+				return WX_ERROR;
+			}
+			
+			User user = UserUtils.findByEmpNo(empNo);
+			if (null == user) {
+				model.addAttribute("message", ERR_WP_NULL);
+				return WX_ERROR;
+			}
+			
+			
+			String mmwcId = request.getParameter("monthMaskWcId");
+			if (null == mmwcId) {
+				model.addAttribute("message", ERR_WSM_ID_NULL);
+				return WX_ERROR;
+			}
+			
+			MonthMaskWc mmwc = monthMaskWcService.get(mmwcId);
+			if(null == mmwc) {
+				model.addAttribute("message", ERR_WSM_NULL);
+				return WX_ERROR;
+			}
+			
+			MonthMaskWs mmws = mmwc.getMmws();
+			if(null == mmws) {
+				model.addAttribute("message", ERR_WSM_NULL);
+				return WX_ERROR;
+			}
+			
+			MonthMask mmwcConf = new MonthMask();
+			mmwcConf.setMonthMaskWcId(mmwcId);
+			//验证数量
+			if(!monthMaskService.validateNum(mmwcConf)) {
+				model.addAttribute("message", ERR_MONTH_MASK_NUM_LIMITED);
+				return WX_ERROR;
+			}
+		
+			monthMaskService.saveWx(monthMask,user);
+			model.addAttribute("message", MSG_MM_SUCCESS);
+			return indexInfo(request,response,model);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("message", ERR_FRR_SAVE);
+		return WX_ERROR;
 	}
 
 }

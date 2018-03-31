@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao;
+import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 
@@ -38,6 +39,9 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 	@Autowired
 	private WorkPersonDao workPersonDao;
 	
+	@Autowired
+	private MonthMaskWsDao monthMaskWsDao;
+	
 	public MonthMaskWc get(String id) {
 		return super.get(id);
 	}
@@ -47,7 +51,23 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 	}
 	
 	public Page<MonthMaskWc> findPage(Page<MonthMaskWc> page, MonthMaskWc monthMaskWc) {
-		return super.findPage(page, monthMaskWc);
+		
+		if(UserUtils.getUser().isAdmin()) {
+			return super.findPage(page, monthMaskWc);
+		}
+		
+		//查询员工号
+		String empNo = UserUtils.getUser().getEmpNo();
+		if(null == empNo) {
+			return page;//空数据
+		}
+		
+		WorkPerson resultWp = new WorkPerson();
+		resultWp = workPersonDao.findByEmpNo(empNo);
+		monthMaskWc.setWp(resultWp);
+		monthMaskWc.setPage(page);
+		page.setList(dao.findListAll(monthMaskWc));
+		return page;
 	}
 	
 	@Transactional(readOnly = false)
@@ -106,6 +126,34 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 
 		queryMmw.setWorkKindId(wkId);//设置工种查询
 		return dao.findListAll(queryMmwc);
+	}
+	
+	//查询当前用户的任务 已发布车间任务的班组任务
+	public List<MonthMaskWc> findMaskMmwcs(String empNo){
+		//查询员工号
+		if(null == empNo) {
+			return null;//空数据
+		}
+		
+		MonthMaskWc queryMmwc = new MonthMaskWc();
+		
+		//查询人员
+		WorkPerson resultWp = new WorkPerson();
+		resultWp = workPersonDao.findByEmpNo(empNo);
+		
+		//设置查询条件
+		String value = DictUtils.getDictValue("是", "yes_no", "是");
+		MonthMaskWs queryMmw = new MonthMaskWs();
+		
+		queryMmw.setEndDate(new Date());//时间
+		queryMmw.setSubmitState(value);//依据发布的
+		queryMmwc.setMmws(queryMmw);
+		queryMmwc.setWp(resultWp);//设置班级
+		queryMmwc.setWorkPersonId(resultWp.getId());//这个人的任务
+		
+		//员工的任务列表
+		List<MonthMaskWc> ret = dao.findListAll(queryMmwc);
+		return ret;
 	}
 	
 	//获取列表数据

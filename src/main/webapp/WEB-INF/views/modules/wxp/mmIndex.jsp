@@ -278,48 +278,46 @@
 		<ul>
 			<li><!-- 任务执行 -->
 				<div class="funcDesc">当前待完成任务</div>
-				<div class="taksInfoCont">
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">任务一</div>
-							<div class="taskBtn showtaskBtn">展开</div>
+				
+					<c:if test = "${not empty mmwcList}">
+						<div class="taksInfoCont">
+							<c:forEach items="${mmwcList}" var="mmwc" varStatus="status">
+								<div class="workTaskCont">
+									<div class="taskType">
+										<div class="taskTypeTxt">${mmwc.mmws.maskDesc}</div>
+										<div class="taskBtn showtaskBtn">展开</div>
+										<div class="taskBtn addcarBtn" id="${mmwc.id}">添加</div>
+									</div>
+									<c:if test = "${empty mmwc.mmList}">
+										<div class="taskCont">
+											<div class="funcDesc">暂无任务</div>
+										</div>
+									</c:if>
+									<c:if test = "${not empty mmwc.mmList}">
+										<div class="taskCont">
+											<ul>
+												<c:forEach items="${mmwc.mmList}" var="mm" varStatus="status">
+													<c:if test = "${mmwc.mmws.type == '0'}">
+														<a href="addCarPage?monthMaskWcId=${mmwc.id}&&id=${mm.id}">
+															<li><p class="complete">${mm.checkResult}</p></li>
+														</a>
+													</c:if>
+													<c:if test = "${mmwc.mmws.type == '1'}">
+														<a href="addNoCarPage?monthMaskWcId=${mmwc.id}&&id=${mm.id}">
+															<li><p class="complete">${mm.checkResult}</p></li>
+														</a>
+													</c:if>
+												</c:forEach>
+											</ul>
+										</div>
+									</c:if>
+								</div>
+							</c:forEach>
 						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车1</p></li>
-								</a>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车2</p></li>
-								</a>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车3</p></li>
-								</a>
-							</ul>
-						</div>
-					</div>
-					<div class="workTaskCont">
-						<div class="taskType">
-							<div class="taskTypeTxt">任务一</div>
-							<div class="taskBtn showtaskBtn">展开</div>
-						</div>
-
-						<div class="taskCont">
-							<ul>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车1</p></li>
-								</a>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车2</p></li>
-								</a>
-								<a href="monthPlanTask.html">
-									<li><p class="uncomplete">车3</p></li>
-								</a>
-							</ul>
-						</div>
-					</div>
-				</div>
+					</c:if>
+					<c:if test = "${empty mmwcList}">
+						<div class="funcDesc">暂无任务</div>
+					</c:if>
 			</li>
 
 			<li> <!-- 任务发布 -->
@@ -391,6 +389,32 @@
 		$(".taskPubBtn").click(function(){
 			var  mmwsId =  $(this).attr("id");
 			window.location.href =pageContextVal+'/mmc/allocationPage?mmwsId='+mmwsId;
+		});
+		
+		$(".addcarBtn").click(function(){
+			 var  mmwcId =  $(this).attr("id");
+			 $.ajax({
+			     type:'GET',
+			     url:pageContextVal+'/mmc/addCar',
+			     data:{'monthMaskWcId':mmwcId},
+				 dataType: "json",
+			     success:function(data){
+						switch(data.code) {
+							case "0" :
+								var type = data.type;
+								if(type == "0"){
+									window.location.href =pageContextVal+'/mmc/addCarPage?monthMaskWcId='+data.mmwcId;
+								}else{
+									window.location.href =pageContextVal+'/mmc/addNoCarPage?monthMaskWcId='+data.mmwcId;
+								}
+								break;
+							case "1" : alert(data.message); break;
+						}
+			     },
+			     error:function(){
+			      	alert("未知错误");
+			     }
+			 });
 		});
 	});
 </script>

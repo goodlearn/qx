@@ -63,6 +63,9 @@
 			<if test="monthMaskWsId != null and monthMaskWsId != ''">
 				AND a.month_mask_ws_id = #{monthMaskWsId}
 			</if>
+			<if test="wp != null and wp.workClassId != null and wp.workClassId != ''">
+				AND wp.work_class_id = #{wp.workClassId}
+			</if>
 			<if test="workPersonId != null and workPersonId != ''">
 				AND a.work_person_id = #{workPersonId}
 			</if>

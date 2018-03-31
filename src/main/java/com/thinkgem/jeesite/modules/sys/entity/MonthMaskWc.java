@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.sys.entity;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.validation.constraints.NotNull;
 
@@ -21,8 +23,15 @@ public class MonthMaskWc extends DataEntity<MonthMaskWc> {
 	private String maskDesc;
 	private WorkPerson wp;
 	
-	
-	
+	private List<MonthMask> mmList;//已经分配的任务
+
+	public List<MonthMask> getMmList() {
+		return mmList;
+	}
+
+	public void setMmList(List<MonthMask> mmList) {
+		this.mmList = mmList;
+	}
 
 	public String getMaskDesc() {
 		return maskDesc;

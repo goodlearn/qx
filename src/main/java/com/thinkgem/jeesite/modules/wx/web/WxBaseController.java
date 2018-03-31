@@ -49,6 +49,8 @@ public abstract class WxBaseController {
 	//月度任务页面
 	protected final String MONTH_MASK_INDEX_INFO = "modules/wxp/mmIndex";//首页
 	protected final String MONTH_MASK_ALLOCATION_PAGE = "modules/wxp/allocationPage";//分配页面
+	protected final String MONTH_MASK_ADD_CAR_PAGE = "modules/wxp/monthMaskCar";//分配页面
+	protected final String MONTH_MASK_ADD_NO_CAR_PAGE = "modules/wxp/monthMaskNoCar";//分配页面
 	//故障记录
 	protected final String ADD_FR_PAGE = "modules/wxp/addFrPage";//添加故障页面
 	protected final String SUCCESS_FR_PAGE = "modules/wxp/frSuccess";//故障成功页面
@@ -58,6 +60,7 @@ public abstract class WxBaseController {
 	protected final String ERR_MEDIA_ID_NULL = "图片编号出现错误";
 	protected final String ERR_WSM_ID_NULL = "任务号为空";
 	protected final String ERR_WSM_NULL = "不存在该任务";
+	protected final String ERR_MONTH_MASK_NUM_LIMITED = "任务添加数量已达上限";
 	protected final String ERR_WS_MASK_WC_NOT_NULL = "任务已经发布过了";
 	protected final String ERR_MSP_ID_NULL = "人员未分配任务号";
 	protected final String ERR_MSP_SUBMIT = "任务已经提交，不得修改";
@@ -83,7 +86,7 @@ public abstract class WxBaseController {
 	//信息
 	protected final String MSG_ALLOCATION_SUCCESS = "任务分配成功";
 	protected final String MSG_FR_SUCCESS = "故障保存成功";
-
+	protected final String MSG_MM_SUCCESS = "任务保存成功";
 	
 	protected final String successCode = "0";//成功码
 	protected final String errCode = "1";//错误码
@@ -340,6 +343,31 @@ public abstract class WxBaseController {
 			//没有绑定数据 跳转到绑定页面
 			model.addAttribute("errUrl",REG_INFO);
 			return WX_ERROR;//没有绑定数据 返回非空数据
+		}
+		return null;//用户已注册，也已经绑定，返回空值
+	}
+	
+	protected String validateRegByOpenIdForJson(String openId,Model model) {
+		if(null == openId) {
+			return ERR_OPEN_ID_NOT_GET;//微信号为空
+		}
+		
+		SysWxInfo sysWxInfo = sysWxInfoService.findWxInfoByOpenId(openId);
+		//判断
+		if(null == sysWxInfo) {
+			return ERR_USER_NO_AUTH;//微信用户未授权
+		}
+		
+		String no = sysWxInfo.getNo();
+		if(StringUtils.isEmpty(no)) {
+			//没有绑定数据 跳转到绑定页面
+			return REG_INFO;//没有绑定数据 返回非空数据
+		}
+		
+		Date endDate = sysWxInfo.getTieEndDate();//结束绑定日期 如果结束 需要重新绑定
+		if(endDate.before(new Date())) {
+			//没有绑定数据 跳转到绑定页面
+			return REG_INFO;//没有绑定数据 返回非空数据
 		}
 		return null;//用户已注册，也已经绑定，返回空值
 	}

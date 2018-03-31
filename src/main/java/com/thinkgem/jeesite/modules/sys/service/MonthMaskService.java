@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMask;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
@@ -73,6 +76,25 @@ public class MonthMaskService extends CrudService<MonthMaskDao, MonthMask> {
 		super.save(monthMask);
 	}
 	
+	//查询已经添加任务的数据
+	public void setMonthMask(List<MonthMaskWc> mmwsList){
+		//如果班组任务为空 不返回数据
+		if(null == mmwsList || mmwsList.size() == 0) {
+			return;
+		}
+		
+		for(MonthMaskWc forMmws : mmwsList) {
+			String forMmwsId = forMmws.getId();
+			MonthMask queryMonthMask = new MonthMask();
+			queryMonthMask.setMonthMaskWcId(forMmwsId);
+			List<MonthMask> mmList = dao.findList(queryMonthMask);//找到班组任务已经添加的任务
+			if(null != mmList && mmList.size()>0) {
+				//设置数据
+				forMmws.setMmList(mmList);
+			}
+		}
+	}
+	
 	//查询数量
 	public boolean validateNum(MonthMask monthMask) {
 		String mmwcId = monthMask.getMonthMaskWcId();
@@ -116,6 +138,27 @@ public class MonthMaskService extends CrudService<MonthMaskDao, MonthMask> {
 	@Transactional(readOnly = false)
 	public void delete(MonthMask monthMask) {
 		super.delete(monthMask);
+	}
+	
+	@Transactional(readOnly = false)
+	public void saveWx(MonthMask monthMask,User user) {
+		monthMask.setCheckDate(new Date());
+		String mmwcId = monthMask.getMonthMaskWcId();
+		MonthMaskWc mmwc = monthMaskWcDao.get(mmwcId);
+		monthMask.setWorkPersonId(mmwc.getWorkPersonId());
+		if (monthMask.getIsNewRecord()){
+			monthMask.setId(IdGen.uuid());
+			monthMask.setUpdateBy(user);
+			monthMask.setCreateBy(user);
+			monthMask.setUpdateDate(new Date());
+			monthMask.setCreateDate(monthMask.getUpdateDate());
+			dao.insert(monthMask);
+		}else{
+			monthMask.setUpdateDate(new Date());
+			monthMask.setUpdateBy(user);
+			dao.update(monthMask);
+		}
+		super.save(monthMask);
 	}
 	
 }
