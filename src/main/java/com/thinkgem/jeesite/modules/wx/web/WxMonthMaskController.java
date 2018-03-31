@@ -228,7 +228,8 @@ public class WxMonthMaskController extends WxBaseController {
 			return WX_ERROR;
 		}
 
-		if (null == workPersonService.findByEmpNo(empNo)) {
+		WorkPerson wp = workPersonService.findByEmpNo(empNo);
+		if (null == wp) {
 			model.addAttribute("message", ERR_WP_NULL);
 			return WX_ERROR;
 		}
@@ -246,7 +247,8 @@ public class WxMonthMaskController extends WxBaseController {
 		}
 		
 		monthMaskWc.setMonthMaskWsId(mmwsId);
-		
+		//设置班级
+		monthMaskWc.setWp(wp);
 		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
 		
 		if(null != mmwcList && mmwcList.size() > 0) {

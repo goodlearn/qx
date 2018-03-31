@@ -335,7 +335,7 @@
 					</c:forEach>
 				</c:if>
 				<c:if test = "${empty mmwsList}">
-					无分配任务
+					<div class="funcDesc">无任务分配</div>
 				</c:if>
 			</li>
 		</ul>

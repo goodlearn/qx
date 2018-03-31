@@ -19,7 +19,8 @@
 		m.mask_desc AS "maskDesc",
 		m.submit_state AS "mmws.submitState",
 		wp.id AS "wp.id",
-		wp.name AS "wp.name"
+		wp.name AS "wp.name",
+		wp.work_class_id AS "wp.workClassId"
 	</sql>
 	
 	<sql id="monthMaskWcJoins">

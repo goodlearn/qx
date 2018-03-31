@@ -110,11 +110,11 @@ public class MonthMaskWcController extends BaseController {
 		monthMaskWc.setMonthMaskWsId(mmwsId);
 		
 		MonthMaskWs mmws = monthMaskWsService.get(mmwsId);
-		
-		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
 		if (null != mmws) {
 			model.addAttribute("monthMaskWs", mmws);//加入任务
 		}
+		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
+		
 		
 		if(null != mmwcList && mmwcList.size() > 0) {
 			model.addAttribute("monthMaskWc", mmwcList.get(0));//应该只有一条 如果有多条也只取一条

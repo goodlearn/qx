@@ -64,11 +64,11 @@
 							<select name="workPersonId">
 								<option value="0" selected>请选择人员...</option>
 								<c:forEach items="${wps}" var="wpvar">
-									<c:if test = "${monthMaskWc.workPersonId == wpvar.no}">
-										<option value="${wpvar.no}" selected>${wpvar.name}</option>
+									<c:if test = "${monthMaskWc.workPersonId == wpvar.id}">
+										<option value="${wpvar.id}" selected>${wpvar.name}</option>
 									</c:if>
-									<c:if test = "${monthMaskWc.workPersonId != wpvar.no}">
-										<option value="${wpvar.no}">${wpvar.name}</option>
+									<c:if test = "${monthMaskWc.workPersonId != wpvar.id}">
+										<option value="${wpvar.id}">${wpvar.name}</option>
 									</c:if>
 								</c:forEach>
 							</select>
