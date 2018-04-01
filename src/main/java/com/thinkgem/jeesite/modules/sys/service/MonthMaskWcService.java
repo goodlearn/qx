@@ -72,8 +72,7 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 		resultWp = workPersonDao.findByEmpNo(empNo);
 		String classId = resultWp.getWorkClassId();//查询班级
 		WorkClass resultWc = workClassDao.get(classId);//查询班级
-		String wkId = resultWc.getWorkKindId();//查询工种
-		queryMmwc.setWorkKindId(wkId);
+		queryMmwc.setWorkClassId(classId);
 		queryMmwc.setMonthMaskWsId(mmwsId);
 		return dao.findListAll(queryMmwc);
 	}
@@ -108,7 +107,7 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 		User user = UserUtils.findByEmpNo(empNo);
 		WorkPerson wp = workPersonDao.findByEmpNo(empNo);
 		WorkClass wc = workClassDao.get(wp.getWorkClassId());
-		monthMaskWc.setWorkKindId(wc.getWorkKindId());
+		monthMaskWc.setWorkClassId(wc.getId());
 		if (monthMaskWc.getIsNewRecord()){
 			monthMaskWc.setId(IdGen.uuid());
 			monthMaskWc.setUpdateBy(user);

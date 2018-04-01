@@ -22,6 +22,17 @@ public class MonthMaskWs extends DataEntity<MonthMaskWs> {
 	private String submitState;		// 提交状态
 	private WorkKind workKind;
 	
+	private MonthMaskWc monthMaskWc;
+	
+	
+	public MonthMaskWc getMonthMaskWc() {
+		return monthMaskWc;
+	}
+
+	public void setMonthMaskWc(MonthMaskWc monthMaskWc) {
+		this.monthMaskWc = monthMaskWc;
+	}
+
 	public WorkKind getWorkKind() {
 		return workKind;
 	}

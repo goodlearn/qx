@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.sys.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
@@ -11,5 +13,7 @@ import com.thinkgem.jeesite.modules.sys.entity.WorkShopMask;
  */
 @MyBatisDao
 public interface WorkShopMaskDao extends CrudDao<WorkShopMask> {
+	
+	public List<WorkShopMask> findWxList(WorkShopMask workShopMask);
 	
 }

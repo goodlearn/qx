@@ -164,7 +164,7 @@ public class MonthMaskWcController extends BaseController {
 		
 		WorkPerson wp = workPersonService.get(wpId);
 		WorkClass wc = workClassService.get(wp.getWorkClassId());
-		monthMaskWc.setWorkKindId(wc.getWorkKindId());
+		monthMaskWc.setWorkClassId(wc.getId());
 		monthMaskWcService.save(monthMaskWc);
 		addMessage(redirectAttributes, "保存班组任务月度表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWc/listws/?repage";

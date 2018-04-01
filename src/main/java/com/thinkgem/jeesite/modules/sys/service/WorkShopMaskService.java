@@ -44,6 +44,11 @@ public class WorkShopMaskService extends CrudService<WorkShopMaskDao, WorkShopMa
 		return super.get(id);
 	}
 	
+	
+	public List<WorkShopMask> findWxList(WorkShopMask workShopMask) {
+		return dao.findWxList(workShopMask);
+	}
+	
 	public List<WorkShopMask> findList(WorkShopMask workShopMask) {
 		return super.findList(workShopMask);
 	}

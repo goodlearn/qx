@@ -27,6 +27,16 @@ public class WorkShopMask extends DataEntity<WorkShopMask> {
 	private WorkClass wc;		// 班级号
 	private BusinessAssemble ba;		// 业务集
 	
+	private WsMaskWc wmw;//任务
+	
+	public WsMaskWc getWmw() {
+		return wmw;
+	}
+
+	public void setWmw(WsMaskWc wmw) {
+		this.wmw = wmw;
+	}
+
 	public WorkShopMask() {
 		super();
 	}

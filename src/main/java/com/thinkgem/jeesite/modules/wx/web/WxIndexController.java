@@ -328,7 +328,7 @@ public class WxIndexController extends WxBaseController{
 		//班级
 		queryWsm.setWorkClassId(loginPerson.getWorkClassId());
 		//查询车间任务
-		List<WorkShopMask> wsmList = workShopMaskService.findList(queryWsm);
+		List<WorkShopMask> wsmList = workShopMaskService.findWxList(queryWsm);
 		//结果
 		model.addAttribute("wsmList",wsmList);
 		

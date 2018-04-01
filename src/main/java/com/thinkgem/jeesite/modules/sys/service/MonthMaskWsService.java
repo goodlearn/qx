@@ -104,7 +104,7 @@ public class MonthMaskWsService extends CrudService<MonthMaskWsDao, MonthMaskWs>
 		
 		monthMaskWs.setEndDate(new Date());
 		monthMaskWs.setWorkKindId(wkId);//设置工种查询
-		return dao.findList(monthMaskWs);
+		return dao.findListWx(monthMaskWs);
 	}
 	
 

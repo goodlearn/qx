@@ -19,8 +19,32 @@
 		a.submit_state AS "submitState"
 	</sql>
 	
+	
+	<sql id="monthMaskWsColumnsWx">
+		a.id AS "id",
+		a.work_kind_id AS "workKindId",
+		a.end_date AS "endDate",
+		a.mask_desc AS "maskDesc",
+		a.type AS "type",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		k.id AS "workKind.id",
+		k.name AS "workKind.name",
+		a.submit_state AS "submitState",
+		mmwc.id AS "monthMaskWc.id"
+	</sql>
+	
 	<sql id="monthMaskWsJoins">
 		LEFT JOIN work_kind k ON k.id = a.work_kind_id
+	</sql>
+	
+	<sql id="monthMaskWsJoinsWx">
+		LEFT JOIN work_kind k ON k.id = a.work_kind_id
+		LEFT JOIN month_mask_wc mmwc ON mmwc.month_mask_ws_id = a.id
 	</sql>
     
 	<select id="get" resultType="MonthMaskWs">
@@ -29,6 +53,31 @@
 		FROM month_mask_ws a
 		<include refid="monthMaskWsJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListWx" resultType="MonthMaskWs">
+		SELECT 
+			<include refid="monthMaskWsColumnsWx"/>
+		FROM month_mask_ws a
+		<include refid="monthMaskWsJoinsWx"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND mmwc.id is null
+			<if test="workKindId != null and workKindId != ''">
+				AND a.work_kind_id in (#{workKindId},'all')
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date &gt;= #{endDate}
+			</if>
+			<if test="maskDesc != null and maskDesc != ''">
+				AND a.mask_desc = #{maskDesc}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="submitState != null and submitState != ''">
+				AND a.submit_state = #{submitState}
+			</if>
+		</where>
 	</select>
 	
 	<select id="findList" resultType="MonthMaskWs">

@@ -1,4 +1,5 @@
 ALTER TABLE month_mask_wc ADD COLUMN work_kind_id varchar(64) NOT NULL 
+ALTER TABLE month_mask_wc CHANGE work_kind_id work_class_id VARCHAR(64) NOT NULL;
 
 还有就是，员工在提交任务的时候，感觉选错啦。需要修改，把对勾取消。再次提交后。班长那还显示的没有改变
 ALTER TABLE fault_record ADD COLUMN user_tool VARCHAR(100) DEFAULT NULL 

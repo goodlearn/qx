@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.sys.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
@@ -14,5 +16,7 @@ import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
  */
 @MyBatisDao
 public interface MonthMaskWsDao extends CrudDao<MonthMaskWs> {
+	
+	public List<MonthMaskWs> findListWx(MonthMaskWs monthMaskWs);
 	
 }
