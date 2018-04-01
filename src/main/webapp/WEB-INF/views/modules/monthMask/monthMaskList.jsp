@@ -19,8 +19,8 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/sys/monthMask/">月度任务表列表</a></li>
-		<shiro:hasPermission name="sys:monthMask:edit"><li><a href="${ctx}/sys/monthMask/form">月度任务表添加</a></li></shiro:hasPermission>
-	</ul>
+		<%-- <shiro:hasPermission name="sys:monthMask:edit"><li><a href="${ctx}/sys/monthMask/form">月度任务表添加</a></li></shiro:hasPermission>--%>
+ 	</ul>
 	<form:form id="searchForm" modelAttribute="monthMask" action="${ctx}/sys/monthMask/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>

@@ -50,6 +50,34 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 		return super.findList(monthMaskWc);
 	}
 	
+	public List<MonthMaskWc> findListAllByMmc(MonthMaskWc monthMaskWc,String mmwsId) {
+		
+		String value = DictUtils.getDictValue("是", "yes_no", "是");
+		MonthMaskWs queryMmw = new MonthMaskWs();
+		queryMmw.setEndDate(new Date());
+		queryMmw.setSubmitState(value);//依据发布的
+		
+		MonthMaskWc queryMmwc = new MonthMaskWc();
+		queryMmwc.setMmws(queryMmw);
+		
+		if(UserUtils.getUser().isAdmin()) {
+			return dao.findList(queryMmwc);
+		}
+		//查询员工号
+		String empNo = UserUtils.getUser().getEmpNo();
+		if(null == empNo) {
+			return null;//空数据
+		}
+		WorkPerson resultWp = new WorkPerson();
+		resultWp = workPersonDao.findByEmpNo(empNo);
+		String classId = resultWp.getWorkClassId();//查询班级
+		WorkClass resultWc = workClassDao.get(classId);//查询班级
+		String wkId = resultWc.getWorkKindId();//查询工种
+		queryMmwc.setWorkKindId(wkId);
+		queryMmwc.setMonthMaskWsId(mmwsId);
+		return dao.findListAll(queryMmwc);
+	}
+	
 	public Page<MonthMaskWc> findPage(Page<MonthMaskWc> page, MonthMaskWc monthMaskWc) {
 		
 		if(UserUtils.getUser().isAdmin()) {
@@ -78,6 +106,9 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 	@Transactional(readOnly = false)
 	public void saveWxEntity(MonthMaskWc monthMaskWc,String empNo) {
 		User user = UserUtils.findByEmpNo(empNo);
+		WorkPerson wp = workPersonDao.findByEmpNo(empNo);
+		WorkClass wc = workClassDao.get(wp.getWorkClassId());
+		monthMaskWc.setWorkKindId(wc.getWorkKindId());
 		if (monthMaskWc.getIsNewRecord()){
 			monthMaskWc.setId(IdGen.uuid());
 			monthMaskWc.setUpdateBy(user);
@@ -154,29 +185,6 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 		//员工的任务列表
 		List<MonthMaskWc> ret = dao.findListAll(queryMmwc);
 		return ret;
-	}
-	
-	//获取列表数据
-	//依据车间任务 查询班组任务
-	public Page<MonthMaskWc> findPageAll(Page<MonthMaskWc> page, MonthMaskWc monthMaskWc,List<MonthMaskWs> listMmws) {
-		List<MonthMaskWc> result = new ArrayList<MonthMaskWc>();
-		if(null != listMmws && listMmws.size()>0) {
-			MonthMaskWc queryMmw = new MonthMaskWc();
-			for(MonthMaskWs forEntity : listMmws) {
-				String mmwsId = forEntity.getId();
-				queryMmw.setMonthMaskWsId(mmwsId);
-				MonthMaskWc mmwcResult = dao.getByMmwsId(queryMmw);
-				if(null!=mmwcResult) {
-					mmwcResult.setMmws(forEntity);
-					result.add(mmwcResult);//获得数据
-				}
-			}
-			monthMaskWc.setPage(page);
-			if(result.size()>0) {
-				page.setList(result);
-			}
-		}
-		return page;
 	}
 	
 }

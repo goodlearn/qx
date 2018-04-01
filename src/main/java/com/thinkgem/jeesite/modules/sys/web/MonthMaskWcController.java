@@ -20,9 +20,12 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
+import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
+import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.service.MonthMaskWcService;
 import com.thinkgem.jeesite.modules.sys.service.MonthMaskWsService;
+import com.thinkgem.jeesite.modules.sys.service.WorkClassService;
 import com.thinkgem.jeesite.modules.sys.service.WorkPersonService;
 
 /**
@@ -39,7 +42,8 @@ public class MonthMaskWcController extends BaseController {
 	
 	@Autowired
 	private WorkPersonService workPersonService;
-	
+	@Autowired
+	private WorkClassService workClassService;
 	@Autowired
 	private MonthMaskWsService monthMaskWsService;
 	
@@ -113,14 +117,13 @@ public class MonthMaskWcController extends BaseController {
 		if (null != mmws) {
 			model.addAttribute("monthMaskWs", mmws);//加入任务
 		}
-		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
+		List<MonthMaskWc> mmwcList = monthMaskWcService.findListAllByMmc(monthMaskWc,mmwsId);//查询
 		
 		
 		if(null != mmwcList && mmwcList.size() > 0) {
 			model.addAttribute("monthMaskWc", mmwcList.get(0));//应该只有一条 如果有多条也只取一条
 			if(null!=mmws) {
 				monthMaskWc.setMmws(mmws);
-				model.addAttribute("monthMaskWs", mmws);
 			}
 		}
 		
@@ -152,6 +155,16 @@ public class MonthMaskWcController extends BaseController {
 			return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWc/listws/?repage";
 		}
 		
+		String wpId = monthMaskWc.getWorkPersonId();
+		
+		if(null == wpId) {
+			addMessage(redirectAttributes, "未分配人员");
+			return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWc/listws/?repage";
+		}
+		
+		WorkPerson wp = workPersonService.get(wpId);
+		WorkClass wc = workClassService.get(wp.getWorkClassId());
+		monthMaskWc.setWorkKindId(wc.getWorkKindId());
 		monthMaskWcService.save(monthMaskWc);
 		addMessage(redirectAttributes, "保存班组任务月度表成功");
 		return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWc/listws/?repage";

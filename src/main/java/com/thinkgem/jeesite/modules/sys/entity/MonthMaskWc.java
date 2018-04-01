@@ -19,11 +19,21 @@ public class MonthMaskWc extends DataEntity<MonthMaskWc> {
 	private static final long serialVersionUID = 1L;
 	private String monthMaskWsId;		// 车间任务
 	private String workPersonId;		// 责任人
+	private String workKindId;		// 责任人
 	private MonthMaskWs mmws;
 	private String maskDesc;
 	private WorkPerson wp;
 	
 	private List<MonthMask> mmList;//已经分配的任务
+
+	
+	public String getWorkKindId() {
+		return workKindId;
+	}
+
+	public void setWorkKindId(String workKindId) {
+		this.workKindId = workKindId;
+	}
 
 	public List<MonthMask> getMmList() {
 		return mmList;
