@@ -52,9 +52,6 @@ public class WsMaskWcController extends BaseController {
 	private MaskContentService maskContentService;
 	
 	@Autowired
-	private MaskMainPersonService maskMainPersonService;
-	
-	@Autowired
 	private MaskSinglePersonService maskSinglePersonService;
 	
 	@ModelAttribute

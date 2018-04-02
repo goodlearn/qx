@@ -1,3 +1,4 @@
+create database sina default character set utf8mb4 collate utf8mb4_unicode_ci
 ALTER TABLE month_mask_wc ADD COLUMN work_kind_id varchar(64) NOT NULL 
 ALTER TABLE month_mask_wc CHANGE work_kind_id work_class_id VARCHAR(64) NOT NULL;
 
