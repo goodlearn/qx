@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.service;
 
 import java.util.Date;
@@ -15,14 +12,12 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMask;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
-import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskDao;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao;
-import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkKindDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
@@ -38,9 +33,6 @@ public class MonthMaskService extends CrudService<MonthMaskDao, MonthMask> {
 	
 	@Autowired
 	private MonthMaskWcDao monthMaskWcDao;
-	
-	@Autowired
-	private MonthMaskWsDao monthMaskWsDao;
 	
 	@Autowired
 	private WorkKindDao workKindDao;

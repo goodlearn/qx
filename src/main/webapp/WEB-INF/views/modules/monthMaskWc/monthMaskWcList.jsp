@@ -20,6 +20,10 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/sys/monthMaskWc/">班组任务月度表列表</a></li>
 	</ul>
+	<form:form id="searchForm" modelAttribute="monthMaskWc" action="${ctx}/sys/monthMaskWc/" method="post" class="breadcrumb form-search">
+		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
+		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
+	</form:form>
 	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>

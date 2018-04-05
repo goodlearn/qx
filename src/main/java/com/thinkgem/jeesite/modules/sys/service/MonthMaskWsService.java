@@ -1,9 +1,5 @@
-/**
- * Copyright &copy; 2012-2016 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,13 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
-import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
 import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkPerson;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
@@ -41,8 +35,6 @@ public class MonthMaskWsService extends CrudService<MonthMaskWsDao, MonthMaskWs>
 	@Autowired
 	private WorkPersonDao workPersonDao;
 	
-	@Autowired
-	private MonthMaskWcDao monthMaskWcDao;
 	
 	public MonthMaskWs get(String id) {
 		return super.get(id);
