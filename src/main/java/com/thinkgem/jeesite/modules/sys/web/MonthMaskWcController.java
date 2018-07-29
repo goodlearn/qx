@@ -70,25 +70,9 @@ public class MonthMaskWcController extends BaseController {
 	@RequiresPermissions("sys:monthMaskWc:view")
 	@RequestMapping(value = {"listws"})
 	public String listws(MonthMaskWc monthMaskWc, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<MonthMaskWs> page = monthMaskWsService.findPageByEmpNo(new Page<MonthMaskWs>(request, response), new MonthMaskWs()); 
+		Page<MonthMaskWc> page = monthMaskWcService.findClassPage(new Page<MonthMaskWc>(request, response), monthMaskWc); 
 		model.addAttribute("page", page);
-		
-		//将所有工种显示
-		List<MonthMaskWs> list = page.getList();
-		if(null!=list && list.size()>0) {
-			for(MonthMaskWs forEntity : list) {
-				String wkId = forEntity.getWorkKindId();
-				if(Global.ALL_WK.equals(wkId)) {
-					//所有工种
-					WorkKind allWk = new WorkKind();
-					allWk.setName(Global.ALL_WK_NAME);
-					allWk.setId(Global.ALL_WK);
-					forEntity.setWorkKind(allWk);
-				}
-			}
-		}
-		
-		return "modules/monthMaskWs/monthMaskWsListWs";
+		return "modules/monthMaskWc/monthMaskWcListWs";
 	}
 
 
@@ -110,23 +94,14 @@ public class MonthMaskWcController extends BaseController {
 	@RequiresPermissions("sys:monthMaskWc:view")
 	@RequestMapping(value = "allocation")
 	public String allocation(MonthMaskWc monthMaskWc, Model model,HttpServletRequest request) {
-		String mmwsId = request.getParameter("mmwsId");
-		monthMaskWc.setMonthMaskWsId(mmwsId);
 		
-		MonthMaskWs mmws = monthMaskWsService.get(mmwsId);
+		MonthMaskWs mmws = monthMaskWsService.get(monthMaskWc.getMonthMaskWsId());
 		if (null != mmws) {
 			model.addAttribute("monthMaskWs", mmws);//加入任务
 		}
-		List<MonthMaskWc> mmwcList = monthMaskWcService.findListAllByMmc(monthMaskWc,mmwsId);//查询
 		
 		
-		if(null != mmwcList && mmwcList.size() > 0) {
-			model.addAttribute("monthMaskWc", mmwcList.get(0));//应该只有一条 如果有多条也只取一条
-			if(null!=mmws) {
-				monthMaskWc.setMmws(mmws);
-			}
-		}
-		
+		model.addAttribute("monthMaskWc", monthMaskWc);
 		model.addAttribute("wps", workPersonService.findWpsByUser());
 		
 		return "modules/monthMaskWc/monthMaskWcAllocation";

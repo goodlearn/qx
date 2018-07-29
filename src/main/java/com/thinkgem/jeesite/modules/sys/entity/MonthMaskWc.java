@@ -21,10 +21,20 @@ public class MonthMaskWc extends DataEntity<MonthMaskWc> {
 	private String workPersonId;		// 责任人
 	private String workClassId;		// 责任班级
 	private MonthMaskWs mmws;
+	private WorkClass wc;
 	private String maskDesc;
 	private WorkPerson wp;
 	
 	private List<MonthMask> mmList;//已经分配的任务
+
+	
+	public WorkClass getWc() {
+		return wc;
+	}
+
+	public void setWc(WorkClass wc) {
+		this.wc = wc;
+	}
 
 	public List<MonthMask> getMmList() {
 		return mmList;

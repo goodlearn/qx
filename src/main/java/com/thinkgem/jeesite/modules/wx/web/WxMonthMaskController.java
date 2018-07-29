@@ -168,7 +168,7 @@ public class WxMonthMaskController extends WxBaseController {
 		navigaionList.add(NAVIGAION_2);
 		model.addAttribute("navigaionList", navigaionList);
 
-		model.addAttribute("mmwsList", monthMaskWsService.findMmwsByEmpNo(new MonthMaskWs(),loginPerson.getNo()));
+		model.addAttribute("mmwcListNoA", monthMaskWcService.findClassMcs(loginPerson.getNo()));//分配到情况
 		model.addAttribute("mmwcList", getMmsList(loginPerson));//月度任务
 		
 		/**
@@ -234,29 +234,25 @@ public class WxMonthMaskController extends WxBaseController {
 			return WX_ERROR;
 		}
 		
-		String mmwsId = request.getParameter("mmwsId");
-		if (null == mmwsId) {
+		String mmwcId = request.getParameter("mmwcId");
+		if (null == mmwcId) {
 			model.addAttribute("message", ERR_WSM_ID_NULL);
 			return WX_ERROR;
 		}
 		
-		MonthMaskWs mmws = monthMaskWsService.get(mmwsId);
-		if (null == mmws) {
+		MonthMaskWc mmwc = monthMaskWcService.get(mmwcId);
+		if (null == mmwc) {
 			model.addAttribute("message", ERR_WSM_ID_NULL);
 			return WX_ERROR;
 		}
 		
-		monthMaskWc.setMonthMaskWsId(mmwsId);
 		//设置班级
-		monthMaskWc.setWp(wp);
-		List<MonthMaskWc> mmwcList = monthMaskWcService.findList(monthMaskWc);//查询
+		mmwc.setWp(wp);
 		
-		if(null != mmwcList && mmwcList.size() > 0) {
-			model.addAttribute("monthMaskWc", mmwcList.get(0));//应该只有一条 如果有多条也只取一条
-		}
+		model.addAttribute("monthMaskWc", mmwc);
 		
-		if (null != mmws) {
-			model.addAttribute("monthMaskWs", mmws);//加入任务
+		if (null != mmwc.getMmws()) {
+			model.addAttribute("monthMaskWs", mmwc.getMmws());//加入任务
 		}
 		model.addAttribute("wps", workPersonService.findWpsByUser(empNo));
 		
@@ -556,12 +552,6 @@ public class WxMonthMaskController extends WxBaseController {
 				return WX_ERROR;
 			}
 			
-			User user = UserUtils.findByEmpNo(empNo);
-			if (null == user) {
-				model.addAttribute("message", ERR_WP_NULL);
-				return WX_ERROR;
-			}
-			
 			
 			String mmwcId = request.getParameter("monthMaskWcId");
 			if (null == mmwcId) {
@@ -589,6 +579,7 @@ public class WxMonthMaskController extends WxBaseController {
 				return WX_ERROR;
 			}
 		
+			User user = UserUtils.get(Global.DEFAULT_ID_SYS_MANAGER);
 			monthMaskService.saveWx(monthMask,user);
 			model.addAttribute("message", MSG_MM_SUCCESS);
 			return indexInfo(request,response,model);

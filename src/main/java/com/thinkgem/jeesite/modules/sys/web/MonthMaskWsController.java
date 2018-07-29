@@ -19,9 +19,14 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWs;
+import com.thinkgem.jeesite.modules.sys.entity.WorkClass;
 import com.thinkgem.jeesite.modules.sys.entity.WorkKind;
+import com.thinkgem.jeesite.modules.sys.service.MonthMaskWcService;
 import com.thinkgem.jeesite.modules.sys.service.MonthMaskWsService;
+import com.thinkgem.jeesite.modules.sys.service.WorkClassService;
+import com.thinkgem.jeesite.modules.sys.service.WorkKindService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
@@ -35,6 +40,12 @@ public class MonthMaskWsController extends BaseController {
 
 	@Autowired
 	private MonthMaskWsService monthMaskWsService;
+	@Autowired
+	private WorkKindService workKindService;
+	@Autowired
+	private WorkClassService workClassService;
+	@Autowired
+	private MonthMaskWcService monthMaskWcService;
 	
 	@ModelAttribute
 	public MonthMaskWs get(@RequestParam(required=false) String id) {
@@ -114,12 +125,61 @@ public class MonthMaskWsController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWs/?repage";
 	}
 	
+	/**
+	 * 发布车间任务
+	 * @param monthMaskWs
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
 	@RequiresPermissions("sys:monthMaskWs:edit")
 	@RequestMapping(value = "release")
 	public String release(MonthMaskWs monthMaskWs, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, monthMaskWs)){
 			return form(monthMaskWs, model);
 		}
+		
+		/**
+		 * 如果是发布的车间任务是所有工种，那么生成所有班组任务，只不过没有对应的责任人，责任人是在后面分配的
+		 */
+		String wkId = monthMaskWs.getWorkKindId();
+		if(Global.ALL_WK.equals(wkId)) {
+			List<WorkKind> workKinds = workKindService.findList(new WorkKind());//查询所有工种
+			if(null!=workKinds && workKinds.size() > 0) {
+				for(WorkKind forEntity : workKinds) {
+					//查询该工种下的所有班级
+					WorkClass workClass  = new WorkClass();
+					workClass.setWorkKindId(forEntity.getId());
+					List<WorkClass> workClasses = workClassService.findList(workClass);//查询所有班级
+					//保存所有月度班组任务
+					if(null!=workClasses && workClasses.size() > 0) {
+						for(WorkClass forEntityWc : workClasses) {
+							MonthMaskWc monthMaskWc = new MonthMaskWc();
+							monthMaskWc.setMonthMaskWsId(monthMaskWs.getId());
+							monthMaskWc.setWorkClassId(forEntityWc.getId());
+							monthMaskWcService.save(monthMaskWc);//保存任务
+						}
+					}
+					
+				}
+			}
+		}else {
+			//查询该工种下的所有班级
+			WorkClass workClass  = new WorkClass();
+			workClass.setId(wkId);
+			List<WorkClass> workClasses = workClassService.findList(workClass);//查询所有班级
+			//保存所有月度班组任务
+			if(null!=workClasses && workClasses.size() > 0) {
+				for(WorkClass forEntityWc : workClasses) {
+					MonthMaskWc monthMaskWc = new MonthMaskWc();
+					monthMaskWc.setMonthMaskWsId(monthMaskWs.getId());
+					monthMaskWc.setWorkClassId(forEntityWc.getId());
+					monthMaskWcService.save(monthMaskWc);//保存任务
+				}
+			}
+		}
+		
+		
 		monthMaskWs.setEndDate(Date2Utils.getEndDayOfMonth());//本月结束
 		String value = DictUtils.getDictValue("是", "yes_no", "是");
 		monthMaskWs.setSubmitState(value);//设置发布状态

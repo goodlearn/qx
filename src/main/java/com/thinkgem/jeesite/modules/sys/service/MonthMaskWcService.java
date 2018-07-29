@@ -97,6 +97,55 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 		return page;
 	}
 	
+	/**
+	 * 只查看班组的任务 不查看个人的
+	 */
+	public Page<MonthMaskWc> findClassPage(Page<MonthMaskWc> page, MonthMaskWc monthMaskWc) {
+		
+		if(UserUtils.getUser().isAdmin()) {
+			return super.findPage(page, monthMaskWc);
+		}
+		
+		//查询员工号
+		String empNo = UserUtils.getUser().getEmpNo();
+		if(null == empNo) {
+			return page;//空数据
+		}
+		
+		WorkPerson wpByEp = workPersonDao.findByEmpNo(empNo);
+		monthMaskWc.setWorkClassId(wpByEp.getWorkClassId());
+		WorkClass wc = new WorkClass();
+		wc.setWorkKindId(wpByEp.getWk().getId());
+		monthMaskWc.setWc(wc);
+		monthMaskWc.setPage(page);
+		page.setList(dao.findListAll(monthMaskWc));
+		return page;
+	}
+	
+	/**
+	 * 只查看班组的任务 不查看个人的(微信不分页)
+	 */
+	public List<MonthMaskWc> findClassMcs(String empNo) {
+		
+		//查询员工号
+		if(null == empNo) {
+			return null;//空数据
+		}
+		
+		if(null == UserUtils.findByEmpNo(empNo)) {
+			return null;//空数据
+		}
+		
+		
+		MonthMaskWc monthMaskWc = new MonthMaskWc();
+		WorkPerson wpByEp = workPersonDao.findByEmpNo(empNo);
+		monthMaskWc.setWorkClassId(wpByEp.getWorkClassId());
+		WorkClass wc = new WorkClass();
+		wc.setWorkKindId(wpByEp.getWk().getId());
+		monthMaskWc.setWc(wc);
+		return dao.findListAll(monthMaskWc);
+	}
+	
 	@Transactional(readOnly = false)
 	public void save(MonthMaskWc monthMaskWc) {
 		super.save(monthMaskWc);

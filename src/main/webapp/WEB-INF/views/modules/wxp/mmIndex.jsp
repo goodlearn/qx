@@ -322,19 +322,19 @@
 
 			<li> <!-- 任务发布 -->
 				<div class="funcDesc">月度计划任务列表</div>
-				<c:if test = "${not empty mmwsList}">
-					<c:forEach items="${mmwsList}" var="mmws" varStatus="status">
+				<c:if test = "${not empty mmwcListNoA}">
+					<c:forEach items="${mmwcListNoA}" var="mmwc" varStatus="status">
 							<div class="taksInfoCont">
 								<div class="workTaskCont">
 									<div class="taskType">
-										<div class="taskTypeTxt">${mmws.maskDesc}</div>
-										<div id="${mmws.id}" class="taskBtn taskPubBtn">分配</div>
+										<div class="taskTypeTxt">${mmwc.maskDesc}</div>
+										<div id="${mmwc.id}" class="taskBtn taskPubBtn">分配</div>
 									</div>
 								</div>
 							</div>
 					</c:forEach>
 				</c:if>
-				<c:if test = "${empty mmwsList}">
+				<c:if test = "${empty mmwcListNoA}">
 					<div class="funcDesc">无任务分配</div>
 				</c:if>
 			</li>
@@ -387,8 +387,8 @@
 
 		// task pub
 		$(".taskPubBtn").click(function(){
-			var  mmwsId =  $(this).attr("id");
-			window.location.href =pageContextVal+'/mmc/allocationPage?mmwsId='+mmwsId;
+			var  mmwcId =  $(this).attr("id");
+			window.location.href =pageContextVal+'/mmc/allocationPage?mmwcId='+mmwcId;
 		});
 		
 		$(".addcarBtn").click(function(){
