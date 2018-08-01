@@ -254,7 +254,7 @@ public class WxMonthMaskController extends WxBaseController {
 		if (null != mmwc.getMmws()) {
 			model.addAttribute("monthMaskWs", mmwc.getMmws());//加入任务
 		}
-		model.addAttribute("wps", workPersonService.findWpsByUser(empNo));
+		model.addAttribute("wps", workPersonService.findWpsByUser(empNo,true));
 		
 		
 		return MONTH_MASK_ALLOCATION_PAGE;
@@ -503,13 +503,21 @@ public class WxMonthMaskController extends WxBaseController {
 			return WX_ERROR;
 		}
 		
+		String mmwcId = request.getParameter("id");
+		if (null == mmwcId) {
+			model.addAttribute("message", ERR_WSM_NULL);
+			return WX_ERROR;
+		}
+		
 		String workPersonId = request.getParameter("workPersonId");
 		if (null == workPersonId) {
 			model.addAttribute("message", ERR_EMP_NO_NULL);
 			return WX_ERROR;
 		}
 		
-		monthMaskWcService.saveWxEntity(monthMaskWc,empNo);
+		monthMaskWc = monthMaskWcService.get(mmwcId);
+		monthMaskWc.setWorkPersonId(workPersonId);
+		monthMaskWcService.saveWxEntity(monthMaskWc);
 	
 		return indexInfo(request,response,model);
 	}

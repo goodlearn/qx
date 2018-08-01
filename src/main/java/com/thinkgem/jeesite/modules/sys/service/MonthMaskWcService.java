@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -21,6 +22,7 @@ import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWcDao;
 import com.thinkgem.jeesite.modules.sys.dao.MonthMaskWsDao;
+import com.thinkgem.jeesite.modules.sys.dao.UserDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkClassDao;
 import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 
@@ -33,6 +35,9 @@ import com.thinkgem.jeesite.modules.sys.dao.WorkPersonDao;
 @Transactional(readOnly = true)
 public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc> {
 
+	@Autowired
+	private UserDao userDao;
+	
 	@Autowired
 	private WorkClassDao workClassDao;
 	
@@ -106,6 +111,11 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 			return super.findPage(page, monthMaskWc);
 		}
 		
+		String userId = UserUtils.getUser().getId();
+		if(userId != null && "2".equals(userId)) {
+			return super.findPage(page, monthMaskWc);
+		}
+		
 		//查询员工号
 		String empNo = UserUtils.getUser().getEmpNo();
 		if(null == empNo) {
@@ -132,10 +142,6 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 			return null;//空数据
 		}
 		
-		if(null == UserUtils.findByEmpNo(empNo)) {
-			return null;//空数据
-		}
-		
 		
 		MonthMaskWc monthMaskWc = new MonthMaskWc();
 		WorkPerson wpByEp = workPersonDao.findByEmpNo(empNo);
@@ -152,11 +158,8 @@ public class MonthMaskWcService extends CrudService<MonthMaskWcDao, MonthMaskWc>
 	}
 	
 	@Transactional(readOnly = false)
-	public void saveWxEntity(MonthMaskWc monthMaskWc,String empNo) {
-		User user = UserUtils.findByEmpNo(empNo);
-		WorkPerson wp = workPersonDao.findByEmpNo(empNo);
-		WorkClass wc = workClassDao.get(wp.getWorkClassId());
-		monthMaskWc.setWorkClassId(wc.getId());
+	public void saveWxEntity(MonthMaskWc monthMaskWc) {
+		User user =userDao.get(Global.DEFAULT_ID_SYS_MANAGER);
 		if (monthMaskWc.getIsNewRecord()){
 			monthMaskWc.setId(IdGen.uuid());
 			monthMaskWc.setUpdateBy(user);

@@ -165,7 +165,7 @@ public class WxFaultRecordController extends WxBaseController {
 				return WX_ERROR;
 			}
 			
-			User user = UserUtils.findByEmpNo(empNo);
+			User user = UserUtils.get(Global.DEFAULT_ID_SYS_MANAGER);
 			if (null == user) {
 				model.addAttribute("message", ERR_WP_NULL);
 				return WX_ERROR;

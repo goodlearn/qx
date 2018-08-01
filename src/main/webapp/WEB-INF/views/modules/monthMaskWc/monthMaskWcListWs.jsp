@@ -30,7 +30,6 @@
 			<tr>
 				<th>任务类型</th>
 				<th>任务说明</th>
-				<th>所属工种</th>
 				<th>所属班组</th>
 				<th>责任人</th>
 				<th>任务结束时间</th>
@@ -46,9 +45,6 @@
 				</td>
 				<td>
 					${monthMaskWc.mmws.maskDesc}
-				</td>
-				<td>
-					${monthMaskWc.wc.workKind.name}
 				</td>
 				<td>
 					${monthMaskWc.wc.name}

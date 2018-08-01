@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.common.utils.CasUtils;
 import com.thinkgem.jeesite.common.utils.Date2Utils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.sys.entity.MonthMaskWc;
@@ -131,14 +133,24 @@ public class MonthMaskWsController extends BaseController {
 	 * @param model
 	 * @param redirectAttributes
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequiresPermissions("sys:monthMaskWs:edit")
 	@RequestMapping(value = "release")
-	public String release(MonthMaskWs monthMaskWs, Model model, RedirectAttributes redirectAttributes) {
+	public String release(MonthMaskWs monthMaskWs, Model model, RedirectAttributes redirectAttributes) throws Exception {
 		if (!beanValidator(model, monthMaskWs)){
 			return form(monthMaskWs, model);
 		}
-		
+		//检验是否本月已经发布过了
+		Date endDate = monthMaskWs.getEndDate();
+		String state = monthMaskWs.getSubmitState();
+		Date monthEndTime = CasUtils.getCurrentMonthEndTime();//本月结束日期
+		int result = CasUtils.compareTime(monthEndTime,endDate);//没超过了月底时间
+		//是否已经发布过 且超过了月底时间
+		if(state.equals(Global.YES) && result<0) {
+			addMessage(redirectAttributes, "本月已经发布过该计划了");
+			return "redirect:"+Global.getAdminPath()+"/sys/monthMaskWs/?repage";
+		}
 		/**
 		 * 如果是发布的车间任务是所有工种，那么生成所有班组任务，只不过没有对应的责任人，责任人是在后面分配的
 		 */
@@ -166,7 +178,7 @@ public class MonthMaskWsController extends BaseController {
 		}else {
 			//查询该工种下的所有班级
 			WorkClass workClass  = new WorkClass();
-			workClass.setId(wkId);
+			workClass.setWorkKindId(wkId);
 			List<WorkClass> workClasses = workClassService.findList(workClass);//查询所有班级
 			//保存所有月度班组任务
 			if(null!=workClasses && workClasses.size() > 0) {
@@ -179,9 +191,8 @@ public class MonthMaskWsController extends BaseController {
 			}
 		}
 		
-		
-		monthMaskWs.setEndDate(Date2Utils.getEndDayOfMonth());//本月结束
 		String value = DictUtils.getDictValue("是", "yes_no", "是");
+		monthMaskWs.setEndDate(Date2Utils.getEndDayOfMonth());//本月结束
 		monthMaskWs.setSubmitState(value);//设置发布状态
 		monthMaskWsService.save(monthMaskWs);
 		addMessage(redirectAttributes, "保存月度计划车间任务成功");
@@ -192,6 +203,8 @@ public class MonthMaskWsController extends BaseController {
 	@RequestMapping(value = "save")
 	public String save(MonthMaskWs monthMaskWs, Model model, RedirectAttributes redirectAttributes) {
 		monthMaskWs.setEndDate(Date2Utils.getEndDayOfMonth());//本月结束
+		String value = DictUtils.getDictValue("否", "yes_no", "否");
+		monthMaskWs.setSubmitState(value);
 		if (!beanValidator(model, monthMaskWs)){
 			return form(monthMaskWs, model);
 		}

@@ -60,15 +60,24 @@ public class WorkPersonService extends CrudService<WorkPersonDao, WorkPerson> {
 	}
 	
 	//查询所在班组所有员工
-	public List<WorkPerson> findWpsByUser(String empNo){
+	public List<WorkPerson> findWpsByUser(String empNo,boolean isWx){
 		
 		//查询员工号
 		if(null == empNo) {
 			return null;//空数据
 		}
 		
-		if(null == UserUtils.findByEmpNo(empNo)) {
+		if(!isWx && null == UserUtils.findByEmpNo(empNo)) {
 			return null;
+		}
+		
+		if(UserUtils.getUser().isAdmin()) {
+			return dao.findList(new WorkPerson());
+		}
+		
+		String userId = UserUtils.getUser().getId();
+		if(userId != null && "2".equals(userId)) {
+			return dao.findList(new WorkPerson());
 		}
 		
 		WorkPerson resultWp = new WorkPerson();
@@ -83,6 +92,11 @@ public class WorkPersonService extends CrudService<WorkPersonDao, WorkPerson> {
 	//查询所在班组所有员工
 	public List<WorkPerson> findWpsByUser(){
 		if(UserUtils.getUser().isAdmin()) {
+			return dao.findList(new WorkPerson());
+		}
+		
+		String userId = UserUtils.getUser().getId();
+		if(userId != null && "2".equals(userId)) {
 			return dao.findList(new WorkPerson());
 		}
 		
