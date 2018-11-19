@@ -93,7 +93,7 @@
         <img src="../static/wx/wximages/logo1.png" alt="图片加载中..." width="100%">
     </div>
     <input id="PageContext" type="hidden" value="${pageContext.request.contextPath}" />
-    <img src="../static/wx/wximages/topimg1.jpg" class="bannerimg" alt="图片加载中..." width="100%">
+    <img src="../static/wx/wximages/topimg.png" class="bannerimg" alt="图片加载中..." width="100%">
     
     <div class="inputinfo">
         <div class="form-group">
